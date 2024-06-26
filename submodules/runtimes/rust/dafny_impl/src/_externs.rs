@@ -5,8 +5,6 @@
 #![allow(nonstandard_style)]
 use crate::ImplementationFromDafny::*;
 
-use self::_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::RSAPaddingMode;
-
 pub use crate::random;
 pub use crate::aes_gcm;
 pub use crate::digest;
@@ -28,4 +26,3 @@ pub use crate::mutable_map;
 pub use crate::mutable_map::DafnyLibraries;
 pub use crate::fileio;
 pub use crate::fileio::_DafnyLibraries_dFileIO;
-
