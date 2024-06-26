@@ -15,11 +15,13 @@ impl Time::_default {
   }
 
   pub fn GetCurrentTimeStamp() -> ::std::rc::Rc<Wrappers::Result<::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>, ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>>> {
-    todo!("Time::GetCurrentTimeStamp not implemented");
-    /*
-      let now_utc = chrono::Utc::now();
-      let formatted = format!("{}", date_time.format("%Y-%m-%dT%H:%M:%S:%.fZ"));
-      return Result<icharseq, icharseq>.create_Success(charseq.FromString(timestamp));
-    */
+    // todo!("Time::GetCurrentTimeStamp not implemented");
+    let now_utc = chrono::Utc::now();
+    let formatted = format!("{}", now_utc.format("%Y-%m-%dT%H:%M:%S:%.fZ"));
+    ::std::rc::Rc::new(
+      Wrappers::Result::Success{value : 
+        dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&formatted)
+      }
+    )
   }
 }
