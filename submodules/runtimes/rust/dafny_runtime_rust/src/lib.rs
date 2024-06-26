@@ -236,6 +236,10 @@ pub mod dafny_runtime_conversions {
     }
 }
 
+pub trait DafnyUsize {
+    fn into_usize(self) -> usize;
+}
+
 // **************
 // Dafny integers
 // **************
@@ -252,6 +256,12 @@ impl DafnyInt {
     }
     pub fn as_usize(&self) -> usize {
         self.to_usize().unwrap()
+    }
+}
+
+impl DafnyUsize for DafnyInt {
+    fn into_usize(self) -> usize {
+        self.as_usize()
     }
 }
 
@@ -540,6 +550,11 @@ macro_rules! impl_dafnyint_from {
                 }
             }
         }
+        impl DafnyUsize for $type {
+            fn into_usize(self) -> usize {
+                self as usize
+            }
+        }
     };
 }
 
@@ -565,6 +580,25 @@ impl<'a> From<&'a [u8]> for DafnyInt {
 impl<'a, const N: usize> From<&'a [u8; N]> for DafnyInt {
     fn from(number: &[u8; N]) -> Self {
         DafnyInt::parse_bytes(number, 10)
+    }
+}
+
+impl From<char> for DafnyInt {
+    fn from(c: char) -> Self {
+        let cu32: u32 = c.into();
+        int!(cu32)
+    }
+}
+
+impl From<DafnyChar> for DafnyInt {
+    fn from(c: DafnyChar) -> Self {
+        int!(c.0)
+    }
+}
+
+impl From<DafnyCharUTF16> for DafnyInt {
+    fn from(c: DafnyCharUTF16) -> Self {
+        int!(c.0)
     }
 }
 
@@ -1140,7 +1174,7 @@ where
             f.write_str(" := ")?;
             v.fmt_print(f, in_seq)?;
         }
-        f.write_str("}")
+        f.write_str("]")
     }
 }
 
@@ -2468,14 +2502,37 @@ macro_rules! INIT_ARRAY_DATA {
 macro_rules! ARRAY_METHODS {
     // Accepts any number of length identifiers
     ($ArrayType:ident, $length0: ident, $($length:ident),+) => {
+        pub fn placebos_box_usize(
+            $length0: usize,
+            $($length: usize),+
+        ) -> Box<$ArrayType<$crate::MaybeUninit<T>>> {
+            Box::new($ArrayType {
+                $($length: $length),+,
+                data: INIT_ARRAY_DATA!($ArrayType, $length0, $($length),+),
+            })
+        }
+        
         pub fn placebos_usize(
             $length0: usize,
             $($length: usize),+
         ) -> *mut $ArrayType<$crate::MaybeUninit<T>> {
-            Box::into_raw(Box::new($ArrayType {
-                $($length: $length),+,
-                data: INIT_ARRAY_DATA!($ArrayType, $length0, $($length),+),
-            }))
+            Box::into_raw(Self::placebos_box_usize(
+                $length0,
+                $($length),+
+            ))
+        }
+
+        pub fn placebos_usize_object(
+            $length0: usize,
+            $($length: usize),+
+        ) -> $crate::Object<$ArrayType<$crate::MaybeUninit<T>>> {
+            // SAFETY: We know the object is owned and never referred to by anything else
+            unsafe {
+                $crate::Object::from_rc(Rc::new($ArrayType {
+                    $($length: $length),+,
+                    data: INIT_ARRAY_DATA!($ArrayType, $length0, $($length),+),
+                }))
+            }
         }
 
         pub fn placebos(
@@ -2504,7 +2561,7 @@ macro_rules! ARRAY_STRUCT {
     ($ArrayType:ident, $length0: ident, $($length:ident),+) => {
         pub struct $ArrayType<T> {
             $($length: usize),+,
-            data: ARRAY_DATA_TYPE!($length0, $($length),+),
+            pub data: ARRAY_DATA_TYPE!($length0, $($length),+),
         }
     }
 }
@@ -2912,7 +2969,8 @@ impl<T: ?Sized> DafnyPrint for *mut T {
 
 impl<T> NontrivialDefault for *mut T {
     fn nontrivial_default() -> Self {
-        0 as *mut T
+        // Create a null pointer
+        ::std::ptr::null() as *const T as *mut T
     }
 }
 pub struct ExactPool<T: Clone> {
@@ -3071,6 +3129,11 @@ macro_rules! update_field_if_uninit {
 
 pub struct Object<T: ?Sized>(pub Option<rcmut::RcMut<T>>);
 
+impl <T: ?Sized> Object<T> {
+    pub unsafe fn from_rc(rc: Rc<T>) -> Object<T> {
+        Object(Some(rcmut::from_rc(rc)))
+    }
+}
 impl<T: ?Sized> Eq for Object<T> {}
 
 impl<T: ?Sized> Clone for Object<T> {
@@ -3283,7 +3346,7 @@ pub mod rcmut {
             crate::Object(Some(crate::rcmut::new(Array { data })))
         }
 
-        pub fn placebos_usize(length: usize) -> crate::Object<Array<MaybeUninit<T>>> {
+        pub fn placebos_usize_object(length: usize) -> crate::Object<Array<MaybeUninit<T>>> {
             let x = crate::array::placebos_box_usize::<T>(length);
             crate::rcmut::Array::<MaybeUninit<T>>::new(x)
         }
@@ -3458,6 +3521,7 @@ pub fn rc_coerce<T: Clone, U: Clone>(f: Rc<impl Fn(T) -> U>) -> Rc<impl Fn(Rc<T>
 pub fn box_coerce<T: Clone, U: Clone>(f: Box<impl Fn(T) -> U>) -> Box<impl Fn(Box<T>) -> Box<U>> {
     Box::new(move |x: Box<T>| Box::new(f.as_ref()(x.as_ref().clone())))
 }
+
 pub fn fn1_coerce<T: Clone + 'static, A: Clone + 'static, R: Clone + 'static>(
     a_to_r: Rc<impl Fn(A) -> R + 'static>) ->
   Rc<impl Fn(Rc<dyn Fn(&T) -> A>) -> Rc<dyn Fn(&T) -> R> + 'static> {
@@ -3468,7 +3532,6 @@ pub fn fn1_coerce<T: Clone + 'static, A: Clone + 'static, R: Clone + 'static>(
         r
     })
 }
-
 
 // For pointers
 pub trait Upcast<T: ?Sized> {
