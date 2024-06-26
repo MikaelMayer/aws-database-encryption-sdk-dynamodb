@@ -231,11 +231,11 @@ pub mod r#_software_damazon_dcryptography_dinternaldafny_dStormTrackingCMC {
 
   pub struct StormTrackingCMC {}
   impl StormTrackingCMC {
-    pub fn _allocate_object() -> ::dafny_runtime::Object<Self> {
-      ::dafny_runtime::allocate_object::<Self>()
-    }
-    pub fn _ctor(_this: &::dafny_runtime::Object<Self>, _cmc: &::dafny_runtime::Object<StormTracker::StormTracker>) -> () {
-      todo!("r#_software_damazon_dcryptography_dinternaldafny_dStormTrackingCMC::_ctor not implemented");
+    pub fn _allocate_object(_cmc: ::dafny_runtime::Object<StormTracker::StormTracker>) -> ::dafny_runtime::Object<Self> {
+      // SAFETY: The Rc has not been shared before
+      unsafe {
+        ::dafny_runtime::Object::from_rc(::std::rc::Rc::new(StormTrackingCMC {}))
+      }
     }
   }
 
