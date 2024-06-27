@@ -2,11 +2,11 @@
 // Annotation to ignore the case of this module
 #[allow(non_snake_case)]
 pub mod UTF8 {
-  use crate::ImplementationFromDafny::Wrappers;
-  use crate::ImplementationFromDafny::UTF8;
+  use crate::Wrappers;
+  use crate::UTF8;
 
   
-  impl crate::ImplementationFromDafny::UTF8::_default {
+  impl crate::UTF8::_default {
     pub fn Encode(s: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>) -> ::std::rc::Rc<Wrappers::Result<UTF8::ValidUTF8Bytes, ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>>> {
       let v = s.to_array();
       let mut _accumulator: Vec<u8> = vec![];

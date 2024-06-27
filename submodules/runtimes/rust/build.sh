@@ -17,5 +17,5 @@ C:/Users/mimayere/Documents/aws-database-encryption-sdk-dynamodb-java/submodules
 C:/Users/mimayere/Documents/aws-database-encryption-sdk-dynamodb-java/submodules/MaterialProviders/ComAmazonawsDynamodb/src/Index.dfy \
 C:/Users/mimayere/Documents/aws-database-encryption-sdk-dynamodb-java/submodules/MaterialProviders/AwsCryptographicMaterialProviders/dafny/AwsCryptographicMaterialProviders/src/Index.dfy \
 C:/Users/mimayere/Documents/aws-database-encryption-sdk-dynamodb-java/submodules/MaterialProviders/AwsCryptographicMaterialProviders/dafny/AwsCryptographyKeyStore/src/Index.dfy \
-MaterialProvidersIndex.dfy
+MaterialProvidersIndex.dfy runtimes/rust/dafny_impl/src/_externs.rs runtimes/rust/dafny_impl/src/externs_UTF8.rs
 )

@@ -3,7 +3,7 @@
 
 #![allow(warnings, unconditional_panic)]
 #![allow(nonstandard_style)]
-use crate::ImplementationFromDafny::*;
+use crate::*;
 
 pub use crate::random;
 pub use crate::aes_gcm;
