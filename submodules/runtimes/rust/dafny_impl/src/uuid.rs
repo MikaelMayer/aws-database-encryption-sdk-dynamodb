@@ -3,9 +3,9 @@
 
 #![allow(warnings, unconditional_panic)]
 #![allow(nonstandard_style)]
-use crate::ImplementationFromDafny::*;
+use crate::*;
 
-impl UUID::_default {
+impl crate::UUID::_default {
   pub fn ToByteArray(_bytes: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>)
     -> ::std::rc::Rc<Wrappers::Result<::dafny_runtime::Sequence<u8>, ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>>>
   {

@@ -3,10 +3,10 @@
 
 #![allow(warnings, unconditional_panic)]
 #![allow(nonstandard_style)]
-use crate::ImplementationFromDafny::*;
-use self::_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::RSAPaddingMode;
+use crate::_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::RSAPaddingMode;
+use crate::*;
 
-impl RSAEncryption_dRSA::_default {
+impl crate::RSAEncryption_dRSA::_default {
   #[allow(non_snake_case)]
   pub fn GenerateKeyPairExtern(_lengthBits: i32) -> (::dafny_runtime::Sequence<u8>, ::dafny_runtime::Sequence<u8>) {
     todo!("RSAEncryption_dRSA::GenerateKeyPairExtern not implemented");
@@ -29,7 +29,7 @@ impl RSAEncryption_dRSA::_default {
   }
 }
 
-impl r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::RSAPublicKey {
+impl crate::r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::RSAPublicKey {
   #[allow(non_snake_case)]
   pub fn GetRSAKeyModulusLengthExtern(&self) -> ::std::rc::Rc<Wrappers::Result<u32, r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::Error>> {
     todo!("GetRSAKeyModulusLengthExtern not implemented");

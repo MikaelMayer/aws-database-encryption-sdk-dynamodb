@@ -3,9 +3,9 @@
 
 #![allow(warnings, unconditional_panic)]
 #![allow(nonstandard_style)]
-use crate::ImplementationFromDafny::*;
+use crate::*;
 
-impl r#_software_damazon_dcryptography_dservices_dkms_dinternaldafny::_default {
+impl crate::r#_software_damazon_dcryptography_dservices_dkms_dinternaldafny::_default {
   pub fn KMSClientForRegion(_region: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>) -> ::std::rc::Rc<Wrappers::Result<::dafny_runtime::Object<dyn r#_software_damazon_dcryptography_dservices_dkms_dinternaldafny_dtypes::IKMSClient>, ::std::rc::Rc<r#_software_damazon_dcryptography_dservices_dkms_dinternaldafny_dtypes::Error>>> {
     todo!("r#_software_damazon_dcryptography_dservices_dkms_dinternaldafny::KMSClientForRegion not implemented");
   }

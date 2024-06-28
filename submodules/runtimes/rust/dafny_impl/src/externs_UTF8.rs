@@ -4,7 +4,6 @@
 pub mod UTF8 {
   use crate::Wrappers;
   use crate::UTF8;
-
   
   impl crate::UTF8::_default {
     pub fn Encode(s: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>) -> ::std::rc::Rc<Wrappers::Result<UTF8::ValidUTF8Bytes, ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>>> {

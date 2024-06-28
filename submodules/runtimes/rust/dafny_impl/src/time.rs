@@ -3,10 +3,10 @@
 
 #![allow(warnings, unconditional_panic)]
 #![allow(nonstandard_style)]
-use crate::ImplementationFromDafny::*;
 use std::time::SystemTime;
+use crate::*;
 
-impl Time::_default {
+impl crate::Time::_default {
   pub fn CurrentRelativeTime() -> u64 {
     match SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
       Ok(n) => n.as_secs(),

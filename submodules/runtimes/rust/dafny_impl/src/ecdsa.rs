@@ -3,19 +3,19 @@
 
 #![allow(warnings, unconditional_panic)]
 #![allow(nonstandard_style)]
-use crate::ImplementationFromDafny::*;
 
 pub mod Signature_dECDSA {
-  use crate::ImplementationFromDafny::*;
-  pub fn ExternKeyGen(_self: &::std::rc::Rc<r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::ECDSASignatureAlgorithm>)
+  use crate::*;
+
+  pub fn ExternKeyGen(_self: &::std::rc::Rc<crate::r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::ECDSASignatureAlgorithm>)
      -> ::std::rc::Rc<Wrappers::Result<::std::rc::Rc<Signature::SignatureKeyPair>, ::std::rc::Rc<r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::Error>>>
   {
     todo!("Signature::ExternKeyGen not implemented");
   }
-  pub fn Sign(_self: &::std::rc::Rc<r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::ECDSASignatureAlgorithm>,
+  pub fn Sign(_self: &::std::rc::Rc<crate::r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::ECDSASignatureAlgorithm>,
               _key: &::dafny_runtime::Sequence<u8>,
               _msg: &::dafny_runtime::Sequence<u8>
-  ) -> ::std::rc::Rc<Wrappers::Result<::dafny_runtime::Sequence<u8>, ::std::rc::Rc<r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::Error>>> {
+  ) -> ::std::rc::Rc<Wrappers::Result<::dafny_runtime::Sequence<u8>, ::std::rc::Rc<crate::r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::Error>>> {
     todo!("Signature::Sign not implemented");
   }
   /*

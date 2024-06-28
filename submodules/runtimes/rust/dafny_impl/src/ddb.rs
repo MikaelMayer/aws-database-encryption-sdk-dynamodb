@@ -3,7 +3,7 @@
 
 #![allow(warnings, unconditional_panic)]
 #![allow(nonstandard_style)]
-use crate::ImplementationFromDafny::*;
+use crate::*;
 
 impl r#_software_damazon_dcryptography_dservices_ddynamodb_dinternaldafny::_default {
   pub fn DDBClientForRegion(_region: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>)

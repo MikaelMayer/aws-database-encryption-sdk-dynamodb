@@ -3,9 +3,9 @@
 
 #![allow(warnings, unconditional_panic)]
 #![allow(nonstandard_style)]
-use crate::ImplementationFromDafny::*;
+use crate::*;
 
-impl r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::AES_GCM {
+impl crate::r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::AES_GCM {
   #[allow(non_snake_case)]
   pub fn AESEncryptExtern(
     &self,

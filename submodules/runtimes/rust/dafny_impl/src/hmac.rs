@@ -3,19 +3,21 @@
 
 #![allow(warnings, unconditional_panic)]
 #![allow(nonstandard_style)]
-use crate::ImplementationFromDafny::*;
+use crate::*;
 
 // Let's implement HMAC::_default::Digest
-impl crate::ImplementationFromDafny::HMAC::_default {
+impl crate::HMAC::_default {
   #[allow(non_snake_case)]
-  pub fn Digest(_input: &::std::rc::Rc<r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::HMacInput>)
+  pub fn Digest(_input: &::std::rc::Rc<crate::r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::HMacInput>)
     -> ::std::rc::Rc<Wrappers::Result<::dafny_runtime::Sequence<u8>, ::std::rc::Rc<r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::Error>>> {
       todo!("HMAC::_default::Digest not implemented");
   }
 }
 
 pub mod HMAC {
-  use crate::ImplementationFromDafny::*;
+  use crate::*;
+  pub struct _default {}
+  
   pub struct HMac {
   }
   impl HMac {
