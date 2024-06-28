@@ -5,7 +5,10 @@
 #![allow(nonstandard_style)]
 use crate::*;
 
-impl crate::r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::AES_GCM {
+pub mod AESEncryption {
+  pub use crate::_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::*;
+}
+impl crate::_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::AES_GCM {
   #[allow(non_snake_case)]
   pub fn AESEncryptExtern(
     &self,
