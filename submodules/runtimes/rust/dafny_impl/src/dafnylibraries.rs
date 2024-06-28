@@ -45,4 +45,17 @@ pub mod DafnyLibraries {
       todo!("MutableMap::Size not implemented");
     }
   }
+
+  pub mod FileIO {
+    pub fn INTERNAL_ReadBytesFromFile(_file: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>)
+      -> (bool, ::dafny_runtime::Sequence<u8>, ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>)
+    {
+      todo!("r#_Dafny_dFileIO::r#_INTERNAL_ReadBytesFromFile not implemented");
+    }
+    pub fn INTERNAL_WriteBytesToFile(_path: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>, _bytes: &::dafny_runtime::Sequence<u8>)
+      -> (bool, ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>)
+    {
+      todo!("r#_Dafny_dFileIO::(path: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>, bytes: &::dafny_runtime::Sequence<u8>) not implemented");
+    }
+  }
 }
