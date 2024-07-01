@@ -6,6 +6,7 @@ if [ -z "$DAFNY" ]; then
   DAFNY=~/Documents/dafny/Binaries/Dafny.exe
 fi
 MPL=runtimes/rust/dafny_impl/src
+IMPL=runtimes/rust/dafny_impl/src
 ALL_EXTERNS=$(ls dafny_impl/src | grep .rs | grep -v ImplementationFromDafny.rs | xargs -I{} echo $IMPL/{})
 REMOVE_EXTERNS=$(ls ImplementationFromDafny-rust/src | grep .rs | grep -v ImplementationFromDafny.rs | xargs -I{} echo ImplementationFromDafny-rust/src/{})
 

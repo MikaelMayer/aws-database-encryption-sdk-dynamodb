@@ -1102,6 +1102,13 @@ impl<K: DafnyTypeEq, V: DafnyTypeEq> Map<K, V> {
         }
         Set::from_array(&result)
     }
+    pub fn items(&self) -> Set<(K, V)> {
+        let mut result: Vec<(K, V)> = Vec::new();
+        for (k, v) in self.data.iter() {
+            result.push((k.clone(), v.clone()));
+        }
+        Set::from_array(&result)
+    }
 
     pub fn update_index(&self, index: &K, value: &V) -> Self {
         let mut result = self.data.as_ref().clone();

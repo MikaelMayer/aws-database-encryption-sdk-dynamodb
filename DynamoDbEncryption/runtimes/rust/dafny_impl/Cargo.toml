@@ -9,4 +9,4 @@ edition = "2021"
 dafny_runtime = { path = "../dafny_runtime_rust"}
 
 [lib]
-path = "src/lib.rs"
+path = "src/ImplementationFromDafny.rs"
