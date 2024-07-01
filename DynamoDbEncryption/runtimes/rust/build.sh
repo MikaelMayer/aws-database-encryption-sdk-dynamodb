@@ -5,6 +5,16 @@
 if [ -z "$DAFNY" ]; then
   DAFNY=~/Documents/dafny/Binaries/Dafny.exe
 fi
+MPL=runtimes/rust/dafny_impl/src
+ALL_EXTERNS=$(ls dafny_impl/src | grep .rs | grep -v ImplementationFromDafny.rs | xargs -I{} echo $IMPL/{})
+REMOVE_EXTERNS=$(ls ImplementationFromDafny-rust/src | grep .rs | grep -v ImplementationFromDafny.rs | xargs -I{} echo ImplementationFromDafny-rust/src/{})
 
 (cd ../../../DynamoDbEncryption;
-$DAFNY -noVerify -compileTarget:rs -spillTargetCode:3 -compile:0 -optimizeErasableDatatypeWrapper:0 -quantifierSyntax:3 -unicodeChar:0 -functionSyntax:3 -useRuntimeLib -emitUncompilableCode -out runtimes/rust/ImplementationFromDafny UniqueToBuildInRust.dfy
+$DAFNY  translate rs --no-verify --emit-uncompilable-code:true \
+--allow-warnings --optimize-erasable-datatype-wrapper:false --allow-external-contracts \
+--quantifier-syntax:3 --unicode-char:false --function-syntax:3 \
+--include-runtime:true --output runtimes/rust/ImplementationFromDafny UniqueToBuildInRust.dfy $ALL_EXTERNS)
+
+echo "Removing externs";
+# Now remove all *.rs files 
+rm $REMOVE_EXTERNS

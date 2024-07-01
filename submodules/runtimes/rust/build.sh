@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# If DAFNY is not defined, use ~/Documents/dafny/Binaries/Dafny.exe
+echo "Start";
 
 if [ -z "$DAFNY" ]; then
   DAFNY=~/Documents/dafny/Binaries/Dafny.exe
@@ -9,7 +9,6 @@ fi
 MPL=C:/Users/mimayere/Documents/aws-database-encryption-sdk-dynamodb-java/submodules/MaterialProviders/
 
 IMPL=runtimes/rust/dafny_impl/src
-GENERATED=
 # List all the files in the folder $IMPL with extension .rs except ImplementationFromDafny.rs
 # Then prefix all of them with $IMPL and join them with a space
 ALL_EXTERNS=$(ls dafny_impl/src | grep .rs | grep -v ImplementationFromDafny.rs | xargs -I{} echo $IMPL/{})
@@ -29,5 +28,6 @@ $MPL/AwsCryptographicMaterialProviders/dafny/AwsCryptographicMaterialProviders/s
 $MPL/AwsCryptographicMaterialProviders/dafny/AwsCryptographyKeyStore/src/Index.dfy \
 MaterialProvidersIndex.dfy $ALL_EXTERNS)
 
+echo "Removing externs";
 # Now remove all *.rs files 
 rm $REMOVE_EXTERNS
