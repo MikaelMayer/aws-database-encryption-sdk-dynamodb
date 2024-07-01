@@ -1204,6 +1204,13 @@ pub struct Set<V: DafnyTypeEq> {
     data: Rc<HashSet<V>>,
 }
 
+// Since there is no canonical way to iterate over a set to compute the hash.
+impl<T: DafnyTypeEq> ::std::hash::Hash for Set<T> {
+    fn hash<_H: ::std::hash::Hasher>(&self, _state: &mut _H) {
+        self.cardinality_usize().hash(_state)
+    }
+}
+
 impl<T> Default for Set<T>
 where
     T: DafnyTypeEq,

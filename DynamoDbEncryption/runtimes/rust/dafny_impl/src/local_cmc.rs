@@ -4,17 +4,17 @@
 #![allow(warnings, unconditional_panic)]
 #![allow(nonstandard_style)]
 
-pub mod r#_software_damazon_dcryptography_dinternaldafny_dSynchronizedLocalCMC {
+pub mod internal_SynchronizedLocalCMC {
   use crate::*;
 
   pub struct SynchronizedLocalCMC {}
 
   impl SynchronizedLocalCMC {
-    pub fn _allocate_object() -> ::dafny_runtime::Object<Self> {
-      ::dafny_runtime::allocate_object::<Self>()
-    }
-    pub fn _ctor(_this: &::dafny_runtime::Object<Self>, _cmc: &::dafny_runtime::Object<LocalCMC::LocalCMC>) -> () {
-      todo!("r#_software_damazon_dcryptography_dinternaldafny_dSynchronizedLocalCMC::_ctor not implemented");
+    pub fn _allocate_object(_cmc: ::dafny_runtime::Object<LocalCMC::LocalCMC>) -> ::dafny_runtime::Object<Self> {
+      // SAFETY: Rc is instantiated only here
+      unsafe {
+        ::dafny_runtime::Object::from_rc(::std::rc::Rc::new(SynchronizedLocalCMC {}))
+      }
     }
   }
 

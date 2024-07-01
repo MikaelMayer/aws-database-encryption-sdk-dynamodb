@@ -4,7 +4,7 @@
 #![allow(warnings, unconditional_panic)]
 #![allow(nonstandard_style)]
 
-pub mod r#_software_damazon_dcryptography_dinternaldafny_dStormTrackingCMC {
+pub mod internal_StormTrackingCMC {
   use crate::*;
   pub struct StormTrackingCMC {}
   impl StormTrackingCMC {

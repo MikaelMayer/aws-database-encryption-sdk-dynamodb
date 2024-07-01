@@ -4,11 +4,12 @@
 #![allow(warnings, unconditional_panic)]
 #![allow(nonstandard_style)]
 
-pub mod RSAEncryption {
+
+// Extern methods with a foreign module name
+pub mod RSAEncryption{
   pub mod RSA {
     use crate::_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::RSAPaddingMode;
     use crate::*;
-
     #[allow(non_snake_case)]
     pub fn GenerateKeyPairExtern(_lengthBits: i32) -> (::dafny_runtime::Sequence<u8>, ::dafny_runtime::Sequence<u8>) {
       todo!("RSAEncryption_dRSA::GenerateKeyPairExtern not implemented");
