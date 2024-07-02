@@ -10,9 +10,9 @@ pub mod Time {
   
   pub struct _default {}
   impl _default {
-    pub fn CurrentRelativeTime() -> u64 {
+    pub fn CurrentRelativeTime() -> i64 {
       match SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
-        Ok(n) => n.as_secs(),
+        Ok(n) => n.as_secs() as i64,
         Err(_) => 0
       }
     }

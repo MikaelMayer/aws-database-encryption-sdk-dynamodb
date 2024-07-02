@@ -11,7 +11,7 @@ pub mod SortedSets {
     pub fn SetToSequence<T: ::dafny_runtime::DafnyTypeEq>(_elems: &::dafny_runtime::Set<T>) -> ::dafny_runtime::Sequence<T> {
       todo!("SortedSets::SetToSequence not implemented");
     }
-    pub fn SetToOrderedSequence2<T: ::dafny_runtime::DafnyTypeEq>(_elems: &::dafny_runtime::Set<::dafny_runtime::Sequence<T>>, less: &Rc<dyn Fn(&T, &T) -> bool>) -> ::dafny_runtime::Sequence<T> {
+    pub fn SetToOrderedSequence2<T: ::dafny_runtime::DafnyTypeEq>(_elems: &::dafny_runtime::Set<::dafny_runtime::Sequence<T>>, less: &::std::rc::Rc<dyn Fn(&T, &T) -> bool>) -> ::dafny_runtime::Sequence<T> {
       todo!("SortedSets::SetToOrderedSequence2 not implemented");
     }
   }  
