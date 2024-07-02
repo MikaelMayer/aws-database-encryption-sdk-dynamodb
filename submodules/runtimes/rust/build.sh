@@ -13,8 +13,6 @@ IMPL=runtimes/rust/dafny_impl/src
 # Then prefix all of them with $IMPL and join them with a space
 ALL_EXTERNS=$(ls dafny_impl/src | grep .rs | grep -v ImplementationFromDafny.rs | xargs -I{} echo $IMPL/{})
 
-REMOVE_EXTERNS=$(ls ImplementationFromDafny-rust/src | grep .rs | grep -v ImplementationFromDafny.rs | xargs -I{} echo ImplementationFromDafny-rust/src/{})
-
 (cd ../../../submodules;
 $DAFNY translate rs --no-verify --emit-uncompilable-code:true \
 --allow-warnings --optimize-erasable-datatype-wrapper:false --allow-external-contracts \
@@ -29,5 +27,6 @@ $MPL/AwsCryptographicMaterialProviders/dafny/AwsCryptographyKeyStore/src/Index.d
 MaterialProvidersIndex.dfy $ALL_EXTERNS)
 
 echo "Removing externs";
+REMOVE_EXTERNS=$(ls ImplementationFromDafny-rust/src | grep .rs | grep -v ImplementationFromDafny.rs | xargs -I{} echo ImplementationFromDafny-rust/src/{})
 # Now remove all *.rs files 
 rm $REMOVE_EXTERNS
