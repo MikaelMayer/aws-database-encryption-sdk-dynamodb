@@ -5,7 +5,7 @@ git commit -am "Fixed beneration"
 
 # Commit and squash all your commits into one
 git reset --soft HEAD~2
-git commit -am "Updated beneration with latest feat-rust compiler"
+git commit -am "Updated beneration of DbESDK with latest feat-rust compiler"
 
 git checkout feat-rust-beneration && git merge b2-update-compiler
 
