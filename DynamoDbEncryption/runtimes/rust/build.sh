@@ -19,3 +19,8 @@ echo "Removing externs";
 REMOVE_EXTERNS=$(ls ImplementationFromDafny-rust/src | grep .rs | grep -v ImplementationFromDafny.rs | xargs -I{} echo ImplementationFromDafny-rust/src/{})
 # Now remove all *.rs files 
 rm $REMOVE_EXTERNS
+
+echo "Moving generated file";
+mv ImplementationFromDafny-rust/src/ImplementationFromDafny.rs dafny_impl/src/ImplementationFromDafny.rs
+mv ImplementationFromDafny-rust/src/ImplementationFromDafny-rs.dtr dafny_impl/src/ImplementationFromDafny-rs.dtr
+rm -r ImplementationFromDafny-rust
