@@ -6,9 +6,9 @@
 use crate::*;
 
 impl r#_software_damazon_dcryptography_dservices_ddynamodb_dinternaldafny::_default {
-  pub fn DDBClientForRegion(_region: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>)
+    pub fn DDBClientForRegion(_region: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>)
     -> ::std::rc::Rc<Wrappers::Result<::dafny_runtime::Object<dyn r#_software_damazon_dcryptography_dservices_ddynamodb_dinternaldafny_dtypes::IDynamoDBClient>, ::std::rc::Rc<r#_software_damazon_dcryptography_dservices_ddynamodb_dinternaldafny_dtypes::Error>>>
   {
-    todo!("r#_software_damazon_dcryptography_dservices_ddynamodb_dinternaldafny::DDBClientForRegion not implemented");
-  }
+        todo!("r#_software_damazon_dcryptography_dservices_ddynamodb_dinternaldafny::DDBClientForRegion not implemented");
+    }
 }

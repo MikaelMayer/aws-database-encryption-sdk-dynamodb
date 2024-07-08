@@ -5,46 +5,56 @@
 #![allow(nonstandard_style)]
 
 pub mod SortedSets {
-  use crate::*;
-  use std::cmp::Ordering;
+    use crate::*;
+    use std::cmp::Ordering;
 
-  pub struct _default {}
-  impl _default {
-    pub fn SetToSequence<T: ::dafny_runtime::DafnyTypeEq>(elems: &::dafny_runtime::Set<T>) -> ::dafny_runtime::Sequence<T> {
-      elems.iter().cloned().collect()
-    }
-
-    pub fn SetToOrderedSequence<T: ::dafny_runtime::DafnyTypeEq>(elems: &::dafny_runtime::Set<::dafny_runtime::Sequence<T>>, less: &::std::rc::Rc<dyn Fn(&T, &T) -> bool>) ->::dafny_runtime::Sequence<::dafny_runtime::Sequence<T>> {
-      let mut vec = elems.iter().cloned().collect::<Vec<_>>();
-      vec.sort_by(|a, b| Self::Order(a, b, less));
-      dafny_runtime::dafny_runtime_conversions::vec_to_dafny_sequence(&vec, |x| x.clone())
-    }
-
-    pub fn SetToOrderedSequence2<T: ::dafny_runtime::DafnyTypeEq>(elems: &::dafny_runtime::Set<::dafny_runtime::Sequence<T>>, less: &::std::rc::Rc<dyn Fn(&T, &T) -> bool>) ->::dafny_runtime::Sequence<::dafny_runtime::Sequence<T>> {
-      Self::SetToOrderedSequence(elems, less)
-    }
-
-    fn Order<T: ::dafny_runtime::DafnyTypeEq>(x : &::dafny_runtime::Sequence<T>, y : &::dafny_runtime::Sequence<T>, less: &::std::rc::Rc<dyn Fn(&T, &T) -> bool>) -> Ordering
-    {
-      let mut iter1 = x.iter();
-      let mut iter2 = y.iter();
-
-      loop {
-        match (iter1.next(), iter2.next()) {
-            (Some(lhs), Some(rhs)) => {
-              if less(&lhs, &rhs) {
-                return Ordering::Less;
-              }
-              if less(&rhs, &lhs) {
-                return Ordering::Greater;
-              }
-            }
-            (Some(_), None) => return Ordering::Greater,
-            (None, Some(_)) => return Ordering::Less,
-            (None, None) => return Ordering::Equal,
+    pub struct _default {}
+    impl _default {
+        pub fn SetToSequence<T: ::dafny_runtime::DafnyTypeEq>(
+            elems: &::dafny_runtime::Set<T>,
+        ) -> ::dafny_runtime::Sequence<T> {
+            elems.iter().cloned().collect()
         }
-      }
-    }  
-  }
-}
 
+        pub fn SetToOrderedSequence<T: ::dafny_runtime::DafnyTypeEq>(
+            elems: &::dafny_runtime::Set<::dafny_runtime::Sequence<T>>,
+            less: &::std::rc::Rc<dyn Fn(&T, &T) -> bool>,
+        ) -> ::dafny_runtime::Sequence<::dafny_runtime::Sequence<T>> {
+            let mut vec = elems.iter().cloned().collect::<Vec<_>>();
+            vec.sort_by(|a, b| Self::Order(a, b, less));
+            dafny_runtime::dafny_runtime_conversions::vec_to_dafny_sequence(&vec, |x| x.clone())
+        }
+
+        pub fn SetToOrderedSequence2<T: ::dafny_runtime::DafnyTypeEq>(
+            elems: &::dafny_runtime::Set<::dafny_runtime::Sequence<T>>,
+            less: &::std::rc::Rc<dyn Fn(&T, &T) -> bool>,
+        ) -> ::dafny_runtime::Sequence<::dafny_runtime::Sequence<T>> {
+            Self::SetToOrderedSequence(elems, less)
+        }
+
+        fn Order<T: ::dafny_runtime::DafnyTypeEq>(
+            x: &::dafny_runtime::Sequence<T>,
+            y: &::dafny_runtime::Sequence<T>,
+            less: &::std::rc::Rc<dyn Fn(&T, &T) -> bool>,
+        ) -> Ordering {
+            let mut iter1 = x.iter();
+            let mut iter2 = y.iter();
+
+            loop {
+                match (iter1.next(), iter2.next()) {
+                    (Some(lhs), Some(rhs)) => {
+                        if less(&lhs, &rhs) {
+                            return Ordering::Less;
+                        }
+                        if less(&rhs, &lhs) {
+                            return Ordering::Greater;
+                        }
+                    }
+                    (Some(_), None) => return Ordering::Greater,
+                    (None, Some(_)) => return Ordering::Less,
+                    (None, None) => return Ordering::Equal,
+                }
+            }
+        }
+    }
+}

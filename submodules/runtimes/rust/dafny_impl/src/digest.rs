@@ -5,15 +5,22 @@
 #![allow(nonstandard_style)]
 
 pub mod ExternDigest {
-  use crate::*;
-  pub struct _default {}
-  impl _default {
-    #[allow(non_snake_case)]
-    pub fn Digest(
-      _digestAlgorithm: &::std::rc::Rc<r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::DigestAlgorithm>,
-      _message: &::dafny_runtime::Sequence<u8>
-    ) -> ::std::rc::Rc<Wrappers::Result<::dafny_runtime::Sequence<u8>, ::std::rc::Rc<r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::Error>>> {
-      todo!("Digest not implemented");
+    use crate::*;
+    pub struct _default {}
+    impl _default {
+        #[allow(non_snake_case)]
+        pub fn Digest(
+            _digestAlgorithm: &::std::rc::Rc<r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::DigestAlgorithm>,
+            _message: &::dafny_runtime::Sequence<u8>,
+        ) -> ::std::rc::Rc<
+            Wrappers::Result<
+                ::dafny_runtime::Sequence<u8>,
+                ::std::rc::Rc<
+                    r#_software_damazon_dcryptography_dprimitives_dinternaldafny_dtypes::Error,
+                >,
+            >,
+        > {
+            todo!("Digest not implemented");
+        }
     }
-  }
 }
