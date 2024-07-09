@@ -26,7 +26,7 @@ pub mod Time {
             let now_utc = chrono::Utc::now();
             let formatted = format!("{}", now_utc.format("%Y-%m-%dT%H:%M:%S:%.fZ"));
             ::std::rc::Rc::new(
-        Wrappers::Result::Success{value : 
+        Wrappers::Result::Success{value :
           dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&formatted)
         }
       )

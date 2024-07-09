@@ -31,15 +31,15 @@ pub mod internal_SynchronizedLocalCMC {
     fn r#_PutCacheEntry_k(&mut self, _input: &std::rc::Rc<crate::software::amazon::cryptography::materialproviders::internaldafny::types::PutCacheEntryInput>) -> std::rc::Rc<crate::Wrappers::Result<(), std::rc::Rc<crate::software::amazon::cryptography::materialproviders::internaldafny::types::Error>>> {
       todo!("r#_software_damazon_dcryptography_dinternaldafny_dSynchronizedLocalCMC::_ctor not implemented");
     }
-  
+
     fn r#_UpdateUsageMetadata_k(&mut self, _input: &std::rc::Rc<crate::software::amazon::cryptography::materialproviders::internaldafny::types::UpdateUsageMetadataInput>) -> std::rc::Rc<crate::Wrappers::Result<(), std::rc::Rc<crate::software::amazon::cryptography::materialproviders::internaldafny::types::Error>>> {
       todo!("r#_software_damazon_dcryptography_dinternaldafny_dSynchronizedLocalCMC::_ctor not implemented");
     }
-  
+
     fn r#_GetCacheEntry_k(&mut self, _input: &std::rc::Rc<crate::software::amazon::cryptography::materialproviders::internaldafny::types::GetCacheEntryInput>) -> std::rc::Rc<crate::Wrappers::Result<std::rc::Rc<crate::software::amazon::cryptography::materialproviders::internaldafny::types::GetCacheEntryOutput>, std::rc::Rc<crate::software::amazon::cryptography::materialproviders::internaldafny::types::Error>>> {
       todo!("r#_software_damazon_dcryptography_dinternaldafny_dSynchronizedLocalCMC::_ctor not implemented");
     }
-  
+
     fn r#_DeleteCacheEntry_k(&mut self, _input: &std::rc::Rc<crate::software::amazon::cryptography::materialproviders::internaldafny::types::DeleteCacheEntryInput>) -> std::rc::Rc<crate::Wrappers::Result<(), std::rc::Rc<crate::software::amazon::cryptography::materialproviders::internaldafny::types::Error>>> {
       todo!("r#_software_damazon_dcryptography_dinternaldafny_dSynchronizedLocalCMC::_ctor not implemented");
     }

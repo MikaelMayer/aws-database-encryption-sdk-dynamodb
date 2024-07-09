@@ -27,9 +27,7 @@ impl crate::HMAC::_default {
     ) -> ::std::rc::Rc<
         Wrappers::Result<
             ::dafny_runtime::Sequence<u8>,
-            ::std::rc::Rc<
-            software::amazon::cryptography::primitives::internaldafny::types::Error,
-            >,
+            ::std::rc::Rc<software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     > {
         let key_vec: Vec<u8> = input.key().iter().collect();
@@ -59,21 +57,21 @@ pub mod HMAC {
             self.context = Some(hmac::Context::with_key(&s_key));
         }
         pub fn Build(
-            input: &::std::rc::Rc<software::amazon::cryptography::primitives::internaldafny::types::DigestAlgorithm>,
+            input: &::std::rc::Rc<
+                software::amazon::cryptography::primitives::internaldafny::types::DigestAlgorithm,
+            >,
         ) -> ::std::rc::Rc<
             Wrappers::Result<
                 ::dafny_runtime::Object<Self>,
                 ::std::rc::Rc<
-                software::amazon::cryptography::primitives::internaldafny::types::Error,
+                    software::amazon::cryptography::primitives::internaldafny::types::Error,
                 >,
             >,
         > {
-            let inner = unsafe {
-                dafny_runtime::Object::from_rc(std::rc::Rc::new(Self {
-                    algorithm: super::convert_algorithm(&*input),
-                    context: None,
-                }))
-            };
+            let inner = dafny_runtime::Object::new(Self {
+                algorithm: super::convert_algorithm(&*input),
+                context: None,
+            });
 
             ::std::rc::Rc::new(Wrappers::Result::Success { value: inner })
         }
