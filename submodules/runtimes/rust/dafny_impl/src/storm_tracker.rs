@@ -11,8 +11,7 @@ pub mod internal_StormTrackingCMC {
         pub fn _allocate_object(
             _cmc: ::dafny_runtime::Object<StormTracker::StormTracker>,
         ) -> ::dafny_runtime::Object<Self> {
-            // SAFETY: The Rc has not been shared before
-            unsafe { ::dafny_runtime::Object::from_rc(::std::rc::Rc::new(StormTrackingCMC {})) }
+            ::dafny_runtime::Object::new(StormTrackingCMC {})
         }
         pub fn _ctor(
             _this: &::dafny_runtime::Object<Self>,
