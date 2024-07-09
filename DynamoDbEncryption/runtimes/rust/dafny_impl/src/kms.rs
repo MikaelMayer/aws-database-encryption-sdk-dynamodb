@@ -5,13 +5,13 @@
 #![allow(nonstandard_style)]
 use crate::*;
 
-impl crate::r#_software_damazon_dcryptography_dservices_dkms_dinternaldafny::_default {
-  pub fn KMSClientForRegion(_region: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>) -> ::std::rc::Rc<Wrappers::Result<::dafny_runtime::Object<dyn r#_software_damazon_dcryptography_dservices_dkms_dinternaldafny_dtypes::IKMSClient>, ::std::rc::Rc<r#_software_damazon_dcryptography_dservices_dkms_dinternaldafny_dtypes::Error>>> {
-    todo!("r#_software_damazon_dcryptography_dservices_dkms_dinternaldafny::KMSClientForRegion not implemented");
+impl crate::software::amazon::cryptography::services::kms::internaldafny::_default {
+  pub fn KMSClientForRegion(_region: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>) -> ::std::rc::Rc<Wrappers::Result<::dafny_runtime::Object<dyn crate::software::amazon::cryptography::services::kms::internaldafny::types::IKMSClient>, ::std::rc::Rc<crate::software::amazon::cryptography::services::kms::internaldafny::types::Error>>> {
+    todo!("software::amazon::cryptography::services::kms::internaldafny::KMSClientForRegion not implemented");
   }
-  pub fn RegionMatch(_kmsClient: &::dafny_runtime::Object<dyn r#_software_damazon_dcryptography_dservices_dkms_dinternaldafny_dtypes::IKMSClient>, _region:  &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>) ->
+  pub fn RegionMatch(_kmsClient: &::dafny_runtime::Object<dyn crate::software::amazon::cryptography::services::kms::internaldafny::types::IKMSClient>, _region:  &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>) ->
     ::std::rc::Rc<Wrappers::Option<bool>>
   {
-    todo!("r#_software_damazon_dcryptography_dservices_dkms_dinternaldafny::RegionMatch not implemented");
+    todo!("software::amazon::cryptography::services::kms::internaldafny::RegionMatch not implemented");
   }
 }
