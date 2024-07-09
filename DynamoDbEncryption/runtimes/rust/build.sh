@@ -24,3 +24,6 @@ echo "Moving generated file";
 mv ImplementationFromDafny-rust/src/ImplementationFromDafny.rs dafny_impl/src/ImplementationFromDafny.rs
 mv ImplementationFromDafny-rust/src/ImplementationFromDafny-rs.dtr dafny_impl/src/ImplementationFromDafny-rs.dtr
 rm -r ImplementationFromDafny-rust
+
+echo "Formatting generated file"
+(cd dafny_impl; cargo fmt)
