@@ -5,23 +5,66 @@
 #![allow(nonstandard_style)]
 
 pub mod UUID {
-  use crate::*;
-  pub struct _default {}
-  impl _default {
-    pub fn ToByteArray(_bytes: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>)
-      -> ::std::rc::Rc<Wrappers::Result<::dafny_runtime::Sequence<u8>, ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>>>
-    {
-      todo!("UUID::ToByteArray not implemented");
-    }
+    use crate::*;
+    use ::uuid::Uuid;
+    pub struct _default {}
+    impl _default {
+        pub fn ToByteArray(
+            bytes: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+        ) -> ::std::rc::Rc<
+            Wrappers::Result<
+                ::dafny_runtime::Sequence<u8>,
+                ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+            >,
+        > {
+            let my_str = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::dafny_string_to_string(&bytes);
+            match Uuid::parse_str(&my_str) {
+                Ok(u) => {
+                    let b = u.as_bytes();
+                    std::rc::Rc::new(Wrappers::Result::Success { value :
+                        b.iter().cloned().collect()
+                    })
+                }
+                Err(e) => {
+                    std::rc::Rc::new(Wrappers::Result::Failure{ error :
+                        dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&(my_str + " is not a valid UUID."))
+                    })
+                }
+            }
+        }
 
-    pub fn FromByteArray(_bytes: &::dafny_runtime::Sequence<u8>)
-      -> ::std::rc::Rc<Wrappers::Result<::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>, ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>>>
-    {
-      todo!("UUID::FromByteArray not implemented");
-    }
+        pub fn FromByteArray(
+            bytes: &::dafny_runtime::Sequence<u8>,
+        ) -> ::std::rc::Rc<
+            Wrappers::Result<
+                ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+                ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+            >,
+        > {
+            let vec: Vec<u8> = bytes.iter().collect();
+            if vec.len() != 16 {
+                return std::rc::Rc::new(Wrappers::Result::Failure{ error :
+                    dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string("Not 16 bytes of input to FromByteArray.")
+                });
+            }
+            let bytes: ::uuid::Bytes = vec[..16].try_into().unwrap();
+            let uuid = Uuid::from_bytes_ref(&bytes);
+            let my_str = Uuid::new_v4().to_string();
+            std::rc::Rc::new(Wrappers::Result::Success { value :
+                dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&my_str)
+            })
+        }
 
-    pub fn GenerateUUID() -> ::std::rc::Rc<Wrappers::Result<::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>, ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>>> {
-      todo!("UUID::GenerateUUID not implemented");
+        pub fn GenerateUUID() -> ::std::rc::Rc<
+            Wrappers::Result<
+                ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+                ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+            >,
+        > {
+            let my_str = Uuid::new_v4().to_string();
+            std::rc::Rc::new(Wrappers::Result::Success { value :
+                dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&my_str)
+            })
+        }
     }
-  }
 }

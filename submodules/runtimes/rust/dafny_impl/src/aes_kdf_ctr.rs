@@ -6,11 +6,11 @@
 use crate::*;
 
 pub mod AesKdfCtr {
-  pub struct _default {}
+    pub struct _default {}
 
-  impl _default {
-    pub fn AesKdfCtrStream(nonce: &::dafny_runtime::Sequence<u8>, key: &::dafny_runtime::Sequence<u8>, length: u32) -> ::std::rc::Rc<super::Wrappers::Result<::dafny_runtime::Sequence<u8>, crate::software::amazon::cryptography::primitives::internaldafny::types::OpaqueError>> {
-      todo!("AesKdfCtrStream not implemented")
+    impl _default {
+        pub fn AesKdfCtrStream(nonce: &::dafny_runtime::Sequence<u8>, key: &::dafny_runtime::Sequence<u8>, length: u32) -> ::std::rc::Rc<super::Wrappers::Result<::dafny_runtime::Sequence<u8>, crate::software::amazon::cryptography::primitives::internaldafny::types::OpaqueError>>{
+            todo!("AesKdfCtrStream not implemented")
+        }
     }
-  }
 }
