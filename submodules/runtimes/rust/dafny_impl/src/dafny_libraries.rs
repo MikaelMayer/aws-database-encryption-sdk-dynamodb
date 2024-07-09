@@ -1,9 +1,6 @@
 // Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-#![allow(warnings, unconditional_panic)]
-#![allow(nonstandard_style)]
-
 pub mod DafnyLibraries {
     use dashmap::DashMap;
     use std::collections::HashMap;
@@ -70,23 +67,73 @@ pub mod DafnyLibraries {
     }
 
     pub mod FileIO {
+        use std::fs::File;
+        use std::io::Read;
+        use std::io::Write;
+        use std::path::Path;
+
         pub fn INTERNAL_ReadBytesFromFile(
-            _file: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+            file: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
         ) -> (
             bool,
             ::dafny_runtime::Sequence<u8>,
             ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
         ) {
-            todo!("r#_Dafny_dFileIO::r#_INTERNAL_ReadBytesFromFile not implemented");
+            let file_name = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::dafny_string_to_string(file);
+            let path = Path::new(&file_name);
+            let display = path.display();
+
+            let mut file = match File::open(&path) {
+                Err(why) => {
+                    let err_msg = format!("couldn't open {}: {}", display, why);
+                    let err_msg = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&err_msg);
+                    return (true, dafny_runtime::Sequence::default(), err_msg);
+                }
+                Ok(file) => file,
+            };
+            let mut result = Vec::new();
+            match file.read_to_end(&mut result) {
+                Err(why) => {
+                    let err_msg = format!("couldn't read {}: {}", display, why);
+                    let err_msg = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&err_msg);
+                    (true, dafny_runtime::Sequence::default(), err_msg)
+                }
+                Ok(_) => (
+                    false,
+                    dafny_runtime::Sequence::from_array_owned(result),
+                    dafny_runtime::Sequence::default(),
+                ),
+            }
         }
+
         pub fn INTERNAL_WriteBytesToFile(
-            _path: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
-            _bytes: &::dafny_runtime::Sequence<u8>,
+            path: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+            bytes: &::dafny_runtime::Sequence<u8>,
         ) -> (
             bool,
             ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
         ) {
-            todo!("r#_Dafny_dFileIO::(path: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>, bytes: &::dafny_runtime::Sequence<u8>) not implemented");
+            let file_name = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::dafny_string_to_string(path);
+            let path = Path::new(&file_name);
+            let display = path.display();
+
+            let mut file = match File::open(&path) {
+                Err(why) => {
+                    let err_msg = format!("couldn't open {}: {}", display, why);
+                    let err_msg = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&err_msg);
+                    return (true, err_msg);
+                }
+                Ok(file) => file,
+            };
+            let bytes = bytes.to_array();
+            match file.write_all(&*bytes) {
+                Err(why) => {
+                    let err_msg = format!("couldn't read {}: {}", display, why);
+                    let err_msg = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&err_msg);
+                    (true, err_msg)
+                }
+                Ok(_) => (false, dafny_runtime::Sequence::default()),
+            }
         }
     }
 }

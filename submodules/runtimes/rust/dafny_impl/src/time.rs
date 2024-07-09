@@ -1,9 +1,6 @@
 // Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-#![allow(warnings, unconditional_panic)]
-#![allow(nonstandard_style)]
-
 pub mod Time {
     use crate::*;
     use std::time::SystemTime;
@@ -26,10 +23,10 @@ pub mod Time {
             let now_utc = chrono::Utc::now();
             let formatted = format!("{}", now_utc.format("%Y-%m-%dT%H:%M:%S:%.fZ"));
             ::std::rc::Rc::new(
-        Wrappers::Result::Success{value :
-          dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&formatted)
-        }
-      )
+                Wrappers::Result::Success{value :
+                dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&formatted)
+                }
+            )
         }
     }
 }
