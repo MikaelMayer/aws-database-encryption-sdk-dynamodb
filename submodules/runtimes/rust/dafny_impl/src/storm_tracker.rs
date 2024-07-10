@@ -52,7 +52,6 @@ pub mod internal_StormTrackingCMC {
             let result = self.wrapped.lock().unwrap().as_mut().GetFromCache(input);
             match &*result {
                 crate::Wrappers::Result::Failure{error} => {return std::rc::Rc::new(crate::Wrappers::Result::Failure{error : error.clone()});}
-                crate::Wrappers::Result::_PhantomVariant(..) => panic!(),
                 crate::Wrappers::Result::Success{value} => {
                     match &**value {
                         Full { data } => { return std::rc::Rc::new(crate::Wrappers::Result::Success{value : data.clone()}); }

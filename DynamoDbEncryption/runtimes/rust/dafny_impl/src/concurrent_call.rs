@@ -1,3 +1,1 @@
-pub mod ConcurrentCall {
-  
-}
+pub mod ConcurrentCall {}
