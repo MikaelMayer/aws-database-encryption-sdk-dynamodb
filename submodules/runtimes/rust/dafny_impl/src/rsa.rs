@@ -9,13 +9,6 @@ pub mod RSAEncryption {
     pub mod RSA {
         use crate::software::amazon::cryptography::primitives::internaldafny::types::RSAPaddingMode;
         use crate::*;
-        use ::rsa::pkcs1::DecodeRsaPublicKey;
-        use ::rsa::pkcs1::EncodeRsaPublicKey;
-        use ::rsa::pkcs8::DecodePrivateKey;
-        use ::rsa::pkcs8::EncodePrivateKey;
-        use ::rsa::traits::PublicKeyParts;
-        use ::rsa::RsaPrivateKey;
-        use ::rsa::RsaPublicKey;
         use ::std::rc::Rc;
         use aws_lc_rs::encoding::AsDer;
         use aws_lc_rs::error::Unspecified;
@@ -27,11 +20,9 @@ pub mod RSAEncryption {
         use aws_lc_rs::rsa::PublicEncryptingKey;
         use aws_lc_rs::signature::KeyPair;
         use aws_lc_rs::signature::RsaKeyPair;
-        use num_traits::cast::ToPrimitive;
+        use pem;
         use software::amazon::cryptography::primitives::internaldafny::types::Error as DafnyError;
         use std::error;
-
-        const LF: der::pem::LineEnding = der::pem::LineEnding::LF;
 
         pub fn key_size_from_length(length: i32) -> KeySize {
             match length {
@@ -55,11 +46,11 @@ pub mod RSAEncryption {
             length_bits: i32,
         ) -> (::dafny_runtime::Sequence<u8>, ::dafny_runtime::Sequence<u8>) {
             let pair = RsaKeyPair::generate(key_size_from_length(length_bits)).unwrap();
-            let public_key = RsaPublicKey::from_pkcs1_der(pair.public_key().as_ref()).unwrap();
-            let public_key = public_key.to_pkcs1_pem(LF).unwrap();
-            let private_key =
-                RsaPrivateKey::from_pkcs8_der(pair.as_der().unwrap().as_ref()).unwrap();
-            let private_key = private_key.to_pkcs8_pem(LF).unwrap();
+            let public_key = pem::Pem::new("RSA PUBLIC KEY", pair.public_key().as_ref());
+            let public_key = pem::encode(&public_key);
+
+            let private_key = pem::Pem::new("RSA PRIVATE KEY", pair.as_der().unwrap().as_ref());
+            let private_key = pem::encode(&private_key);
             (
                 public_key.as_bytes().iter().cloned().collect(),
                 private_key.as_bytes().iter().cloned().collect(),
@@ -77,41 +68,42 @@ pub mod RSAEncryption {
         }
 
         fn get_modulus(public_key: &[u8]) -> Result<u32, String> {
-            let public_key = std::str::from_utf8(public_key).map_err(|e| format!("{}", e))?;
-            let public_key =
-                RsaPublicKey::from_pkcs1_pem(public_key).map_err(|e| format!("{}", e))?;
-            let modulus = public_key.n().to_u32();
-            match modulus {
-                Some(m) => Ok(m),
-                None => Err(format!(
-                    "GetRSAKeyModulusLength value too big for u32 : {}",
-                    public_key.n()
-                )),
-            }
+            let public_key = std::str::from_utf8(public_key).map_err(|e| format!("{:?}", e))?;
+            let public_key = pem::parse(public_key).map_err(|e| format!("{:?}", e))?;
+            let public_key = PublicEncryptingKey::from_der(public_key.contents())
+                .map_err(|e| format!("{:?}", e))?;
+            Ok(public_key.key_size_bits() as u32)
         }
 
         #[allow(non_snake_case)]
         pub fn GetRSAKeyModulusLengthExtern(
-            publicKey: &::dafny_runtime::Sequence<u8>,
+            public_key: &::dafny_runtime::Sequence<u8>,
         ) -> Rc<Wrappers::Result<u32, Rc<DafnyError>>> {
-            let publicKey: Vec<u8> = publicKey.iter().collect();
-            let pair = RsaKeyPair::from_pkcs8(&publicKey).unwrap();
-            Rc::new(Wrappers::Result::Success {
-                value: pair.public_modulus_len() as u32,
-            })
+            let public_key: Vec<u8> = public_key.iter().collect();
+            match get_modulus(&public_key) {
+                Ok(v) => Rc::new(Wrappers::Result::Success { value: v }),
+                Err(e) => Rc::new(Wrappers::Result::Failure { error: error(&e) }),
+            }
         }
 
         fn decrypt_extern(
             mode: &RSAPaddingMode,
             private_key: &[u8],
             cipher_text: &[u8],
-        ) -> Result<Vec<u8>, Unspecified> {
+        ) -> Result<Vec<u8>, String> {
             let mode = get_alg_for_padding(mode);
-            let private_key = PrivateDecryptingKey::from_pkcs8(&private_key)?;
-            let private_key = OaepPrivateDecryptingKey::new(private_key)?;
+
+            // let private_key = std::str::from_utf8(private_key).map_err(|e| format!("{:?}", e))?;
+            // let private_key = pem::parse(private_key).map_err(|e| format!("{:?}", e))?;
+            let private_key =
+                PrivateDecryptingKey::from_pkcs8(private_key).map_err(|e| format!("{:?}", e))?;
+            let private_key =
+                OaepPrivateDecryptingKey::new(private_key).map_err(|e| format!("{:?}", e))?;
             let mut message: Vec<u8> = Vec::new();
             message.resize(message.len(), 0);
-            let message = private_key.decrypt(mode, &cipher_text, &mut message, None)?;
+            let message = private_key
+                .decrypt(mode, &cipher_text, &mut message, None)
+                .map_err(|e| format!("{:?}", e))?;
             Ok(message.iter().cloned().collect())
         }
 
@@ -141,19 +133,17 @@ pub mod RSAEncryption {
         ) -> Result<Vec<u8>, String> {
             let mode = get_alg_for_padding(mode);
 
-            let public_key = std::str::from_utf8(public_key).map_err(|e| format!("{}", e))?;
+            let public_key = std::str::from_utf8(public_key).map_err(|e| format!("{:?}", e))?;
+            let public_key = pem::parse(public_key).map_err(|e| format!("{:?}", e))?;
+            let public_key = PublicEncryptingKey::from_der(public_key.contents())
+                .map_err(|e| format!("{:?}", e))?;
             let public_key =
-                RsaPublicKey::from_pkcs1_pem(public_key).map_err(|e| format!("{}", e))?;
-            let public_key = public_key.to_pkcs1_der().map_err(|e| format!("{}", e))?;
-            let public_key = PublicEncryptingKey::from_der(&public_key.as_bytes())
-                .map_err(|e| format!("{}", e))?;
-            let public_key =
-                OaepPublicEncryptingKey::new(public_key).map_err(|e| format!("{}", e))?;
+                OaepPublicEncryptingKey::new(public_key).map_err(|e| format!("{:?}", e))?;
             let mut ciphertext: Vec<u8> = Vec::new();
             ciphertext.resize(message.len() + public_key.key_size_bytes(), 0);
             let cipher_text = public_key
                 .encrypt(mode, &message, &mut ciphertext, None)
-                .map_err(|e| format!("{}", e))?;
+                .map_err(|e| format!("{:?}", e))?;
             Ok(cipher_text.iter().cloned().collect())
         }
 
@@ -179,36 +169,24 @@ pub mod RSAEncryption {
         #[cfg(test)]
         mod tests {
             use super::*;
-            use ::rsa::pkcs1::DecodeRsaPublicKey;
-            use ::rsa::pkcs1::EncodeRsaPublicKey;
-            use ::rsa::pkcs8::DecodePrivateKey;
-            use ::rsa::pkcs8::EncodePrivateKey;
-            use ::rsa::RsaPrivateKey;
-            use ::rsa::RsaPublicKey;
-            use aws_lc_rs::signature::RsaKeyPair;
             #[test]
             fn test_generate() {
-                // let pair = RsaKeyPair::generate(key_size_from_length(2048)).unwrap();
-                // let public_key = RsaPublicKey::from_pkcs1_der(pair.public_key().as_ref()).unwrap();
-                // let public_key = public_key.to_pkcs1_pem(der::pem::LineEnding::LF).unwrap();
-                // let private_key = RsaPrivateKey::from_pkcs8_der(pair.as_der().unwrap().as_ref()).unwrap();
-                // let private_key = private_key.to_pkcs8_pem(der::pem::LineEnding::LF).unwrap();
+                // let foo = generate_key_pair(2048);
+                // println!("{:?}", foo);
 
-                // println!("Pair : {:?}", pair);
-                // println!("Public : {:?}", pair.public_key());
-                // println!("Public Len : {:?}", pair.public_key().as_ref().len());
-                // let doc : der::Result<der::Document> = pair.public_key().as_ref().try_into();
-                // let doc = doc.unwrap();
-                // println!("Public Der : {:?}", doc.decode_msg::<der::Any>());
-                // // println!("Public Der : {:?}", <[u8]>::decode(pair.public_key().as_ref()));
-                // let doc2 : der::Result<der::Document> = pair.as_der().unwrap().as_ref().try_into();
-                // let doc2 = doc2.unwrap();
-                // println!("Doc2 : {:?}", doc2);
-                // println!("Doc2 : {:?}", doc2.decode_msg::<der::Any>());
-                // println!("Der : {:?}", pair.as_der());
-                // println!("Der : {:?}", pair.as_der().unwrap());
-                // println!("Der Len : {:?}", pair.as_der().unwrap().as_ref().len());
-                // println!("Der : {:?}", pair.as_der().unwrap().as_ref());
+                let (public_key, private_key) = GenerateKeyPairExtern(2048);
+
+                // let modulus = GetRSAKeyModulusLengthExtern(&public_key);
+                // println!("{:?}", modulus);
+                // let modulus = modulus.UnwrapOr(&42);
+                // assert_eq!(modulus, 2048);
+
+                let mode = RSAPaddingMode::OAEP_SHA256 {};
+                let plain_text: ::dafny_runtime::Sequence<u8> =
+                    [1u8, 2, 3, 4, 5].iter().cloned().collect();
+                let empty: ::dafny_runtime::Sequence<u8> = [].iter().cloned().collect();
+                let cipher_text = DecryptExtern(&mode, &private_key, &plain_text); //.UnwrapOr(&empty);
+                println!("{:?}", cipher_text);
             }
         }
     }
