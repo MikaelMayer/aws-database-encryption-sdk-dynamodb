@@ -165,7 +165,9 @@ pub mod Signature {
             sig: &[u8],
         ) -> Result<bool, String> {
             let public_key = UnparsedPublicKey::new(get_ver_alg(alg), key);
-            public_key.verify(msg, &sig).map_err(|e| format!("{:?}", e))?;
+            public_key
+                .verify(msg, &sig)
+                .map_err(|e| format!("{:?}", e))?;
             println!("Verify Succeeded.");
             Ok(true)
         }
@@ -193,10 +195,10 @@ pub mod Signature {
             use std::rc::Rc;
             #[test]
             fn test_generate() {
-                let alg = Rc::new(ECDSASignatureAlgorithm::ECDSA_P384{});
+                let alg = Rc::new(ECDSASignatureAlgorithm::ECDSA_P384 {});
                 let key_pair = match &*ExternKeyGen(&alg) {
-                    Wrappers::Result::Success{value} => value.clone(),
-                    Wrappers::Result::Failure{error} => {
+                    Wrappers::Result::Success { value } => value.clone(),
+                    Wrappers::Result::Failure { error } => {
                         panic!("ExternKeyGen Failed : {:?}", error);
                     }
                 };
@@ -204,38 +206,36 @@ pub mod Signature {
                 let (s_key, v_key) = match &*key_pair {
                     Signature::SignatureKeyPair::SignatureKeyPair {
                         signingKey,
-                        verificationKey
-                    } => (signingKey, verificationKey)
+                        verificationKey,
+                    } => (signingKey, verificationKey),
                 };
 
                 let message: ::dafny_runtime::Sequence<u8> =
                     [1u8, 2, 3, 4, 5].iter().cloned().collect();
 
                 let sig = match &*Sign(&alg, &s_key, &message) {
-                    Wrappers::Result::Success{value} => value.clone(),
-                    Wrappers::Result::Failure{error} => {
+                    Wrappers::Result::Success { value } => value.clone(),
+                    Wrappers::Result::Failure { error } => {
                         panic!("Sign Failed : {:?}", error);
                     }
                 };
 
-                let ver : bool = match &*Verify(&alg, &v_key, &message, &sig) {
-                    Wrappers::Result::Success{value} => value.clone(),
-                    Wrappers::Result::Failure{error} => {
+                let ver: bool = match &*Verify(&alg, &v_key, &message, &sig) {
+                    Wrappers::Result::Success { value } => value.clone(),
+                    Wrappers::Result::Failure { error } => {
                         panic!("Verify Failed : {:?}", error);
                     }
                 };
                 assert!(ver);
-                
+
                 let mut sig_vec: Vec<u8> = sig.iter().collect();
                 sig_vec[0] = 42;
-                let sig2 : ::dafny_runtime::Sequence<u8> = sig_vec.iter().cloned().collect();
-                let ver2 : bool = match &*Verify(&alg, &v_key, &message, &sig2) {
-                    Wrappers::Result::Success{value} => {
+                let sig2: ::dafny_runtime::Sequence<u8> = sig_vec.iter().cloned().collect();
+                let ver2: bool = match &*Verify(&alg, &v_key, &message, &sig2) {
+                    Wrappers::Result::Success { value } => {
                         panic!("Verify Should have failed");
                     }
-                    Wrappers::Result::Failure{error} => {
-                        false
-                    }
+                    Wrappers::Result::Failure { error } => false,
                 };
                 assert!(!ver2);
 
