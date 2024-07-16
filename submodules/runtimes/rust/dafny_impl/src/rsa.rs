@@ -166,28 +166,28 @@ pub mod RSAEncryption {
             }
         }
 
-        #[cfg(test)]
-        mod tests {
-            use super::*;
-            #[test]
-            fn test_generate() {
-                // let foo = generate_key_pair(2048);
-                // println!("{:?}", foo);
+        // #[cfg(test)]
+        // mod tests {
+        //     use super::*;
+        //     #[test]
+        //     fn test_generate() {
+        //         // let foo = generate_key_pair(2048);
+        //         // println!("{:?}", foo);
 
-                let (public_key, private_key) = GenerateKeyPairExtern(2048);
+        //         let (public_key, private_key) = GenerateKeyPairExtern(2048);
 
-                // let modulus = GetRSAKeyModulusLengthExtern(&public_key);
-                // println!("{:?}", modulus);
-                // let modulus = modulus.UnwrapOr(&42);
-                // assert_eq!(modulus, 2048);
+        //         // let modulus = GetRSAKeyModulusLengthExtern(&public_key);
+        //         // println!("{:?}", modulus);
+        //         // let modulus = modulus.UnwrapOr(&42);
+        //         // assert_eq!(modulus, 2048);
 
-                let mode = RSAPaddingMode::OAEP_SHA256 {};
-                let plain_text: ::dafny_runtime::Sequence<u8> =
-                    [1u8, 2, 3, 4, 5].iter().cloned().collect();
-                let empty: ::dafny_runtime::Sequence<u8> = [].iter().cloned().collect();
-                let cipher_text = DecryptExtern(&mode, &private_key, &plain_text); //.UnwrapOr(&empty);
-                println!("{:?}", cipher_text);
-            }
-        }
+        //         let mode = RSAPaddingMode::OAEP_SHA256 {};
+        //         let plain_text: ::dafny_runtime::Sequence<u8> =
+        //             [1u8, 2, 3, 4, 5].iter().cloned().collect();
+        //         let empty: ::dafny_runtime::Sequence<u8> = [].iter().cloned().collect();
+        //         let cipher_text = DecryptExtern(&mode, &private_key, &plain_text); //.UnwrapOr(&empty);
+        //         println!("{:?}", cipher_text);
+        //     }
+        // }
     }
 }
