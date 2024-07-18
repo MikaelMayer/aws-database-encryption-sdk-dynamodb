@@ -10,7 +10,8 @@ pub mod RSAEncryption {
         use crate::software::amazon::cryptography::primitives::internaldafny::types::RSAPaddingMode;
         use crate::*;
         use ::std::rc::Rc;
-        use aws_lc_rs::encoding::AsDer;
+        use aws_lc_rs::encoding::{AsDer, Pkcs8V1Der, PublicKeyX509Der};
+
         use aws_lc_rs::error::Unspecified;
         use aws_lc_rs::rsa::KeySize;
         use aws_lc_rs::rsa::OaepAlgorithm;
@@ -41,20 +42,39 @@ pub mod RSAEncryption {
             })
         }
 
+        fn generate_key_pair(length_bits: i32) -> Result<(Vec<u8>, Vec<u8>), String> {
+            // Generate an RSA key.
+            let private_key = PrivateDecryptingKey::generate(key_size_from_length(length_bits))
+                .map_err(|e| format!("{:?}", e))?;
+
+            // Serialize the RSA private key to DER encoded PKCS#8 format for later usage.
+            let private_key_der =
+                AsDer::<Pkcs8V1Der>::as_der(&private_key).map_err(|e| format!("{:?}", e))?;
+
+            // Retrieve the RSA public key
+            let public_key = private_key.public_key();
+
+            // Serialize the RSA public key to DER encoded X.509 SubjectPublicKeyInfo for later usage.
+            let public_key_der =
+                AsDer::<PublicKeyX509Der>::as_der(&public_key).map_err(|e| format!("{:?}", e))?;
+
+            let public_key = pem::Pem::new("RSA PUBLIC KEY", public_key_der.as_ref());
+            let public_key = pem::encode(&public_key);
+            let private_key = pem::Pem::new("RSA PRIVATE KEY", private_key_der.as_ref());
+            let private_key = pem::encode(&private_key);
+
+            Ok((public_key.into(), private_key.into()))
+        }
         #[allow(non_snake_case)]
         pub fn GenerateKeyPairExtern(
             length_bits: i32,
         ) -> (::dafny_runtime::Sequence<u8>, ::dafny_runtime::Sequence<u8>) {
-            let pair = RsaKeyPair::generate(key_size_from_length(length_bits)).unwrap();
-            let public_key = pem::Pem::new("RSA PUBLIC KEY", pair.public_key().as_ref());
-            let public_key = pem::encode(&public_key);
-
-            let private_key = pem::Pem::new("RSA PRIVATE KEY", pair.as_der().unwrap().as_ref());
-            let private_key = pem::encode(&private_key);
-            (
-                public_key.as_bytes().iter().cloned().collect(),
-                private_key.as_bytes().iter().cloned().collect(),
-            )
+            match generate_key_pair(length_bits) {
+                Ok(x) => (x.0.iter().cloned().collect(), x.1.iter().cloned().collect()),
+                Err(e) => {
+                    panic!("Unexpected error generating RSA Key Pair{}", e);
+                }
+            }
         }
 
         fn get_alg_for_padding(mode: &RSAPaddingMode) -> &'static OaepAlgorithm {
@@ -93,17 +113,19 @@ pub mod RSAEncryption {
         ) -> Result<Vec<u8>, String> {
             let mode = get_alg_for_padding(mode);
 
-            // let private_key = std::str::from_utf8(private_key).map_err(|e| format!("{:?}", e))?;
-            // let private_key = pem::parse(private_key).map_err(|e| format!("{:?}", e))?;
             let private_key =
-                PrivateDecryptingKey::from_pkcs8(private_key).map_err(|e| format!("{:?}", e))?;
+                std::str::from_utf8(private_key).map_err(|e| format!("from_utf8 : {:?}", e))?;
             let private_key =
-                OaepPrivateDecryptingKey::new(private_key).map_err(|e| format!("{:?}", e))?;
+                pem::parse(private_key).map_err(|e| format!("pem::parse : {:?}", e))?;
+            let private_key = PrivateDecryptingKey::from_pkcs8(private_key.contents())
+                .map_err(|e| format!("from_pkcs8 : {:?}", e))?;
+            let private_key =
+                OaepPrivateDecryptingKey::new(private_key).map_err(|e| format!("new : {:?}", e))?;
             let mut message: Vec<u8> = Vec::new();
-            message.resize(message.len(), 0);
+            message.resize(cipher_text.len(), 0);
             let message = private_key
                 .decrypt(mode, &cipher_text, &mut message, None)
-                .map_err(|e| format!("{:?}", e))?;
+                .map_err(|e| format!("decrypt {:?}", e))?;
             Ok(message.iter().cloned().collect())
         }
 
@@ -166,28 +188,38 @@ pub mod RSAEncryption {
             }
         }
 
-        // #[cfg(test)]
-        // mod tests {
-        //     use super::*;
-        //     #[test]
-        //     fn test_generate() {
-        //         // let foo = generate_key_pair(2048);
-        //         // println!("{:?}", foo);
+        #[cfg(test)]
+        mod tests {
+            use super::*;
+            #[test]
+            fn test_generate() {
+                let (public_key, private_key) = GenerateKeyPairExtern(2048);
 
-        //         let (public_key, private_key) = GenerateKeyPairExtern(2048);
+                let modulus: u32 = match &*GetRSAKeyModulusLengthExtern(&public_key) {
+                    Wrappers::Result::Success { value } => *value,
+                    Wrappers::Result::Failure { error } => panic!("{:?}", error),
+                };
+                assert_eq!(modulus, 2048);
 
-        //         // let modulus = GetRSAKeyModulusLengthExtern(&public_key);
-        //         // println!("{:?}", modulus);
-        //         // let modulus = modulus.UnwrapOr(&42);
-        //         // assert_eq!(modulus, 2048);
+                let mode = RSAPaddingMode::OAEP_SHA256 {};
 
-        //         let mode = RSAPaddingMode::OAEP_SHA256 {};
-        //         let plain_text: ::dafny_runtime::Sequence<u8> =
-        //             [1u8, 2, 3, 4, 5].iter().cloned().collect();
-        //         let empty: ::dafny_runtime::Sequence<u8> = [].iter().cloned().collect();
-        //         let cipher_text = DecryptExtern(&mode, &private_key, &plain_text); //.UnwrapOr(&empty);
-        //         println!("{:?}", cipher_text);
-        //     }
-        // }
+                let plain_text: ::dafny_runtime::Sequence<u8> =
+                    [1u8, 2, 3, 4, 5].iter().cloned().collect();
+
+                let cipher: ::dafny_runtime::Sequence<u8> =
+                    match &*EncryptExtern(&mode, &public_key, &plain_text) {
+                        Wrappers::Result::Success { value } => value.clone(),
+                        Wrappers::Result::Failure { error } => panic!("{:?}", error),
+                    };
+
+                let message: ::dafny_runtime::Sequence<u8> =
+                    match &*DecryptExtern(&mode, &private_key, &cipher) {
+                        Wrappers::Result::Success { value } => value.clone(),
+                        Wrappers::Result::Failure { error } => panic!("{:?}", error),
+                    };
+
+                assert_eq!(plain_text, message);
+            }
+        }
     }
 }
