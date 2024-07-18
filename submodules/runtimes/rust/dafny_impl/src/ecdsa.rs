@@ -62,7 +62,33 @@ pub mod Signature {
         const SCALAR_MAX_BYTES: usize = ELEM_MAX_BYTES;
         const PUBLIC_KEY_MAX_LEN: usize = 1 + (2 * ELEM_MAX_BYTES);
 
-        fn sec1_compress(data: &[u8], alg: &ECDSASignatureAlgorithm) -> Result<Vec<u8>, String> {
+        pub(crate) fn sec1_compress(
+            data: &[u8],
+            alg: &ECDSASignatureAlgorithm,
+        ) -> Result<Vec<u8>, String> {
+            sec1_convert(
+                data,
+                get_nid(alg),
+                aws_lc_sys::point_conversion_form_t::POINT_CONVERSION_COMPRESSED,
+            )
+        }
+
+        pub(crate) fn sec1_uncompress(
+            data: &[u8],
+            alg: &ECDSASignatureAlgorithm,
+        ) -> Result<Vec<u8>, String> {
+            sec1_convert(
+                data,
+                get_nid(alg),
+                aws_lc_sys::point_conversion_form_t::POINT_CONVERSION_UNCOMPRESSED,
+            )
+        }
+
+        pub(crate) fn sec1_convert(
+            data: &[u8],
+            nid: i32,
+            form: aws_lc_sys::point_conversion_form_t,
+        ) -> Result<Vec<u8>, String> {
             use aws_lc_sys::point_conversion_form_t;
             use aws_lc_sys::EC_GROUP_new_by_curve_name;
             use aws_lc_sys::EC_POINT_new;
@@ -70,11 +96,9 @@ pub mod Signature {
             use aws_lc_sys::EC_POINT_point2oct;
             use std::ptr::null_mut;
 
-            let nid = get_nid(alg);
             let ec_group = LcPtr::new(unsafe { EC_GROUP_new_by_curve_name(nid) })
                 .map_err(|e| format!("{:?}", e))?;
 
-            let form = point_conversion_form_t::POINT_CONVERSION_COMPRESSED;
             let ec_point =
                 LcPtr::new(unsafe { EC_POINT_new(*ec_group) }).map_err(|e| format!("{:?}", e))?;
             let mut out_buf = [0u8; PUBLIC_KEY_MAX_LEN];
