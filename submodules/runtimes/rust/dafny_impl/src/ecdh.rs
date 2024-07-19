@@ -168,7 +168,18 @@ pub mod ECDH {
                 Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
             >,
         > {
-            todo!("ECDH::ECCUtils::ParsePublicKey not implemented.");
+            let public_key: Vec<u8> = publicKey.iter().collect();
+            match aws_lc_rs::rsa::PublicEncryptingKey::from_der(&public_key) {
+                Ok(_) => Rc::new(crate::Wrappers::Result::Success {
+                    value: publicKey.clone(),
+                }),
+                Err(e) => {
+                    let msg = format!("{}", e);
+                    Rc::new(crate::Wrappers::Result::Failure {
+                        error: super::error(&msg),
+                    })
+                }
+            }
         }
     }
     pub mod DeriveSharedSecret {
@@ -226,6 +237,8 @@ pub mod ECDH {
     pub mod KeyGeneration {
         use crate::software::amazon::cryptography::primitives::internaldafny::types::ECDHCurveSpec;
         use aws_lc_rs::encoding::AsDer;
+        use aws_lc_rs::encoding::EcPrivateKeyRfc5915Der;
+        use aws_lc_rs::encoding::PublicKeyX509Der;
         use aws_lc_rs::signature::EcdsaKeyPair;
         use aws_lc_rs::signature::KeyPair;
         use std::rc::Rc;
@@ -247,16 +260,15 @@ pub mod ECDH {
 
         fn ecdsa_key_gen(alg: &ECDHCurveSpec) -> Result<(Vec<u8>, Vec<u8>), String> {
             let pair = EcdsaKeyPair::generate(get_alg(alg)).map_err(|e| format!("{:?}", e))?;
-            let public_key: Vec<u8> =
-                super::ECCUtils::sec1_compress(pair.public_key().as_ref(), alg)?;
-            let private_key: Vec<u8> = pair
-                .private_key()
-                .as_der()
-                .unwrap()
-                .as_ref()
-                .iter()
-                .cloned()
-                .collect();
+            let public_key_der = AsDer::<PublicKeyX509Der>::as_der(pair.public_key())
+                .map_err(|e| format!("{:?}", e))?;
+            let public_key: Vec<u8> = super::ECCUtils::sec1_compress(public_key_der.as_ref(), alg)?;
+
+            let private_key_der = AsDer::<EcPrivateKeyRfc5915Der>::as_der(&pair.private_key())
+                .map_err(|e| format!("{:?}", e))?;
+            let private_key = pem::Pem::new("PRIVATE KEY", private_key_der.as_ref());
+            let private_key = pem::encode(&private_key);
+            let private_key: Vec<u8> = private_key.into_bytes();
             Ok((public_key, private_key))
         }
 
