@@ -192,7 +192,6 @@ pub mod Signature {
             public_key
                 .verify(msg, &sig)
                 .map_err(|e| format!("{:?}", e))?;
-            println!("Verify Succeeded.");
             Ok(true)
         }
 

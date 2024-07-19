@@ -90,10 +90,15 @@ pub mod ECDH {
             }
         }
 
+        // for the moment, it's valid if we can use it to generate a shared secret
         fn valid_public_key(alg: &ECDHCurveSpec, public_key: &[u8]) -> Result<(), String> {
+            let private_key = aws_lc_rs::agreement::PrivateKey::generate(get_alg(alg))
+                .map_err(|e| format!("{:?}", e))?;
             let public_key = aws_lc_rs::agreement::UnparsedPublicKey::new(get_alg(alg), public_key);
-            // then a miracle occurs
-            Ok(())
+            match aws_lc_rs::agreement::agree(&private_key, &public_key, "foo", |x| Ok(false)) {
+                Ok(_) => Ok(()),
+                Err(_) => Err("Invalid ECDH Public Key".to_string()),
+            }
         }
 
         pub fn ValidatePublicKey(
@@ -168,18 +173,21 @@ pub mod ECDH {
                 Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
             >,
         > {
-            let public_key: Vec<u8> = publicKey.iter().collect();
-            match aws_lc_rs::rsa::PublicEncryptingKey::from_der(&public_key) {
-                Ok(_) => Rc::new(crate::Wrappers::Result::Success {
-                    value: publicKey.clone(),
-                }),
-                Err(e) => {
-                    let msg = format!("{}", e);
-                    Rc::new(crate::Wrappers::Result::Failure {
-                        error: super::error(&msg),
-                    })
-                }
-            }
+            Rc::new(crate::Wrappers::Result::Success {
+                value: publicKey.clone(),
+            })
+            // let public_key: Vec<u8> = publicKey.iter().collect();
+            // match aws_lc_rs::rsa::PublicEncryptingKey::from_der(&public_key) {
+            //     Ok(_) => Rc::new(crate::Wrappers::Result::Success {
+            //         value: publicKey.clone(),
+            //     }),
+            //     Err(e) => {
+            //         let msg = format!("{}", e);
+            //         Rc::new(crate::Wrappers::Result::Failure {
+            //             error: super::error(&msg),
+            //         })
+            //     }
+            // }
         }
     }
     pub mod DeriveSharedSecret {
@@ -238,37 +246,25 @@ pub mod ECDH {
         use crate::software::amazon::cryptography::primitives::internaldafny::types::ECDHCurveSpec;
         use aws_lc_rs::encoding::AsDer;
         use aws_lc_rs::encoding::EcPrivateKeyRfc5915Der;
-        use aws_lc_rs::encoding::PublicKeyX509Der;
-        use aws_lc_rs::signature::EcdsaKeyPair;
         use aws_lc_rs::signature::KeyPair;
         use std::rc::Rc;
 
-        fn get_alg(x: &ECDHCurveSpec) -> &'static aws_lc_rs::signature::EcdsaSigningAlgorithm {
-            match x {
-                ECDHCurveSpec::ECC_NIST_P256 {} => {
-                    &aws_lc_rs::signature::ECDSA_P256K1_SHA256_FIXED_SIGNING
-                }
-                ECDHCurveSpec::ECC_NIST_P384 {} => {
-                    &aws_lc_rs::signature::ECDSA_P384_SHA384_FIXED_SIGNING
-                }
-                ECDHCurveSpec::ECC_NIST_P521 {} => {
-                    &aws_lc_rs::signature::ECDSA_P521_SHA512_FIXED_SIGNING
-                }
-                ECDHCurveSpec::SM2 {} => panic!("No SM2 in Rust"),
-            }
-        }
-
         fn ecdsa_key_gen(alg: &ECDHCurveSpec) -> Result<(Vec<u8>, Vec<u8>), String> {
-            let pair = EcdsaKeyPair::generate(get_alg(alg)).map_err(|e| format!("{:?}", e))?;
-            let public_key_der = AsDer::<PublicKeyX509Der>::as_der(pair.public_key())
-                .map_err(|e| format!("{:?}", e))?;
-            let public_key: Vec<u8> = super::ECCUtils::sec1_compress(public_key_der.as_ref(), alg)?;
+            let private_key =
+                aws_lc_rs::agreement::PrivateKey::generate(super::ECCUtils::get_alg(alg))
+                    .map_err(|e| format!("{:?}", e))?;
 
-            let private_key_der = AsDer::<EcPrivateKeyRfc5915Der>::as_der(&pair.private_key())
+            let public_key = private_key
+                .compute_public_key()
+                .map_err(|e| format!("{:?}", e))?;
+            let public_key: Vec<u8> = super::ECCUtils::sec1_compress(public_key.as_ref(), alg)?;
+
+            let private_key_der = AsDer::<EcPrivateKeyRfc5915Der>::as_der(&private_key)
                 .map_err(|e| format!("{:?}", e))?;
             let private_key = pem::Pem::new("PRIVATE KEY", private_key_der.as_ref());
             let private_key = pem::encode(&private_key);
             let private_key: Vec<u8> = private_key.into_bytes();
+
             Ok((public_key, private_key))
         }
 
@@ -294,6 +290,29 @@ pub mod ECDH {
                     })
                 }
             }
+        }
+    }
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::software::amazon::cryptography::primitives::internaldafny::types::ECDHCurveSpec;
+        use aws_lc_rs::encoding::AsDer;
+        use aws_lc_rs::encoding::PublicKeyX509Der;
+        use aws_lc_rs::signature::EcdsaKeyPair;
+        use std::rc::Rc;
+        #[test]
+        fn test_generate() {
+            let alg = Rc::new(ECDHCurveSpec::ECC_NIST_P256 {});
+
+            let pair: crate::ECDH::EccKeyPair = match &*KeyGeneration::GenerateKeyPair(&alg) {
+                crate::Wrappers::Result::Success { value } => (**value).clone(),
+                crate::Wrappers::Result::Failure { error } => panic!("{:?}", error),
+            };
+
+            match &*ECCUtils::ValidatePublicKey(&alg, pair.publicKey()) {
+                crate::Wrappers::Result::Success { value } => {}
+                crate::Wrappers::Result::Failure { error } => panic!("{:?}", error),
+            };
         }
     }
 }
