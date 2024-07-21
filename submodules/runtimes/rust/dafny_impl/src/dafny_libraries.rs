@@ -1,6 +1,11 @@
 // Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+#![deny(warnings, unconditional_panic)]
+#![deny(nonstandard_style)]
+#![deny(clippy::all)]
+
+#[allow(non_snake_case)]
 pub mod DafnyLibraries {
     use dashmap::DashMap;
     use std::collections::HashMap;
@@ -28,7 +33,7 @@ pub mod DafnyLibraries {
             }
             dafny_runtime::Map::from_hashmap_owned(new_map)
         }
-        fn Put(&mut self, k: &K, v: &V) -> () {
+        fn Put(&mut self, k: &K, v: &V) {
             self.map.insert(k.clone(), v.clone());
         }
         fn Keys(&self) -> ::dafny_runtime::Set<K> {
@@ -58,7 +63,7 @@ pub mod DafnyLibraries {
         fn Select(&self, k: &K) -> V {
             self.map.get(k).unwrap().clone()
         }
-        fn Remove(&mut self, k: &K) -> () {
+        fn Remove(&mut self, k: &K) {
             self.map.remove(k);
         }
         fn Size(&self) -> ::dafny_runtime::DafnyInt {
@@ -83,7 +88,7 @@ pub mod DafnyLibraries {
             let path = Path::new(&file_name);
             let display = path.display();
 
-            let mut file = match File::open(&path) {
+            let mut file = match File::open(path) {
                 Err(why) => {
                     let err_msg = format!("couldn't open {}: {}", display, why);
                     let err_msg = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&err_msg);
@@ -117,7 +122,7 @@ pub mod DafnyLibraries {
             let path = Path::new(&file_name);
             let display = path.display();
 
-            let mut file = match File::open(&path) {
+            let mut file = match File::open(path) {
                 Err(why) => {
                     let err_msg = format!("couldn't open {}: {}", display, why);
                     let err_msg = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&err_msg);
@@ -126,7 +131,7 @@ pub mod DafnyLibraries {
                 Ok(file) => file,
             };
             let bytes = bytes.to_array();
-            match file.write_all(&*bytes) {
+            match file.write_all(&bytes) {
                 Err(why) => {
                     let err_msg = format!("couldn't read {}: {}", display, why);
                     let err_msg = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&err_msg);

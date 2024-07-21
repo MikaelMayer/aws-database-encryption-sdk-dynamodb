@@ -202,7 +202,6 @@ impl AES_GCM {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::rc::Rc;
     #[test]
     fn test_generate() {
         let iv: ::dafny_runtime::Sequence<u8> = [1u8, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
@@ -235,14 +234,14 @@ mod tests {
             }
         };
 
-        let (cipherText, auth_tag) = match &*cipher {
+        let (cipher_text, auth_tag) = match &*cipher {
             AESEncryptOutput::AESEncryptOutput {
                 cipherText,
-                auth_tag,
-            } => (cipherText, auth_tag),
+                authTag,
+            } => (cipherText, authTag),
         };
 
-        let output = match &*alg.AESDecryptExtern(&key, &cipherText, &auth_tag, &iv, &aad) {
+        let output = match &*alg.AESDecryptExtern(&key, &cipher_text, &auth_tag, &iv, &aad) {
             Wrappers::Result::Success { value } => value.clone(),
             Wrappers::Result::Failure { error } => {
                 panic!("AESEncryptExtern Failed : {:?}", error);
