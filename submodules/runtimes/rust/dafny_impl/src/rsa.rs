@@ -1,10 +1,12 @@
 // Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-#![allow(warnings)]
-#![allow(nonstandard_style)]
+#![deny(warnings, unconditional_panic)]
+#![deny(nonstandard_style)]
+#![deny(clippy::all)]
 
 // Extern methods with a foreign module name
+#[allow(non_snake_case)]
 pub mod RSAEncryption {
     pub mod RSA {
         use crate::software::amazon::cryptography::primitives::internaldafny::types::RSAPaddingMode;
@@ -12,18 +14,14 @@ pub mod RSAEncryption {
         use ::std::rc::Rc;
         use aws_lc_rs::encoding::{AsDer, Pkcs8V1Der, PublicKeyX509Der};
 
-        use aws_lc_rs::error::Unspecified;
         use aws_lc_rs::rsa::KeySize;
         use aws_lc_rs::rsa::OaepAlgorithm;
         use aws_lc_rs::rsa::OaepPrivateDecryptingKey;
         use aws_lc_rs::rsa::OaepPublicEncryptingKey;
         use aws_lc_rs::rsa::PrivateDecryptingKey;
         use aws_lc_rs::rsa::PublicEncryptingKey;
-        use aws_lc_rs::signature::KeyPair;
-        use aws_lc_rs::signature::RsaKeyPair;
         use pem;
         use software::amazon::cryptography::primitives::internaldafny::types::Error as DafnyError;
-        use std::error;
 
         pub fn key_size_from_length(length: i32) -> KeySize {
             match length {
@@ -121,12 +119,11 @@ pub mod RSAEncryption {
                 .map_err(|e| format!("from_pkcs8 : {:?}", e))?;
             let private_key =
                 OaepPrivateDecryptingKey::new(private_key).map_err(|e| format!("new : {:?}", e))?;
-            let mut message: Vec<u8> = Vec::new();
-            message.resize(cipher_text.len(), 0);
+            let mut message: Vec<u8> = vec![0; cipher_text.len()];
             let message = private_key
-                .decrypt(mode, &cipher_text, &mut message, None)
+                .decrypt(mode, cipher_text, &mut message, None)
                 .map_err(|e| format!("decrypt {:?}", e))?;
-            Ok(message.iter().cloned().collect())
+            Ok(message.to_vec())
         }
 
         #[allow(non_snake_case)]
@@ -142,7 +139,7 @@ pub mod RSAEncryption {
                     value: x.iter().cloned().collect(),
                 }),
                 Err(e) => {
-                    let msg = format!("{}", e);
+                    let msg = format!("RSA Decrypt : {}", e);
                     Rc::new(Wrappers::Result::Failure { error: error(&msg) })
                 }
             }
@@ -161,12 +158,11 @@ pub mod RSAEncryption {
                 .map_err(|e| format!("{:?}", e))?;
             let public_key =
                 OaepPublicEncryptingKey::new(public_key).map_err(|e| format!("{:?}", e))?;
-            let mut ciphertext: Vec<u8> = Vec::new();
-            ciphertext.resize(message.len() + public_key.key_size_bytes(), 0);
+            let mut ciphertext: Vec<u8> = vec![0; message.len() + public_key.key_size_bytes()];
             let cipher_text = public_key
-                .encrypt(mode, &message, &mut ciphertext, None)
+                .encrypt(mode, message, &mut ciphertext, None)
                 .map_err(|e| format!("{:?}", e))?;
-            Ok(cipher_text.iter().cloned().collect())
+            Ok(cipher_text.to_vec())
         }
 
         #[allow(non_snake_case)]
@@ -182,7 +178,7 @@ pub mod RSAEncryption {
                     value: x.iter().cloned().collect(),
                 }),
                 Err(e) => {
-                    let msg = format!("{}", e);
+                    let msg = format!("RSA Encrypt : {}", e);
                     Rc::new(Wrappers::Result::Failure { error: error(&msg) })
                 }
             }
