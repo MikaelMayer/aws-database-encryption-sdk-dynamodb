@@ -1,19 +1,19 @@
 // Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-#![allow(warnings, unconditional_panic)]
-#![allow(nonstandard_style)]
-use crate::*;
-use aws_lc_rs::rand::SecureRandom;
-use aws_lc_rs::{digest, hmac, rand};
+#![deny(warnings, unconditional_panic)]
+#![deny(nonstandard_style)]
+#![deny(clippy::all)]
 
-fn convert_algorithm(
-    input: &crate::software::amazon::cryptography::primitives::internaldafny::types::DigestAlgorithm,
-) -> hmac::Algorithm {
+use crate::software::amazon::cryptography::primitives::internaldafny::types::DigestAlgorithm;
+use crate::*;
+use aws_lc_rs::hmac;
+
+fn convert_algorithm(input: &DigestAlgorithm) -> hmac::Algorithm {
     match input {
-        SHA_512 => hmac::HMAC_SHA512,
-        SHA_384 => hmac::HMAC_SHA384,
-        SHA_256 => hmac::HMAC_SHA256,
+        DigestAlgorithm::SHA_512 {} => hmac::HMAC_SHA512,
+        DigestAlgorithm::SHA_384 {} => hmac::HMAC_SHA384,
+        DigestAlgorithm::SHA_256 {} => hmac::HMAC_SHA256,
     }
 }
 
@@ -31,7 +31,7 @@ impl crate::HMAC::_default {
         >,
     > {
         let key_vec: Vec<u8> = input.key().iter().collect();
-        let the_key = hmac::Key::new(convert_algorithm(&*input.digestAlgorithm()), &key_vec);
+        let the_key = hmac::Key::new(convert_algorithm(input.digestAlgorithm()), &key_vec);
         let message_vec: Vec<u8> = input.message().iter().collect();
         let result = hmac::sign(&the_key, &message_vec);
         ::std::rc::Rc::new(Wrappers::Result::Success {
@@ -40,10 +40,11 @@ impl crate::HMAC::_default {
     }
 }
 
+#[allow(non_snake_case)]
 pub mod HMAC {
     use crate::*;
-    use aws_lc_rs::rand::SecureRandom;
-    use aws_lc_rs::{digest, hmac, rand};
+    use aws_lc_rs::hmac;
+    #[allow(non_camel_case_types)]
     pub struct _default {}
 
     pub struct HMac {
@@ -69,7 +70,7 @@ pub mod HMAC {
             >,
         > {
             let inner = dafny_runtime::Object::new(Self {
-                algorithm: super::convert_algorithm(&*input),
+                algorithm: super::convert_algorithm(input),
                 context: None,
             });
 
@@ -80,7 +81,7 @@ pub mod HMAC {
             self.context.as_mut().unwrap().update(&part);
         }
         pub fn GetResult(&mut self) -> ::dafny_runtime::Sequence<u8> {
-            let mut inner = self.context.take();
+            let inner = self.context.take();
             match inner {
                 Some(x) => {
                     let tag = x.sign();

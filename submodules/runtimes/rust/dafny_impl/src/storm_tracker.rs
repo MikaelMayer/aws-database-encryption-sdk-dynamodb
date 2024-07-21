@@ -1,9 +1,11 @@
 // Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-#![allow(warnings, unconditional_panic)]
-#![allow(nonstandard_style)]
+#![deny(warnings, unconditional_panic)]
+#![deny(nonstandard_style)]
+#![deny(clippy::all)]
 
+#[allow(non_snake_case)]
 pub mod internal_StormTrackingCMC {
     use crate::StormTracker::CacheState::*;
     use crate::*;

@@ -1,4 +1,8 @@
 // Annotation to ignore the case of this module
+#![deny(warnings, unconditional_panic)]
+#![deny(nonstandard_style)]
+#![deny(clippy::all)]
+
 #[allow(non_snake_case)]
 pub mod UTF8 {
     use crate::Wrappers;
@@ -71,7 +75,7 @@ pub mod UTF8 {
           })
         },
         Err(e) => {
-          return ::std::rc::Rc::new(Wrappers::Result::<::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+          ::std::rc::Rc::new(Wrappers::Result::<::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
             ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>>::Failure {
               error: ::dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(
                 &e.to_string())

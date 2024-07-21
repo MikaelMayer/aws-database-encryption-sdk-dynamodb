@@ -1,10 +1,15 @@
 // Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+#![deny(warnings, unconditional_panic)]
+#![deny(nonstandard_style)]
+#![deny(clippy::all)]
+
 use crate::*;
 use std::time::SystemTime;
 
 impl crate::Time::_default {
+    #[allow(non_snake_case)]
     pub fn CurrentRelativeTime() -> i64 {
         match SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
             Ok(n) => n.as_secs() as i64,
@@ -12,6 +17,7 @@ impl crate::Time::_default {
         }
     }
 
+    #[allow(non_snake_case)]
     pub fn GetCurrentTimeStamp() -> ::std::rc::Rc<
         Wrappers::Result<
             ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,

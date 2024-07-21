@@ -1,9 +1,14 @@
 // Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+#![deny(warnings, unconditional_panic)]
+#![deny(nonstandard_style)]
+#![deny(clippy::all)]
+
 use crate::*;
 use ::uuid::Uuid;
 impl crate::UUID::_default {
+    #[allow(non_snake_case)]
     pub fn ToByteArray(
         bytes: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
     ) -> ::std::rc::Rc<
@@ -14,7 +19,7 @@ impl crate::UUID::_default {
     > {
         let my_str =
             dafny_runtime::dafny_runtime_conversions::unicode_chars_false::dafny_string_to_string(
-                &bytes,
+                bytes,
             );
         match Uuid::parse_str(&my_str) {
                 Ok(u) => {
@@ -25,12 +30,14 @@ impl crate::UUID::_default {
                 }
                 Err(e) => {
                     std::rc::Rc::new(Wrappers::Result::Failure{ error :
-                        dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&(my_str + " is not a valid UUID."))
+                        dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(
+                            &format!("{my_str} is not a valid UUID ({e})."))
                     })
                 }
             }
     }
 
+    #[allow(non_snake_case)]
     pub fn FromByteArray(
         bytes: &::dafny_runtime::Sequence<u8>,
     ) -> ::std::rc::Rc<
@@ -47,12 +54,13 @@ impl crate::UUID::_default {
         }
         let bytes: ::uuid::Bytes = vec[..16].try_into().unwrap();
         let uuid = Uuid::from_bytes_ref(&bytes);
-        let my_str = Uuid::new_v4().to_string();
+        let my_str = uuid.to_string();
         std::rc::Rc::new(Wrappers::Result::Success { value :
                 dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&my_str)
             })
     }
 
+    #[allow(non_snake_case)]
     pub fn GenerateUUID() -> ::std::rc::Rc<
         Wrappers::Result<
             ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,

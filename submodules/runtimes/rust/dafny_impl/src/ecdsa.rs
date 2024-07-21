@@ -1,9 +1,11 @@
 // Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-#![allow(warnings, unconditional_panic)]
-#![allow(nonstandard_style)]
+#![deny(warnings, unconditional_panic)]
+#![deny(nonstandard_style)]
+#![deny(clippy::all)]
 
+#[allow(non_snake_case)]
 pub mod Signature {
     pub mod ECDSA {
         use crate::*;
@@ -14,7 +16,6 @@ pub mod Signature {
         use aws_lc_rs::signature::EcdsaKeyPair;
         use aws_lc_rs::signature::EcdsaSigningAlgorithm;
         use aws_lc_rs::signature::EcdsaVerificationAlgorithm;
-        use aws_lc_rs::encoding::AsBigEndian;
         use aws_lc_rs::signature::KeyPair;
         use aws_lc_rs::encoding::AsDer;
         use aws_lc_rs::rand::SystemRandom;
@@ -59,7 +60,6 @@ pub mod Signature {
 
         const ELEM_MAX_BITS: usize = 521;
         const ELEM_MAX_BYTES: usize = (ELEM_MAX_BITS + 7) / 8;
-        const SCALAR_MAX_BYTES: usize = ELEM_MAX_BYTES;
         const PUBLIC_KEY_MAX_LEN: usize = 1 + (2 * ELEM_MAX_BYTES);
 
         pub(crate) fn sec1_compress(
@@ -73,23 +73,11 @@ pub mod Signature {
             )
         }
 
-        pub(crate) fn sec1_uncompress(
-            data: &[u8],
-            alg: &ECDSASignatureAlgorithm,
-        ) -> Result<Vec<u8>, String> {
-            sec1_convert(
-                data,
-                get_nid(alg),
-                aws_lc_sys::point_conversion_form_t::POINT_CONVERSION_UNCOMPRESSED,
-            )
-        }
-
         pub(crate) fn sec1_convert(
             data: &[u8],
             nid: i32,
             form: aws_lc_sys::point_conversion_form_t,
         ) -> Result<Vec<u8>, String> {
-            use aws_lc_sys::point_conversion_form_t;
             use aws_lc_sys::EC_GROUP_new_by_curve_name;
             use aws_lc_sys::EC_POINT_new;
             use aws_lc_sys::EC_POINT_oct2point;
@@ -116,27 +104,20 @@ pub mod Signature {
                     null_mut(),
                 );
             }
-            Ok(data.iter().cloned().collect())
+            Ok(data.to_vec())
         }
 
         fn ecdsa_key_gen(alg: &ECDSASignatureAlgorithm) -> Result<(Vec<u8>, Vec<u8>), String> {
             let pair = EcdsaKeyPair::generate(get_alg(alg)).map_err(|e| format!("{:?}", e))?;
             let public_key: Vec<u8> = sec1_compress(pair.public_key().as_ref(), alg)?;
-            let private_key: Vec<u8> = pair
-                .private_key()
-                .as_der()
-                .unwrap()
-                .as_ref()
-                .iter()
-                .cloned()
-                .collect();
+            let private_key: Vec<u8> = pair.private_key().as_der().unwrap().as_ref().to_vec();
             Ok((public_key, private_key))
         }
 
         pub fn ExternKeyGen(
             alg: &Rc<ECDSASignatureAlgorithm>,
         ) -> Rc<Wrappers::Result<Rc<Signature::SignatureKeyPair>, Rc<DafnyError>>> {
-            match ecdsa_key_gen(&**alg) {
+            match ecdsa_key_gen(alg) {
                 Ok(x) => Rc::new(Wrappers::Result::Success {
                     value: Rc::new(Signature::SignatureKeyPair::SignatureKeyPair {
                         verificationKey: x.0.iter().cloned().collect(),
@@ -144,7 +125,7 @@ pub mod Signature {
                     }),
                 }),
                 Err(e) => {
-                    let msg = format!("{}", e);
+                    let msg = format!("ECDSA Key Gen : {}", e);
                     Rc::new(Wrappers::Result::Failure { error: error(&msg) })
                 }
             }
@@ -161,7 +142,7 @@ pub mod Signature {
             let sig = private_key
                 .sign(&rng, msg)
                 .map_err(|e| format!("{:?}", e))?;
-            Ok(sig.as_ref().iter().cloned().collect())
+            Ok(sig.as_ref().to_vec())
         }
 
         pub fn Sign(
@@ -171,12 +152,12 @@ pub mod Signature {
         ) -> Rc<Wrappers::Result<::dafny_runtime::Sequence<u8>, Rc<DafnyError>>> {
             let key: Vec<u8> = key.iter().collect();
             let msg: Vec<u8> = msg.iter().collect();
-            match ecdsa_sign(&**alg, &key, &msg) {
+            match ecdsa_sign(alg, &key, &msg) {
                 Ok(x) => Rc::new(Wrappers::Result::Success {
                     value: x.iter().cloned().collect(),
                 }),
                 Err(e) => {
-                    let msg = format!("{}", e);
+                    let msg = format!("ECDSA Sign : {}", e);
                     Rc::new(Wrappers::Result::Failure { error: error(&msg) })
                 }
             }
@@ -190,7 +171,7 @@ pub mod Signature {
         ) -> Result<bool, String> {
             let public_key = UnparsedPublicKey::new(get_ver_alg(alg), key);
             public_key
-                .verify(msg, &sig)
+                .verify(msg, sig)
                 .map_err(|e| format!("{:?}", e))?;
             Ok(true)
         }
@@ -204,10 +185,10 @@ pub mod Signature {
             let key: Vec<u8> = key.iter().collect();
             let msg: Vec<u8> = msg.iter().collect();
             let sig: Vec<u8> = sig.iter().collect();
-            match ecdsa_verify(&**alg, &key, &msg, &sig) {
+            match ecdsa_verify(alg, &key, &msg, &sig) {
                 Ok(x) => Rc::new(Wrappers::Result::Success { value: x }),
                 Err(e) => {
-                    let msg = format!("{}", e);
+                    let msg = format!("ECDSA Verify : {}", e);
                     Rc::new(Wrappers::Result::Failure { error: error(&msg) })
                 }
             }
@@ -255,10 +236,10 @@ pub mod Signature {
                 sig_vec[0] = 42;
                 let sig2: ::dafny_runtime::Sequence<u8> = sig_vec.iter().cloned().collect();
                 let ver2: bool = match &*Verify(&alg, &v_key, &message, &sig2) {
-                    Wrappers::Result::Success { value } => {
+                    Wrappers::Result::Success { .. } => {
                         panic!("Verify Should have failed");
                     }
-                    Wrappers::Result::Failure { error } => false,
+                    Wrappers::Result::Failure { .. } => false,
                 };
                 assert!(!ver2);
 
