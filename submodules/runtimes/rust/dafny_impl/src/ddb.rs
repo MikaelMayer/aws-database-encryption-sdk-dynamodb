@@ -12,7 +12,14 @@ impl software::amazon::cryptography::services::dynamodb::internaldafny::_default
     pub fn DynamoDBClient()
     -> ::std::rc::Rc<Wrappers::Result<::dafny_runtime::Object<dyn crate::software::amazon::cryptography::services::dynamodb::internaldafny::types::IDynamoDBClient>, ::std::rc::Rc<crate::software::amazon::cryptography::services::dynamodb::internaldafny::types::Error>>>
     {
+        let config = aws_types::SdkConfig::builder().build();
+        // let config = SdkConfig::builder().region(Region::new("us-east-1")).build();
+        // let config = aws_config::load_from_env().await;
+        let _client = aws_sdk_dynamodb::Client::new(&config);
         todo!("software::amazon::cryptography::services::ddb::internaldafny::DynamoDBClient not implemented");
+//        std::rc::Rc::new(Wrappers::Result::Success {
+//            value: ::dafny_runtime::Object::new(client),
+//        })
     }
 
     #[allow(non_snake_case)]
