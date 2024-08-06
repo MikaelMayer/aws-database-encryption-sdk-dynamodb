@@ -6,9 +6,9 @@
 #![deny(clippy::all)]
 
 use crate::software::amazon::cryptography::primitives::internaldafny::types::DigestAlgorithm;
-use mpl_standard_library::_Wrappers_Compile as Wrappers;
 use crate::*;
 use aws_lc_rs::hmac;
+use mpl_standard_library::_Wrappers_Compile as Wrappers;
 
 fn convert_algorithm(input: &DigestAlgorithm) -> hmac::Algorithm {
     match input {
@@ -44,8 +44,8 @@ impl crate::HMAC::_default {
 #[allow(non_snake_case)]
 pub mod HMAC {
     use crate::*;
-    use mpl_standard_library::_Wrappers_Compile as Wrappers;
     use aws_lc_rs::hmac;
+    use mpl_standard_library::_Wrappers_Compile as Wrappers;
     #[allow(non_camel_case_types)]
     pub struct _default {}
 
@@ -53,7 +53,7 @@ pub mod HMAC {
     pub struct HMac {
         algorithm: hmac::Algorithm,
         context: Option<hmac::Context>,
-        key : Option<hmac::Key>
+        key: Option<hmac::Key>,
     }
     impl HMac {
         pub fn Init(&mut self, salt: &::dafny_runtime::Sequence<u8>) {
@@ -79,7 +79,7 @@ pub mod HMAC {
             let inner = dafny_runtime::Object::new(Self {
                 algorithm: super::convert_algorithm(input),
                 context: None,
-                key: None
+                key: None,
             });
 
             ::std::rc::Rc::new(Wrappers::Result::Success { value: inner })

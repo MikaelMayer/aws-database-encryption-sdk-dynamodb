@@ -7,8 +7,8 @@
 
 use crate::*;
 use aws_lc_rs::digest;
-use software::amazon::cryptography::primitives::internaldafny::types::DigestAlgorithm;
 use mpl_standard_library::_Wrappers_Compile as Wrappers;
+use software::amazon::cryptography::primitives::internaldafny::types::DigestAlgorithm;
 
 impl crate::ExternDigest::_default {
     #[allow(non_snake_case)]
