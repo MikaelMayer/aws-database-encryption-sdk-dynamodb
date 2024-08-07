@@ -59,10 +59,10 @@ pub mod HMAC {
         pub fn Init(&mut self, salt: &::dafny_runtime::Sequence<u8>) {
             let salt: Vec<u8> = salt.iter().collect();
             self.key = Some(hmac::Key::new(self.algorithm, &salt));
-            self.context = Some(hmac::Context::with_key(&self.key.as_ref().unwrap()));
+            self.context = Some(hmac::Context::with_key(self.key.as_ref().unwrap()));
         }
         pub fn re_init(&mut self) {
-            self.context = Some(hmac::Context::with_key(&self.key.as_ref().unwrap()));
+            self.context = Some(hmac::Context::with_key(self.key.as_ref().unwrap()));
         }
         pub fn Build(
             input: &::std::rc::Rc<

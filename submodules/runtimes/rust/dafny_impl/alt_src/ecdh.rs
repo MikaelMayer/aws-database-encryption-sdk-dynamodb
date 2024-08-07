@@ -52,19 +52,21 @@ pub mod ECDH {
         use aws_lc_sys::EC_KEY_get0_public_key;
         use aws_lc_sys::EC_KEY_new_by_curve_name;
         use aws_lc_sys::EC_KEY_set_public_key;
+        use aws_lc_sys::EC_POINT_free;
         use aws_lc_sys::EC_POINT_new;
         use aws_lc_sys::EC_POINT_oct2point;
         use aws_lc_sys::EC_POINT_point2oct;
         use aws_lc_sys::EVP_PKEY_assign_EC_KEY;
+        use aws_lc_sys::EVP_PKEY_free;
         use aws_lc_sys::EVP_PKEY_get0_EC_KEY;
         use aws_lc_sys::EVP_PKEY_new;
         use aws_lc_sys::EVP_PKEY_size;
         use aws_lc_sys::EVP_marshal_public_key;
         use aws_lc_sys::EVP_parse_public_key;
+        use aws_lc_sys::OPENSSL_free;
         use aws_lc_sys::CBB;
         use aws_lc_sys::CBS;
         use aws_lc_sys::EVP_PKEY_EC;
-        use std::mem::MaybeUninit;
         use std::ptr::null_mut;
 
         const ELEM_MAX_BITS: usize = 521;
@@ -78,17 +80,17 @@ pub mod ECDH {
             };
 
             let evp_pkey = unsafe { EVP_parse_public_key(&mut cbs) };
-            if evp_pkey == std::ptr::null_mut() {
+            if evp_pkey.is_null() {
                 return Err("Invalid X509 Public Key.".to_string());
             }
             let ec_key = unsafe { EVP_PKEY_get0_EC_KEY(evp_pkey) };
 
             let ec_group = unsafe { EC_KEY_get0_group(ec_key) };
-            if ec_group == std::ptr::null_mut() {
+            if ec_group.is_null() {
                 return Err("Error in EC_KEY_get0_group in X509_to_X962.".to_string());
             }
             let ec_point = unsafe { EC_KEY_get0_public_key(ec_key) };
-            if ec_point == std::ptr::null_mut() {
+            if ec_point.is_null() {
                 return Err("Error in EC_KEY_get0_public_key in X509_to_X962.".to_string());
             }
 
@@ -109,6 +111,7 @@ pub mod ECDH {
                     null_mut(),
                 )
             };
+            unsafe { EVP_PKEY_free(evp_pkey) };
             Ok(out_buf[..new_size].to_vec())
         }
 
@@ -142,11 +145,8 @@ pub mod ECDH {
             }
 
             let key_size_bytes: usize = unsafe { EVP_PKEY_size(evp_pkey) }.try_into().unwrap();
-            let mut cbb = MaybeUninit::<CBB>::uninit();
-            let mut cbb = unsafe {
-                CBB_init(cbb.as_mut_ptr(), key_size_bytes * 5);
-                cbb.assume_init()
-            };
+            let mut cbb: CBB = Default::default();
+            unsafe { CBB_init(&mut cbb as *mut CBB, key_size_bytes * 5) };
 
             if 1 != unsafe { EVP_marshal_public_key(&mut cbb, evp_pkey) } {
                 return Err("Error in EVP_marshal_public_key in GetPublicKey.".to_string());
@@ -159,8 +159,12 @@ pub mod ECDH {
                 return Err("Error in CBB_finish in GetPublicKey.".to_string());
             };
             let slice = unsafe { std::slice::from_raw_parts(out_data, out_len) };
+            let slice = slice.to_vec();
 
-            Ok(slice.to_vec())
+            unsafe { OPENSSL_free(out_data as *mut ::std::os::raw::c_void) };
+            unsafe { EVP_PKEY_free(evp_pkey) };
+            unsafe { EC_POINT_free(ec_point) };
+            Ok(slice)
         }
 
         fn inner_get_public_key(
@@ -179,16 +183,16 @@ pub mod ECDH {
                         .map_err(|_| "Key too long".to_string())?,
                 )
             };
-            if evp_pkey == std::ptr::null_mut() {
+            if evp_pkey.is_null() {
                 return Err("Error in d2i_PrivateKey in GetPublicKey.".to_string());
             }
 
             let ec_key = unsafe { EVP_PKEY_get0_EC_KEY(evp_pkey) };
-            if ec_key == std::ptr::null_mut() {
+            if ec_key.is_null() {
                 return Err("Error in EVP_PKEY_get0_EC_KEY in GetPublicKey.".to_string());
             }
             let ec_group = unsafe { EC_KEY_get0_group(ec_key) };
-            if ec_group == std::ptr::null_mut() {
+            if ec_group.is_null() {
                 return Err("Error in EC_KEY_get0_group in GetPublicKey.".to_string());
             }
             let key_nid = unsafe { EC_GROUP_get_curve_name(ec_group) };
@@ -198,12 +202,8 @@ pub mod ECDH {
             }
 
             let key_size_bytes: usize = unsafe { EVP_PKEY_size(evp_pkey) }.try_into().unwrap();
-
-            let mut cbb = MaybeUninit::<CBB>::uninit();
-            let mut cbb = unsafe {
-                CBB_init(cbb.as_mut_ptr(), key_size_bytes * 5);
-                cbb.assume_init()
-            };
+            let mut cbb: CBB = Default::default();
+            unsafe { CBB_init(&mut cbb as *mut CBB, key_size_bytes * 5) };
 
             if 1 != unsafe { EVP_marshal_public_key(&mut cbb, evp_pkey) } {
                 return Err("Error in EVP_marshal_public_key in GetPublicKey.".to_string());
@@ -216,8 +216,11 @@ pub mod ECDH {
                 return Err("Error in CBB_finish in GetPublicKey.".to_string());
             };
             let slice = unsafe { std::slice::from_raw_parts(out_data, out_len) };
+            let slice = slice.to_vec();
 
-            Ok(slice.to_vec())
+            unsafe { OPENSSL_free(out_data as *mut ::std::os::raw::c_void) };
+            unsafe { EVP_PKEY_free(evp_pkey) };
+            Ok(slice)
         }
         fn get_public_key(alg: &ECDHCurveSpec, pem: &[u8]) -> Result<Vec<u8>, String> {
             let pem = std::str::from_utf8(pem).map_err(|e| format!("{:?}", e))?;
@@ -315,7 +318,7 @@ pub mod ECDH {
 
         // for the moment, it's valid if we can use it to generate a shared secret
         fn valid_public_key(alg: &ECDHCurveSpec, public_key: &[u8]) -> Result<(), String> {
-            let public_key = X509_to_X962(&public_key, false)?;
+            let public_key = X509_to_X962(public_key, false)?;
 
             let private_key = aws_lc_rs::agreement::PrivateKey::generate(get_alg(alg))
                 .map_err(|e| format!("{:?}", e))?;
@@ -334,12 +337,9 @@ pub mod ECDH {
             let public_key: Vec<u8> = public_key.iter().collect();
             match valid_public_key(curve_algorithm, &public_key) {
                 Ok(_) => Rc::new(Wrappers::Result::Success { value: true }),
-                Err(e) => {
-                    let msg = format!("ECDH Validate Public Key : {}", e);
-                    Rc::new(Wrappers::Result::Failure {
-                        error: super::error(&msg),
-                    })
-                }
+                Err(e) => Rc::new(Wrappers::Result::Failure {
+                    error: super::error(&e),
+                }),
             }
         }
 
@@ -387,12 +387,9 @@ pub mod ECDH {
                 Ok(_) => Rc::new(Wrappers::Result::Success {
                     value: publicKey.clone(),
                 }),
-                Err(e) => {
-                    let msg = format!("{}", e);
-                    Rc::new(Wrappers::Result::Failure {
-                        error: super::error(&msg),
-                    })
-                }
+                Err(e) => Rc::new(Wrappers::Result::Failure {
+                    error: super::error(&e),
+                }),
             }
         }
     }
@@ -414,7 +411,7 @@ pub mod ECDH {
                 private_key.contents(),
             )
             .map_err(|e| format!("{:?}", e))?;
-            let public_key = super::ECCUtils::X509_to_X962(&public_key_der, false)?;
+            let public_key = super::ECCUtils::X509_to_X962(public_key_der, false)?;
             let public_key = aws_lc_rs::agreement::UnparsedPublicKey::new(
                 super::ECCUtils::get_alg(curve_algorithm),
                 &public_key,

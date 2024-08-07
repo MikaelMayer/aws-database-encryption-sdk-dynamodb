@@ -8,10 +8,9 @@
 #[allow(non_snake_case)]
 pub mod Signature {
     pub mod ECDSA {
-        use crate::*;
-        // pub use crate::software::amazon::cryptography::primitives::internaldafny::types::ECDSA::*;
         use crate::software::amazon::cryptography::primitives::internaldafny::types::ECDSASignatureAlgorithm;
         use crate::software::amazon::cryptography::primitives::internaldafny::types::Error as DafnyError;
+        use crate::*;
         use ::std::rc::Rc;
         use aws_lc_rs::encoding::AsDer;
         use aws_lc_rs::rand::SystemRandom;
@@ -21,8 +20,6 @@ pub mod Signature {
         use aws_lc_rs::signature::KeyPair;
         use aws_lc_rs::signature::UnparsedPublicKey;
         use mpl_standard_library::_Wrappers_Compile as Wrappers;
-        use ptr::LcPtr;
-        // use aws_lc_rs::encoding::PublicKeyX509Der;
 
         fn error(s: &str) -> Rc<DafnyError> {
             Rc::new(DafnyError::AwsCryptographicPrimitivesError {
@@ -81,47 +78,46 @@ pub mod Signature {
             form: aws_lc_sys::point_conversion_form_t,
         ) -> Result<Vec<u8>, String> {
             use aws_lc_sys::EC_GROUP_new_by_curve_name;
+            use aws_lc_sys::EC_POINT_free;
             use aws_lc_sys::EC_POINT_new;
             use aws_lc_sys::EC_POINT_oct2point;
             use aws_lc_sys::EC_POINT_point2oct;
             use std::ptr::null_mut;
 
-            let ec_group = LcPtr::new(unsafe { EC_GROUP_new_by_curve_name(nid) })
-                .map_err(|e| format!("{:?}", e))?;
+            // no need to free ec_group
+            let ec_group = unsafe { EC_GROUP_new_by_curve_name(nid) };
+            if ec_group.is_null() {
+                return Err("EC_GROUP_new_by_curve_name returned failure.".to_string());
+            }
 
-            let ec_point =
-                LcPtr::new(unsafe { EC_POINT_new(*ec_group) }).map_err(|e| format!("{:?}", e))?;
+            let ec_point = unsafe { EC_POINT_new(ec_group) };
+            if ec_point.is_null() {
+                return Err("EC_POINT_new returned failure.".to_string());
+            }
             let mut out_buf = [0u8; PUBLIC_KEY_MAX_LEN];
 
-            let _ret = unsafe {
-                EC_POINT_oct2point(*ec_group, *ec_point, data.as_ptr(), data.len(), null_mut())
+            let ret = unsafe {
+                EC_POINT_oct2point(ec_group, ec_point, data.as_ptr(), data.len(), null_mut())
             };
-            // if ret == 0 {
-            //     return Err("EC_POINT_oct2point returned failure.".to_string());
-            // }
+            if ret == 0 {
+                return Err("EC_POINT_oct2point returned failure.".to_string());
+            }
             let new_size: usize = unsafe {
                 EC_POINT_point2oct(
-                    *ec_group,
-                    *ec_point,
+                    ec_group,
+                    ec_point,
                     form,
                     out_buf.as_mut_ptr(),
                     PUBLIC_KEY_MAX_LEN,
                     null_mut(),
                 )
             };
+            unsafe { EC_POINT_free(ec_point) };
             Ok(out_buf[..new_size].to_vec())
         }
 
         fn ecdsa_key_gen(alg: &ECDSASignatureAlgorithm) -> Result<(Vec<u8>, Vec<u8>), String> {
             let pair = EcdsaKeyPair::generate(get_alg(alg)).map_err(|e| format!("{:?}", e))?;
-
-            // let public_key_der = AsDer::<PublicKeyX509Der>::as_der(pair.public_key())
-            //     .map_err(|e| format!("{:?}", e))?;
-            // if public_key_der.as_ref() != pair.public_key().as_ref() {
-            //     println!("DIFFERENT!");
-            //     println!("{:?}", pair.public_key().as_ref());
-            //     println!("{:?}", public_key_der.as_ref());
-            // }
 
             let public_key: Vec<u8> = sec1_compress(pair.public_key().as_ref(), alg)?;
             let private_key: Vec<u8> = pair.private_key().as_der().unwrap().as_ref().to_vec();

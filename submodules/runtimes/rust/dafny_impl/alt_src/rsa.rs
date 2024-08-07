@@ -193,11 +193,13 @@ pub mod RSAEncryption {
             }
         }
 
+        use aws_lc_sys::EVP_PKEY_CTX_free;
         use aws_lc_sys::EVP_PKEY_CTX_new;
         use aws_lc_sys::EVP_PKEY_decrypt;
         use aws_lc_sys::EVP_PKEY_decrypt_init;
         use aws_lc_sys::EVP_PKEY_encrypt;
         use aws_lc_sys::EVP_PKEY_encrypt_init;
+        use aws_lc_sys::EVP_PKEY_free;
         use aws_lc_sys::EVP_PKEY_size;
         use aws_lc_sys::EVP_parse_private_key;
         use aws_lc_sys::EVP_parse_public_key;
@@ -211,12 +213,12 @@ pub mod RSAEncryption {
             };
 
             let key = unsafe { EVP_parse_public_key(&mut cbs) };
-            if key == std::ptr::null_mut() {
+            if key.is_null() {
                 return Err("Invalid X509 Public Key in RSA PKCS1 Encrypt.".to_string());
             }
 
             let pkey_ctx = unsafe { EVP_PKEY_CTX_new(key, null_mut()) };
-            if pkey_ctx == std::ptr::null_mut() {
+            if pkey_ctx.is_null() {
                 return Err("Error in EVP_PKEY_CTX_new in encrypt_pkcs1.".to_string());
             }
 
@@ -241,6 +243,8 @@ pub mod RSAEncryption {
                 return Err("Error in EVP_PKEY_encrypt in encrypt_pkcs1.".to_string());
             };
 
+            unsafe { EVP_PKEY_CTX_free(pkey_ctx) };
+            unsafe { EVP_PKEY_free(key) };
             cipher_text.resize(out_len, 0);
             Ok(cipher_text)
         }
@@ -252,12 +256,12 @@ pub mod RSAEncryption {
             };
 
             let key = unsafe { EVP_parse_private_key(&mut cbs) };
-            if key == std::ptr::null_mut() {
+            if key.is_null() {
                 return Err("Invalid Private Key in RSA PKCS1 Decrypt.".to_string());
             }
 
             let pkey_ctx = unsafe { EVP_PKEY_CTX_new(key, null_mut()) };
-            if pkey_ctx == std::ptr::null_mut() {
+            if pkey_ctx.is_null() {
                 return Err("Error in EVP_PKEY_CTX_new in decrypt_pkcs1.".to_string());
             }
 
@@ -282,6 +286,8 @@ pub mod RSAEncryption {
                 return Err("Error in EVP_PKEY_decrypt in decrypt_pkcs1.".to_string());
             };
 
+            unsafe { EVP_PKEY_CTX_free(pkey_ctx) };
+            unsafe { EVP_PKEY_free(key) };
             plain_text.resize(out_len, 0);
             Ok(plain_text)
         }
