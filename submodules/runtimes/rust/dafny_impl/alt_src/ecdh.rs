@@ -73,7 +73,7 @@ pub mod ECDH {
         const ELEM_MAX_BYTES: usize = (ELEM_MAX_BITS + 7) / 8;
         const PUBLIC_KEY_MAX_LEN: usize = 1 + (2 * ELEM_MAX_BYTES);
 
-        pub(crate) fn X509_to_X962(public_key: &[u8], compress: bool) -> Result<Vec<u8>, String> {
+        pub(crate) fn X509_to_X962(public_key: &[u8], compress: bool, nid : Option<i32>) -> Result<Vec<u8>, String> {
             let mut cbs = CBS {
                 data: public_key.as_ptr(),
                 len: public_key.len(),
@@ -88,6 +88,11 @@ pub mod ECDH {
             let ec_group = unsafe { EC_KEY_get0_group(ec_key) };
             if ec_group.is_null() {
                 return Err("Error in EC_KEY_get0_group in X509_to_X962.".to_string());
+            }
+            if nid.is_some() {
+                if nid.unwrap() != unsafe { EC_GROUP_get_curve_name(ec_group) } {
+                    return Err("Curve type mismatch in X509_to_X962.".to_string());
+                }
             }
             let ec_point = unsafe { EC_KEY_get0_public_key(ec_key) };
             if ec_point.is_null() {
@@ -318,16 +323,8 @@ pub mod ECDH {
 
         // for the moment, it's valid if we can use it to generate a shared secret
         fn valid_public_key(alg: &ECDHCurveSpec, public_key: &[u8]) -> Result<(), String> {
-            let public_key = X509_to_X962(public_key, false)?;
-
-            let private_key = aws_lc_rs::agreement::PrivateKey::generate(get_alg(alg))
-                .map_err(|e| format!("{:?}", e))?;
-            let public_key =
-                aws_lc_rs::agreement::UnparsedPublicKey::new(get_alg(alg), &public_key);
-            match aws_lc_rs::agreement::agree(&private_key, &public_key, "foo", |_x| Ok(false)) {
-                Ok(_) => Ok(()),
-                Err(_) => Err("Invalid ECDH Public Key".to_string()),
-            }
+            let _ = X509_to_X962(public_key, false, Some(get_nid(alg)))?;
+            Ok(())
         }
 
         pub fn ValidatePublicKey(
@@ -348,7 +345,7 @@ pub mod ECDH {
             _curve_algorithm: &Rc<ECDHCurveSpec>,
         ) -> Rc<Wrappers::Result<::dafny_runtime::Sequence<u8>, Rc<DafnyError>>> {
             let public_key: Vec<u8> = public_key.iter().collect();
-            match X509_to_X962(&public_key, true) {
+            match X509_to_X962(&public_key, true, None) {
                 Ok(v) => Rc::new(Wrappers::Result::Success {
                     value: v.iter().cloned().collect(),
                 }),
@@ -383,7 +380,7 @@ pub mod ECDH {
             publicKey: &::dafny_runtime::Sequence<u8>,
         ) -> Rc<Wrappers::Result<::dafny_runtime::Sequence<u8>, Rc<DafnyError>>> {
             let public_key: Vec<u8> = publicKey.iter().collect();
-            match X509_to_X962(&public_key, false) {
+            match X509_to_X962(&public_key, false, None) {
                 Ok(_) => Rc::new(Wrappers::Result::Success {
                     value: publicKey.clone(),
                 }),
@@ -411,7 +408,7 @@ pub mod ECDH {
                 private_key.contents(),
             )
             .map_err(|e| format!("{:?}", e))?;
-            let public_key = super::ECCUtils::X509_to_X962(public_key_der, false)?;
+            let public_key = super::ECCUtils::X509_to_X962(public_key_der, false, None)?;
             let public_key = aws_lc_rs::agreement::UnparsedPublicKey::new(
                 super::ECCUtils::get_alg(curve_algorithm),
                 &public_key,
