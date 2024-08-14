@@ -1,17 +1,19 @@
 // Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-#![allow(warnings, unconditional_panic)]
-#![allow(nonstandard_style)]
+#![deny(warnings, unconditional_panic)]
+#![deny(nonstandard_style)]
+#![deny(clippy::all)]
 
+#[allow(non_snake_case)]
 pub mod AesKdfCtr {
     use crate::software::amazon::cryptography::primitives::internaldafny::types::Error as DafnyError;
     use crate::*;
     use ::dafny_runtime::Sequence;
-    use aws_lc_rs::cipher::{DecryptingKey, EncryptingKey, UnboundCipherKey, AES_256};
-    use aws_lc_rs::error::Unspecified;
+    use aws_lc_rs::cipher::{EncryptingKey, EncryptionContext, UnboundCipherKey, AES_256};
     use std::rc::Rc;
 
+    #[allow(non_camel_case_types)]
     pub struct _default {}
 
     fn error(s: &str) -> Rc<DafnyError> {
@@ -21,17 +23,33 @@ pub mod AesKdfCtr {
         })
     }
 
-    fn ctr_stream(nonce: &[u8], key: &[u8], length: u32) -> Result<Vec<u8>, Unspecified> {
-        let mut in_out_buffer = Vec::new();
-        in_out_buffer.resize(length as usize, 0);
+    fn as_array(nonce: &[u8]) -> &[u8; aws_lc_rs::iv::IV_LEN_128_BIT] {
+        nonce.try_into().unwrap()
+    }
 
-        let key = UnboundCipherKey::new(&AES_256, key)?;
-        let mut encrypting_key = EncryptingKey::ctr(key)?;
-        let context = encrypting_key.encrypt(&mut in_out_buffer)?;
+    fn ctr_stream(nonce: &[u8], key: &[u8], length: u32) -> Result<Vec<u8>, String> {
+        if nonce.len() != aws_lc_rs::iv::IV_LEN_128_BIT {
+            return Err(format!(
+                "Nonce length of {} not supported in AesKdfCtrStream. Nonce length must be {}.",
+                nonce.len(),
+                aws_lc_rs::iv::IV_LEN_128_BIT
+            ));
+        }
+
+        let mut in_out_buffer = vec![0; length as usize];
+
+        let key = UnboundCipherKey::new(&AES_256, key).map_err(|e| format!("new {:?}", e))?;
+        let encrypting_key = EncryptingKey::ctr(key).map_err(|e| format!("new {:?}", e))?;
+        let nonce = aws_lc_rs::iv::FixedLength::<16>::from(as_array(nonce));
+        let context = EncryptionContext::Iv128(nonce);
+        encrypting_key
+            .less_safe_encrypt(&mut in_out_buffer, context)
+            .map_err(|e| format!("new {:?}", e))?;
         Ok(in_out_buffer)
     }
 
     impl _default {
+        #[allow(non_snake_case)]
         pub fn AesKdfCtrStream(
             nonce: &Sequence<u8>,
             key: &Sequence<u8>,
@@ -49,7 +67,7 @@ pub mod AesKdfCtr {
                     value: x.iter().cloned().collect(),
                 }),
                 Err(e) => {
-                    let msg = format!("{}", e);
+                    let msg = format!("Aes Kdf Ctr : {}", e);
                     Rc::new(Wrappers::Result::Failure { error: error(&msg) })
                 }
             }
