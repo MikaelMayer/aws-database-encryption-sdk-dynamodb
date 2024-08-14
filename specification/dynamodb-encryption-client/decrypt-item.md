@@ -29,9 +29,9 @@ decrypts a DynamoDB Item originally encrypted via the [Encrypt Item](./encrypt-i
 
 The following inputs to this behavior are REQUIRED:
 
-- DynamoDB Item
+- [DynamoDb Item](#input-dynamodb-item)
 
-### DynamoDB Item
+### Input DynamoDB Item
 
 The DynamoDB Item is the item to be decrypted by this behavior.
 
@@ -49,17 +49,18 @@ Otherwise this operation MUST yield an error.
 
 This operation MUST output the following:
 
-- [DynamoDb Item](#dynamodb-item-1)
+- [DynamoDb Item](#output-dynamodb-item)
 
 This operation MUST also output a [Parsed Header](#parsed-header) if the following is true:
+
 - The operation is not using a [Legacy Policy](./ddb-table-encryption-config.md#legacy-policy) that allows legacy decrypts,
   and the input item is a [legacy item](#determining-legacy-items).
 - The operation is not using a [Plaintext Policy](./ddb-table-encryption-config.md#plaintext-policy) that allows plaintext reads,
   and the input item is a [plaintext item](#determining-plaintext-items).
 
-### DynamoDB Item
+### Output DynamoDB Item
 
-The DynamoDB Item is the decryption of the [input DynamoBD Item](#dynamodb-item).
+The DynamoDB Item is the decryption of the [input DynamoBD Item](#input dynamodb-item).
 
 ### Parsed Header
 
@@ -71,6 +72,9 @@ representing the deserialized form of the header of the input encrypted structur
   calculated using the Crypto Legend in the header, the signature scope used for decryption, and the data in the structure,
   converted into Attribute Actions.
 - [Encrypted Data Keys](./header.md#encrypted-data-keys): The Encrypted Data Keys stored in the header.
+- [Stored Encryption Context](../structured-encryption/header.md#encryption-context): The Encryption Context stored in the header.
+- [Encryption Context](../structured-encryption/decrypt-structure#encryption-context): The full Encryption Context used.
+- Selector Context : the AttributeMap as passed to the [Branch Key Supplier](./ddb-encryption-branch-key-id-supplier.md)
 
 ## Behavior
 
@@ -96,42 +100,58 @@ this operation MUST NOT decrypt the input item,
 and MUST passthrough that item as the output.
 
 This behavior REQUIRES a [Structured Data](../structured-encryption/structures.md#structured-data)
-which is [converted](./ddb-item-conversion.md) from the [input DynamoDB Item](#dynamodb-item).
+which is [converted](./ddb-item-conversion.md) from the [input DynamoDB Item](#input-dynamodb-item).
 
 This operation MUST create a
 [Required Encryption Context CMM](https://github.com/awslabs/private-aws-encryption-sdk-specification-staging/blob/dafny-verified/framework/required-encryption-context-cmm.md)
 with the following inputs:
+
 - This item encryptor's [CMM](./ddb-table-encryption-config.md#cmm) as the underlying CMM.
-- The keys from the [DynamoDB Item Base Context](./encrypt-item.md#dynamodb-item-base-context).
+- The keys from the [DynamoDB Item Base Context](#dynamodb-item-base-context).
 
 Given the converted [Structured Data](../structured-encryption/structures.md#structured-data),
 this operation MUST delegate decryption of this data to
 Structured Encryption Client's [Decrypt Structure](../structured-encryption/encrypt-structure.md),
 with the following inputs:
+
 - Encrypted Structured Data MUST be the Structured Data converted above.
 - Authenticate Schema MUST be a [Authenticate Schema](../structured-encryption/structures.md#crypto-schema)
   built with the following requirements:
-  - For every Attribute in the [input DynamoDB Item](#dynamodb-item)
+  - For every Attribute in the [input DynamoDB Item](#input-dynamodb-item)
     that is in the [signature scope](#signature-scope),
     there MUST exist a [SIGN Authenticate Action](../structured-encryption/structures.md#sign)
     in the Authenticate Schema,
     string indexed at the top level by that attribute name.
-  - For every Attribute in the [input DynamoDB Item](#dynamodb-item)
+  - For every Attribute in the [input DynamoDB Item](#input-dynamodb-item)
     that is not in the [signature scope](#signature-scope),
     there MUST exist a [DO_NOT_SIGN Authenticate Action](../structured-encryption/structures.md#do_not_sign)
     in the Authenticate Schema,
     string indexed at the top level by that attribute name.
   - The number of Authenticate Actions in the Authenticate Schema
-    MUST EQUAL the number of Attributes on the [input DynamoDB Item](#dynamodb-item).
+    MUST EQUAL the number of Attributes on the [input DynamoDB Item](#input-dynamodb-item).
 - Encryption Context MUST be the input Item's [DynamoDB Item Base Context](./encrypt-item.md#dynamodb-item-base-context).
 - CMM MUST be the CMM constructed above.
 
 The output to this behavior is the [conversion](./ddb-item-conversion.md)
 of the decrypted Structured Data determined above
-into the [output DynamoDB Item](#encrypted-dynamodb-item).
+into the [output DynamoDB Item](./encrypt-item.md#encrypted-dynamodb-item).
 
 The output MUST also include a [Parsed Header](#parsed-header) that contains
 data that was serialized into the header included in the output DynamoDb Item.
+
+### DynamoDB Item Base Context
+
+The item to be encrypted MUST have an attribute named `aws_dbe_head`.
+
+The attribute named `aws_dbe_head` MUST be of type `B` Binary.
+
+The first byte of that value is the Version Number.
+
+If the Version Number is 2, then the base context MUST be the [version 2](./encrypt-item.md#dynamodb-item-base-context-version-2) context.
+
+If the Version Number is 1, the base context MUST be the [version 1](./encrypt-item.md#dynamodb-item-base-context-version-1) context.
+
+If the Version Number is not 1 or 2, the operation MUST return an error.
 
 ### Signature Scope
 
@@ -152,7 +172,7 @@ this operation MUST yield an error.
 
 An item MUST be determined to be encrypted under the legacy format if it contains
 attributes for the material description and the signature.
-These are usually "*amzn-ddb-map-desc*" and "*amzn-ddb-map-sig*" respectively,
+These are usually "_amzn-ddb-map-desc_" and "_amzn-ddb-map-sig_" respectively,
 although the DynamoDbEncryptor allows callers to configure custom names for these attributes.
 
 ### Determining Plaintext Items

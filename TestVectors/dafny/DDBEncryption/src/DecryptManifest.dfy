@@ -32,7 +32,7 @@ module {:options "-functionSyntax:4"} DecryptManifest {
     );
     expect DdbItemJson.NormalizeItem(decrypted.plaintextItem) == DdbItemJson.NormalizeItem(plain.item);
 
-   return Success(true);
+    return Success(true);
   }
 
   method OneNegativeTest(name : string, config : JSON, encrypted : JSON) returns (output : Result<bool, string>)
@@ -47,13 +47,12 @@ module {:options "-functionSyntax:4"} DecryptManifest {
     if decrypted.Success? {
       return Failure("Failed to fail to decrypt " + name);
     }
-   return Success(true);
+    return Success(true);
   }
 
   method OneTest(name : string, value : JSON) returns (output : Result<bool, string>)
   {
     :- Need(value.Object?, "Test must be an object");
-    print "Decrypting ", name, "\n";
 
     var types : Option<string> := None;
     var description : Option<string> := None;
@@ -99,6 +98,7 @@ module {:options "-functionSyntax:4"} DecryptManifest {
 
   method Decrypt(inFile : string) returns (output : Result<bool, string>)
   {
+    print "Decrypt : ", inFile, "\n";
     var configBv :- expect FileIO.ReadBytesFromFile(inFile);
     var configBytes := BvToBytes(configBv);
     var json :- expect API.Deserialize(configBytes);

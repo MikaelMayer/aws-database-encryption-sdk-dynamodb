@@ -10,18 +10,21 @@ use com.amazonaws.dynamodb#AttributeMap
 use com.amazonaws.dynamodb#AttributeNameList
 use com.amazonaws.dynamodb#TableName
 use com.amazonaws.dynamodb#KeySchemaAttributeName
+use com.amazonaws.dynamodb#Key
+
+use aws.cryptography.primitives#AwsCryptographicPrimitives
+
 use aws.cryptography.materialProviders#KeyringReference
 use aws.cryptography.materialProviders#CryptographicMaterialsManagerReference
 use aws.cryptography.materialProviders#DBEAlgorithmSuiteId
 use aws.cryptography.materialProviders#EncryptedDataKeyList
 use aws.cryptography.materialProviders#EncryptionContext
+use aws.cryptography.materialProviders#AwsCryptographicMaterialProviders
+
 use aws.cryptography.dbEncryptionSdk.dynamoDb#AttributeActions
 use aws.cryptography.dbEncryptionSdk.dynamoDb#LegacyOverride
 use aws.cryptography.dbEncryptionSdk.structuredEncryption#Version
 use aws.cryptography.dbEncryptionSdk.dynamoDb#PlaintextOverride
-
-use aws.cryptography.materialProviders#AwsCryptographicMaterialProviders
-use aws.cryptography.primitives#AwsCryptographicPrimitives
 use aws.cryptography.dbEncryptionSdk.dynamoDb#DynamoDbEncryption
 use aws.cryptography.dbEncryptionSdk.structuredEncryption#StructuredEncryption
 
@@ -44,23 +47,24 @@ service DynamoDbItemEncryptor {
 
 @javadoc("The configuration for the client-side encryption of DynamoDB items.")
 structure DynamoDbItemEncryptorConfig {
-    //= specification/dynamodb-encryption-client/ddb-table-encryption-config.md#structure
+    //= specification/dynamodb-encryption-client/ddb-item-encryptor.md#initialization
     //= type=implication
-    //# The following are REQUIRED for DynamoDb Table Encryption Configuration:
-    //# - [Logical Table Name](#logical-table-name)
-    //# - [DynamoDB Partition Key Name](#dynamodb-partition-key-name)
-    //# - [Attribute Actions](#attribute-actions)
-    //# - A [CMM](#cmm) or [Keyring](#keyring)
+    //# On initialization of the DynamoDB Item Encryptor
+    //# the caller MUST provide:
+    //# - [DynamoDB Table Name](./ddb-table-encryption-config.md#dynamodb-table-name)
+    //# - [DynamoDB Partition Key Name](./ddb-table-encryption-config.md#dynamodb-partition-key-name)
+    //# - [Attribute Actions](./ddb-table-encryption-config.md#attribute-actions)
+    //# - A [CMM](./ddb-table-encryption-config.md#cmm) or [Keyring](./ddb-table-encryption-config.md#keyring)
 
-    //= specification/dynamodb-encryption-client/ddb-table-encryption-config.md#structure
+    //= specification/dynamodb-encryption-client/ddb-item-encryptor.md#initialization
     //= type=implication
-    //# The following are OPTIONAL for DynamoDb Table Encryption Configuration:
-    //# - [DynamoDB Sort Key Name](#dynamodb-sort-key-name)
-    //# - [Unauthenticated Attributes](#unauthenticated-attributes)
-    //# - [Unauthenticated Attribute Name Prefix](#unauthenticated-attribute-prefix)
-    //# - [Algorithm Suite](#algorithm-suite)
-    //# - [Legacy Config](#legacy-config)
-    //# - [Plaintext Policy](#plaintext-policy)
+    //# The following are OPTIONAL for the DynamoDB Item Encryptor:
+    //# - [DynamoDB Sort Key Name](./ddb-table-encryption-config.md#dynamodb-sort-key-name)
+    //# - [Unauthenticated Attributes](./ddb-table-encryption-config.md#unauthenticated-attributes)
+    //# - [Unauthenticated Attribute Name Prefix](./ddb-table-encryption-config.md#unauthenticated-attribute-prefix)
+    //# - [Algorithm Suite](./ddb-table-encryption-config.md#algorithm-suite)
+    //# - [Legacy Config](./ddb-table-encryption-config.md#legacy-config)
+    //# - [Plaintext Policy](./ddb-table-encryption-config.md#plaintext-policy)
 
     @required
     @javadoc("The logical table name for this table. This is the name that is cryptographically bound with your data. This can be the same as the actual DynamoDB table name. It's purpose is to be distinct from the DynamoDB table name so that the data may still be authenticated if being read from different (but logically similar) tables, such as a backup table.")
@@ -123,6 +127,9 @@ structure DynamoDbItemEncryptorConfig {
 //#     calculated using the Crypto Legend in the header, the signature scope used for decryption, and the data in the structure,
 //#     converted into Attribute Actions.
 //#   - [Encrypted Data Keys](./header.md#encrypted-data-keys): The Encrypted Data Keys stored in the header.
+//#   - [Stored Encryption Context](../structured-encryption/header.md#encryption-context): The Encryption Context stored in the header.
+//#   - [Encryption Context](../structured-encryption/decrypt-structure#encryption-context): The full Encryption Context used.
+//#   - Selector Context : the AttributeMap as passed to the [Branch Key Supplier](./ddb-encryption-branch-key-id-supplier.md)
 @javadoc("A parsed version of the header that was written with or read on an encrypted DynamoDB item.")
 structure ParsedHeader {
     @required
@@ -136,7 +143,13 @@ structure ParsedHeader {
     encryptedDataKeys: EncryptedDataKeyList,
     @required
     @javadoc("The portion of the encryption context that was stored in the header of this item.")
-    storedEncryptionContext: EncryptionContext
+    storedEncryptionContext: EncryptionContext,
+    @required
+    @javadoc("The full encryption context.")
+    encryptionContext: EncryptionContext,
+    @required
+    @javadoc("The encryption context as presented to the branch key selector.")
+    selectorContext: Key
 }
 
 //= specification/dynamodb-encryption-client/ddb-item-encryptor.md#encryptitem
@@ -182,7 +195,7 @@ structure EncryptItemOutput {
 //= specification/dynamodb-encryption-client/decrypt-item.md#input
 //= type=implication
 //# The following inputs to this behavior are REQUIRED:
-//# - DynamoDB Item
+//# - [DynamoDb Item](#input-dynamodb-item)
 @javadoc("Inputs for decrypting a DynamoDB Item.")
 structure DecryptItemInput {
     @required
@@ -195,7 +208,7 @@ structure DecryptItemOutput {
     //= specification/dynamodb-encryption-client/decrypt-item.md#output
     //= type=implication
     //# This operation MUST output the following:
-    //#   - [DynamoDb Item](#dynamodb-item-1)
+    //#   - [DynamoDb Item](#output-dynamodb-item)
     @required
     @javadoc("The decrypted DynamoDB item.")
     plaintextItem: AttributeMap,

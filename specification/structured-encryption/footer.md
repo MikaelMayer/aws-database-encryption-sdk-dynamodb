@@ -15,16 +15,16 @@ When encrypting, `signed fields` refers to all fields for which the
 [Crypto Schema](./structures.md#crypto-schema) indicates `ENCRYPT_AND_SIGN` or `SIGN_ONLY`.
 
 When decrypting `signed fields` refers to all fields for which the
-the [Authenticate Schema](#authenticate-schema) indicates `SIGN`
+the [Authenticate Schema](./structures.md#authenticate-schema) indicates `SIGN`
 
 ## Footer Format
 
 The [Terminal Value](./structures.md#terminal-value) of the footer MUST be
 
-| Field | Length (bytes) | Interpreted as |
-| ----- | -------------- | -------------- |
-| [Recipient Tags](#recipient-tags) | Variable. 48 bytes per Encrypted Data Key in the header | Bytes |
-| [Signature](#signature) | 0 or 96 | Signature, if signatures are enabled |
+| Field                             | Length (bytes)                                          | Interpreted as                       |
+| --------------------------------- | ------------------------------------------------------- | ------------------------------------ |
+| [Recipient Tags](#recipient-tags) | Variable. 48 bytes per Encrypted Data Key in the header | Bytes                                |
+| [Signature](#signature)           | 0 or 96                                                 | Signature, if signatures are enabled |
 
 ### Canonical Hash
 
@@ -108,7 +108,7 @@ indicated by the algorithm suite.
 
 ## Footer Verification
 
-The footer is verified before it's record is decrypted. 
+The footer is verified before it's record is decrypted.
 
 ### Recipient Tag Verification
 
@@ -121,4 +121,3 @@ Recipient Tag comparisons MUST be constant time operations.
 If the footer contains a signature, this signature MUST be verified using the
 [asymmetric signature algorithm](../../submodules/MaterialProviders/aws-encryption-sdk-specification/framework/algorithm-suites.md#algorithm-suites-signature-settings)
 indicated by the algorithm suite.
-

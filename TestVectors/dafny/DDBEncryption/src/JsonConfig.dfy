@@ -33,7 +33,7 @@ module {:options "-functionSyntax:4"} JsonConfig {
   import DynamoDbItemEncryptor
 
 
-  const DEFAULT_KEYS := "../../../submodules/MaterialProviders/TestVectorsAwsCryptographicMaterialProviders/dafny/TestVectorsAwsCryptographicMaterialProviders/test/keys.json"
+  const DEFAULT_KEYS : string := "../../../submodules/MaterialProviders/TestVectorsAwsCryptographicMaterialProviders/dafny/TestVectorsAwsCryptographicMaterialProviders/test/keys.json"
 
   predicate IsValidInt32(x: int)  { -0x8000_0000 <= x < 0x8000_0000}
   type ConfigName = string
@@ -229,9 +229,9 @@ module {:options "-functionSyntax:4"} JsonConfig {
   method GetItemEncryptor(name : string, data : JSON)
     returns (encryptor : Result<DynamoDbItemEncryptor.DynamoDbItemEncryptorClient, string>)
     ensures encryptor.Success? ==>
-      && encryptor.value.ValidState()
-      && fresh(encryptor.value)
-      && fresh(encryptor.value.Modifies)
+              && encryptor.value.ValidState()
+              && fresh(encryptor.value)
+              && fresh(encryptor.value.Modifies)
   {
     :- Need(data.Object?, "A Table Config must be an object.");
     var logicalTableName := TableName;
@@ -298,7 +298,7 @@ module {:options "-functionSyntax:4"} JsonConfig {
 
     var keys :- expect KeyVectors.KeyVectors(
       KeyVectorsTypes.KeyVectorsConfig(
-        keyManifiestPath := DEFAULT_KEYS
+        keyManifestPath := DEFAULT_KEYS
       )
     );
     var keyDescription :-
@@ -311,24 +311,26 @@ module {:options "-functionSyntax:4"} JsonConfig {
                       .MapFailure(ParseJsonManifests.ErrorToString);
         Success(keyOut.keyDescription);
 
-    var keyring :- expect keys.CreateWappedTestVectorKeyring(KeyVectorsTypes.TestVectorKeyringInput(keyDescription := keyDescription));
+    var keyring :- expect keys.CreateWrappedTestVectorKeyring(KeyVectorsTypes.TestVectorKeyringInput(keyDescription := keyDescription));
 
     var encryptorConfig :=
-        ENC.DynamoDbItemEncryptorConfig(
-          logicalTableName := logicalTableName,
-          partitionKeyName := partitionKeyName,
-          sortKeyName := sortKeyName,
-          attributeActionsOnEncrypt := attributeActionsOnEncrypt,
-          allowedUnsignedAttributes := OptSeq(allowed),
-          allowedUnsignedAttributePrefix := OptSeq(prefix),
-          algorithmSuiteId := algorithmSuiteId,
-          keyring := Some(keyring),
-          cmm := None,
-          legacyOverride := legacyOverride,
-          plaintextOverride := plaintextOverride
-        );
-    var enc :- expect DynamoDbItemEncryptor.DynamoDbItemEncryptor(encryptorConfig);
-    return Success(enc);
+      ENC.DynamoDbItemEncryptorConfig(
+        logicalTableName := logicalTableName,
+        partitionKeyName := partitionKeyName,
+        sortKeyName := sortKeyName,
+        attributeActionsOnEncrypt := attributeActionsOnEncrypt,
+        allowedUnsignedAttributes := OptSeq(allowed),
+        allowedUnsignedAttributePrefix := OptSeq(prefix),
+        algorithmSuiteId := algorithmSuiteId,
+        keyring := Some(keyring),
+        cmm := None,
+        legacyOverride := legacyOverride,
+        plaintextOverride := plaintextOverride
+      );
+    var enc : ENC.IDynamoDbItemEncryptorClient :- expect DynamoDbItemEncryptor.DynamoDbItemEncryptor(encryptorConfig);
+    assert enc is DynamoDbItemEncryptor.DynamoDbItemEncryptorClient;
+    var encr := enc as DynamoDbItemEncryptor.DynamoDbItemEncryptorClient;
+    return Success(encr);
   }
 
   method GetOneTableConfig(name : string, data : JSON) returns (output : Result<TableConfig, string>)
@@ -400,7 +402,7 @@ module {:options "-functionSyntax:4"} JsonConfig {
 
     var keys :- expect KeyVectors.KeyVectors(
       KeyVectorsTypes.KeyVectorsConfig(
-        keyManifiestPath := DEFAULT_KEYS
+        keyManifestPath := DEFAULT_KEYS
       )
     );
     var keyDescription :-
@@ -413,7 +415,7 @@ module {:options "-functionSyntax:4"} JsonConfig {
                       .MapFailure(ParseJsonManifests.ErrorToString);
         Success(keyOut.keyDescription);
 
-    var keyring :- expect keys.CreateWappedTestVectorKeyring(KeyVectorsTypes.TestVectorKeyringInput(keyDescription := keyDescription));
+    var keyring :- expect keys.CreateWrappedTestVectorKeyring(KeyVectorsTypes.TestVectorKeyringInput(keyDescription := keyDescription));
 
     var config :=
       Types.DynamoDbTableEncryptionConfig(
@@ -546,6 +548,8 @@ module {:options "-functionSyntax:4"} JsonConfig {
     match data.str {
       case "ENCRYPT_AND_SIGN" => return Success(SE.ENCRYPT_AND_SIGN);
       case "SIGN_ONLY" => return Success(SE.SIGN_ONLY);
+      case "CONTEXT_AND_SIGN" => return Success(SE.SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT);
+      case "SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT" => return Success(SE.SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT);
       case "DO_NOTHING" => return Success(SE.DO_NOTHING);
       case _ => return Failure(data.str + " is not a valid CryptoAction.");
     }

@@ -9,15 +9,25 @@ module DdbMiddlewareConfig {
   import EncTypes = AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorTypes
   import DDBE = AwsCryptographyDbEncryptionSdkDynamoDbTypes
   import SearchableEncryptionInfo
-  
+  import DDB = ComAmazonawsDynamodbTypes
+  import HexStrings
+
   datatype TableConfig = TableConfig(
     physicalTableName: ComAmazonawsDynamodbTypes.TableName,
     logicalTableName: string,
     partitionKeyName: string,
     sortKeyName: Option<string>,
     itemEncryptor: DynamoDbItemEncryptor.DynamoDbItemEncryptorClient,
-    search : Option<SearchableEncryptionInfo.ValidSearchInfo>
+    search : Option<SearchableEncryptionInfo.ValidSearchInfo>,
+    plaintextOverride: AwsCryptographyDbEncryptionSdkDynamoDbTypes.PlaintextOverride
   )
+
+  // return true if records written to the table should NOT be encrypted or otherwise modified
+  predicate method IsPlainWrite(config : Config, tableName : string)
+  {
+    || tableName !in config.tableEncryptionConfigs
+    || config.tableEncryptionConfigs[tableName].plaintextOverride == AwsCryptographyDbEncryptionSdkDynamoDbTypes.PlaintextOverride.FORCE_PLAINTEXT_WRITE_ALLOW_PLAINTEXT_READ
+  }
 
   predicate ValidTableConfig?(config: TableConfig) {
     var encryptorConfig := config.itemEncryptor.config;
@@ -38,8 +48,8 @@ module DdbMiddlewareConfig {
   {
     //set x, y | y in config.tableEncryptionConfigs && x in OneSearchModifies(config.tableEncryptionConfigs[y]) :: x
     set versions <- set configValue <- config.tableEncryptionConfigs.Values | configValue.search.Some? :: configValue.search.value.versions,
-    keyStore <- set version <- versions :: version.keySource.store,
-    obj <- keyStore.Modifies | obj in keyStore.Modifies :: obj
+      keyStore <- set version <- versions :: version.keySource.store,
+      obj <- keyStore.Modifies | obj in keyStore.Modifies :: obj
 
   }
 
@@ -61,22 +71,51 @@ module DdbMiddlewareConfig {
   predicate ValidConfig?(config: Config)
   {
     && (forall tableName <- config.tableEncryptionConfigs ::
-        config.tableEncryptionConfigs[tableName].physicalTableName == tableName)
-    //= specification/dynamodb-encryption-client/ddb-table-encryption-config.md#logical-table-name
-    //# When mapping [DynamoDB Table Names](#dynamodb-table-name) to [logical table name](#logical-table-name)
-    //# there MUST a one to one mapping between the two.
+          config.tableEncryptionConfigs[tableName].physicalTableName == tableName)
+       //= specification/dynamodb-encryption-client/ddb-table-encryption-config.md#logical-table-name
+       //# When mapping [DynamoDB Table Names](#dynamodb-table-name) to [logical table name](#logical-table-name)
+       //# there MUST a one to one mapping between the two.
     && (forall
-        c1 <- config.tableEncryptionConfigs.Values,
-        c2 <- config.tableEncryptionConfigs.Values
-      | c1 != c2
-      :: c1.logicalTableName != c2.logicalTableName
-    )
+          c1 <- config.tableEncryptionConfigs.Values,
+          c2 <- config.tableEncryptionConfigs.Values
+          | c1 != c2
+          :: c1.logicalTableName != c2.logicalTableName
+       )
   }
 
 
   datatype Config = Config(
     tableEncryptionConfigs: map<string, ValidTableConfig>
   )
+
+  function method AttrToString(attr : DDB.AttributeValue) : string
+  {
+    if attr.S? then
+      attr.S
+    else if attr.N? then
+      attr.N
+    else if attr.B? then
+      HexStrings.ToHexString(attr.B)
+    else
+      "unexpected key type"
+  }
+
+  // return human readable string containing primary keys
+  function method KeyString(config : ValidTableConfig, item : DDB.AttributeMap) : string
+  {
+    var partition :=
+      if config.partitionKeyName in item then
+        config.partitionKeyName + " = " + AttrToString(item[config.partitionKeyName])
+      else
+        "";
+    var sort :=
+      if config.sortKeyName.Some? && config.sortKeyName.value in item then
+        "; " + config.sortKeyName.value + " = " + AttrToString(item[config.sortKeyName.value])
+      else
+        "";
+
+    partition + sort
+  }
 
   function method MapError<T>(r : Result<T, EncTypes.Error>) : Result<T, Error> {
     r.MapFailure(e => AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptor(e))

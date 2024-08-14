@@ -19,20 +19,26 @@ module
 
   method StructuredEncryption(config: StructuredEncryptionConfig)
     returns (res: Result<StructuredEncryptionClient, Error>)
+    ensures res.Success? ==> res.value is StructuredEncryptionClient
   {
     var maybePrimitives := Primitives.AtomicPrimitives();
     var primitives :- maybePrimitives.MapFailure(e => AwsCryptographyPrimitives(e));
+
     var maybeMatProv := MaterialProviders.MaterialProviders();
     var matProv :- maybeMatProv.MapFailure(e => AwsCryptographyMaterialProviders(e));
+
     var client := new StructuredEncryptionClient(Operations.Config(primitives := primitives, materialProviders := matProv));
     return Success(client);
   }
+
+
 
   class StructuredEncryptionClient... {
 
     predicate ValidState()
     {
       && Operations.ValidInternalConfig?(config)
+      && History !in Operations.ModifiesInternalConfig(config)
       && Modifies == Operations.ModifiesInternalConfig(config) + {History}
     }
 

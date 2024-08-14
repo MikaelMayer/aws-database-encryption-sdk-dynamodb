@@ -1,12 +1,9 @@
 // Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-include "../Model/AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorTypes.dfy"
-include "../../../../submodules/MaterialProviders/AwsCryptographicMaterialProviders/dafny/AwsCryptographicMaterialProviders/src/CMMs/RequiredEncryptionContextCMM.dfy"
+
 include "../../DynamoDbEncryption/src/DynamoToStruct.dfy"
-include "../../DynamoDbEncryption/src/SearchInfo.dfy"
 include "Util.dfy"
 include "InternalLegacyOverride.dfy"
-include "../../DynamoDbEncryption/src/Util.dfy"
 include "../../StructuredEncryption/src/Util.dfy"
 
 module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines AbstractAwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations {
@@ -26,11 +23,11 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
   import RequiredEncryptionContextCMM
   import SET = AwsCryptographyDbEncryptionSdkStructuredEncryptionTypes
   import DDBE = AwsCryptographyDbEncryptionSdkDynamoDbTypes
-  import DynamoDbEncryptionUtil
-  import StructuredEncryptionUtil
   import StandardLibrary.String
+  import StructuredEncryptionHeader
 
   datatype Config = Config(
+    nameonly version : StructuredEncryptionHeader.Version,
     nameonly cmpClient : MaterialProviders.MaterialProvidersClient,
     nameonly logicalTableName: string,
     nameonly partitionKeyName: ComAmazonawsDynamodbTypes.KeySchemaAttributeName,
@@ -47,16 +44,6 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
 
   type InternalConfig = Config
   type ValidConfig = x : Config | ValidInternalConfig?(x) witness *
-
-  const DoNotSign :=
-    CSE.AuthenticateSchema(content := CSE.AuthenticateSchemaContent.Action(CSE.AuthenticateAction.DO_NOT_SIGN), attributes := None)
-  const DoSign :=
-    CSE.AuthenticateSchema(content := CSE.AuthenticateSchemaContent.Action(CSE.AuthenticateAction.SIGN), attributes := None)
-
-  // constant attribute names for the encryption context
-  const TABLE_NAME : ValidUTF8Bytes := UTF8.EncodeAscii("aws-crypto-table-name");
-  const PARTITION_NAME : ValidUTF8Bytes := UTF8.EncodeAscii("aws-crypto-partition-name");
-  const SORT_NAME : ValidUTF8Bytes := UTF8.EncodeAscii("aws-crypto-sort-name");
 
   // Is the attribute name an allowed unauthenticated name?
   predicate method AllowedUnsigned(
@@ -95,11 +82,22 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
 
   function method CryptoActionString(action: CSE.CryptoAction) : string
   {
-    match action {
-      case DO_NOTHING => "DO_NOTHING"
-      case SIGN_ONLY => "SIGN_ONLY"
-      case ENCRYPT_AND_SIGN => "ENCRYPT_AND_SIGN"
-    }
+    if action == CSE.DO_NOTHING then
+      "DO_NOTHING"
+    else if action == CSE.SIGN_ONLY then
+      "SIGN_ONLY"
+    else if action == CSE.SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT then
+      "SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT"
+    else if action == CSE.ENCRYPT_AND_SIGN then
+      "ENCRYPT_AND_SIGN"
+    else
+      assert false by {
+        assert action != CSE.DO_NOTHING;
+        assert action != CSE.SIGN_ONLY;
+        assert action != CSE.SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT;
+        assert action != CSE.ENCRYPT_AND_SIGN;
+      }
+      "internal error"
   }
 
   function method ExplainNotForwardCompatible(
@@ -123,7 +121,6 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
       "it also begins with the reserved prefix."
   }
 
-
   // Is this attribute unknown to the config?
   predicate method UnknownAttribute(config : InternalConfig, attr : ComAmazonawsDynamodbTypes.AttributeName)
   {
@@ -132,12 +129,6 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
        // Attributes in signature scope MUST be configured in attributeActionsOnEncrypt
        // so these two lines are saying "in scope && not in scope"
        // and that's why it's an error
-  }
-
-  // Is the attribute SIGN_ONLY?
-  predicate method IsSignOnly(config : InternalConfig, attr : ComAmazonawsDynamodbTypes.AttributeName)
-  {
-    attr in config.attributeActionsOnEncrypt && config.attributeActionsOnEncrypt[attr] == CSE.SIGN_ONLY
   }
 
   // Is the attribute name in signature scope?
@@ -150,42 +141,72 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
   }
 
   function method EncodeName(k : string) : (ret : Result<UTF8.ValidUTF8Bytes, Error>)
-    //= specification/dynamodb-encryption-client/encrypt-item.md#base-context-value
-    //= type=implication
-    //# The key MUST be the following concatenation,
-    //# where `attributeName` is the name of the attribute:
-    //# "aws-crypto-attr." + `attributeName`.
-    ensures ret == DDBEncode(DynamoDbEncryptionUtil.DDBEC_ATTR_PREFIX + k)
+    ensures ret == DDBEncode(SE.ATTR_PREFIX + k)
   {
-    DDBEncode(DynamoDbEncryptionUtil.DDBEC_ATTR_PREFIX + k)
+    DDBEncode(SE.ATTR_PREFIX + k)
   }
 
-  function method EncodeValue(t : SET.StructuredDataTerminal) : (ret : UTF8.ValidUTF8Bytes)
-    //= specification/dynamodb-encryption-client/encrypt-item.md#base-context-value
+  function method MakeEncryptionContextForEncrypt(
+    config : InternalConfig,
+    item : DynamoToStruct.TerminalDataMap)
+    : (ret : Result<CMP.EncryptionContext, Error>)
+    //= specification/dynamodb-encryption-client/encrypt-item.md#dynamodb-item-base-context
     //= type=implication
-    //# The value MUST be the UTF8 Encoding of the
-    //# [Base 64 encoded](https://www.rfc-editor.org/rfc/rfc4648),
-    //# of the concatenation of the bytes `typeID + serializedValue`
-    //# where `typeId` is the attribute's [type ID](./ddb-attribute-serialization.md#type-id)
-    //# and `serializedValue` is the attribute's value serialized according to
-    //# [Attribute Value Serialization](./ddb-attribute-serialization.md#attribute-value-serialization).
-    ensures ret == EncodeAscii(Base64.Encode(t.typeId + t.value))
+    //# If the [Configuration Version](./ddb-table-encryption-config.md#configuration-version) is 2,
+    //# then the base context MUST be the [version 2](#dynamodb-item-base-context-version-2) context;
+    //# otherwise, the base context MUST be the [version 1](#dynamodb-item-base-context-version-1) context.
+    ensures config.version == 2 ==> ret == MakeEncryptionContextV2(config, item)
+    ensures config.version == 1 ==> ret == MakeEncryptionContextV1(config, item)
+    ensures (config.version == 1) || (config.version == 2)
   {
-    EncodeAscii(Base64.Encode(t.typeId + t.value))
+    if config.version == 2 then
+      MakeEncryptionContextV2(config, item)
+    else
+      MakeEncryptionContextV1(config, item)
   }
 
-  function method {:opaque} {:vcs_split_on_every_assert} MakeEncryptionContext(
+  function method MakeEncryptionContextForDecrypt(
+    config : InternalConfig,
+    header : seq<uint8>,
+    item : DynamoToStruct.TerminalDataMap)
+    : (ret : Result<CMP.EncryptionContext, Error>)
+    requires 0 < |header|
+    ensures ret.Success? ==>
+              //= specification/dynamodb-encryption-client/decrypt-item.md#dynamodb-item-base-context
+              //= type=implication
+              //# If the Version Number is 2, then the base context MUST be the [version 2](./encrypt-item.md#dynamodb-item-base-context-version-2) context.
+              && (header[0] == 2 ==> ret == MakeEncryptionContextV2(config, item))
+                 //= specification/dynamodb-encryption-client/decrypt-item.md#dynamodb-item-base-context
+                 //= type=implication
+                 //# If the Version Number is 1, the base context MUST be the [version 1](./encrypt-item.md#dynamodb-item-base-context-version-1) context.
+              && (header[0] == 1 ==> ret == MakeEncryptionContextV1(config, item))
+              && ((header[0] == 1) || (header[0] == 2))
+
+    //= specification/dynamodb-encryption-client/decrypt-item.md#dynamodb-item-base-context
+    //= type=implication
+    //# If the Version Number is not 1 or 2, the operation MUST return an error.
+    ensures ((header[0] != 1) && (header[0] != 2)) ==> ret.Failure?
+  {
+    if header[0] == 2 then
+      MakeEncryptionContextV2(config, item)
+    else if header[0] == 1 then
+      MakeEncryptionContextV1(config, item)
+    else
+      Failure(E("Header attribute has unexpected version number"))
+  }
+
+  function method {:opaque} {:vcs_split_on_every_assert} MakeEncryptionContextV1(
     config : InternalConfig,
     item : DynamoToStruct.TerminalDataMap)
     : (ret : Result<CMP.EncryptionContext, Error>)
 
-    //= specification/dynamodb-encryption-client/encrypt-item.md#dynamodb-item-base-context
+    //= specification/dynamodb-encryption-client/encrypt-item.md#dynamodb-item-base-context-version-1
     //= type=implication
     //# The DynamoDB Item Base Context MUST contain:
-    //# - the key "aws-crypto-table-name" with a value equal to the DynamoDB Table Name of the DynamoDB Table
-    //#   this item is stored in (or will be stored in).
+    //# - the key "aws-crypto-table-name" with a value equal to the configured
+    //# [logical table name](./ddb-table-encryption-config.md#logical-table-name).
     //# - the key "aws-crypto-partition-name" with a value equal to the name of the Partition Key on this item.
-    //# - the [value](#base-context-value) of the Partition Key.
+    //# - the [value](#base-context-value-version-1) of the Partition Key.
     ensures ret.Success? ==>
               && config.partitionKeyName in item
               && TABLE_NAME in ret.value
@@ -200,15 +221,15 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
 
               && EncodeName(config.partitionKeyName).Success?
               && var partitionKeyName : ValidUTF8Bytes := EncodeName(config.partitionKeyName).value;
-              && var partitionKeyValue : ValidUTF8Bytes := EncodeValue(item[config.partitionKeyName].content.Terminal);
+              && var partitionKeyValue : ValidUTF8Bytes := SE.EncodeTerminal(item[config.partitionKeyName]);
               && partitionKeyName in ret.value
               && ret.value[partitionKeyName] == partitionKeyValue
 
-    //= specification/dynamodb-encryption-client/encrypt-item.md#dynamodb-item-base-context
+    //= specification/dynamodb-encryption-client/encrypt-item.md#dynamodb-item-base-context-version-1
     //= type=implication
     //# If this item has a Sort Key attribute, the DynamoDB Item Base Context MUST contain:
-    //# - the key "aws-crypto-sort-name" with a value equal to the [DynamoDB Sort Key Name](#dynamodb-sort-key-name).
-    //# - the [value](#base-context-value) of the Sort Key.
+    //# - the key "aws-crypto-sort-name" with a value equal to the [DynamoDB Sort Key Name](./ddb-table-encryption-config.md#dynamodb-sort-key-name).
+    //# - the [value](#base-context-value-version-1) of the Sort Key.
     ensures ret.Success? && config.sortKeyName.Some? ==>
               && config.sortKeyName.value in item
               && SORT_NAME in ret.value
@@ -219,10 +240,10 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
               && EncodeName(config.sortKeyName.value).Success?
               && var sortKeyName : ValidUTF8Bytes := EncodeName(config.sortKeyName.value).value;
               && sortKeyName in ret.value
-              && var sortKeyValue : ValidUTF8Bytes := EncodeValue(item[config.sortKeyName.value].content.Terminal);
+              && var sortKeyValue : ValidUTF8Bytes := SE.EncodeTerminal(item[config.sortKeyName.value]);
               && ret.value[sortKeyName] == sortKeyValue
 
-    //= specification/dynamodb-encryption-client/encrypt-item.md#dynamodb-item-base-context
+    //= specification/dynamodb-encryption-client/encrypt-item.md#dynamodb-item-base-context-version-1
     //= type=implication
     //# If this item does not have a sort key attribute,
     //# the DynamoDB Item Context MUST NOT contain the key `aws-crypto-sort-name`.
@@ -234,7 +255,7 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
     var logicalTableName : ValidUTF8Bytes :- DDBEncode(config.logicalTableName);
     var partitionName : ValidUTF8Bytes :- DDBEncode(config.partitionKeyName);
     var partitionKeyName : ValidUTF8Bytes :- EncodeName(config.partitionKeyName);
-    var partitionKeyValue : ValidUTF8Bytes := EncodeValue(item[config.partitionKeyName].content.Terminal);
+    var partitionKeyValue : ValidUTF8Bytes := SE.EncodeTerminal(item[config.partitionKeyName]);
     if (config.sortKeyName.None?) then
       :- Need(|{TABLE_NAME, PARTITION_NAME, SORT_NAME, partitionKeyName}| == 4, E("Internal Error"));
       var ec : CMP.EncryptionContext :=
@@ -255,7 +276,7 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
       :- Need(config.sortKeyName.value in item, DDBError("Sort key " + config.sortKeyName.value + " not found in Item to be encrypted or decrypted"));
       var sortName :- DDBEncode(config.sortKeyName.value);
       var sortKeyName : ValidUTF8Bytes :- EncodeName(config.sortKeyName.value);
-      var sortKeyValue : ValidUTF8Bytes := EncodeValue(item[config.sortKeyName.value].content.Terminal);
+      var sortKeyValue : ValidUTF8Bytes := SE.EncodeTerminal(item[config.sortKeyName.value]);
       :- Need(|{TABLE_NAME, PARTITION_NAME, partitionKeyName, SORT_NAME, sortKeyName}| == 5, E("Internal Error"));
       var ec : CMP.EncryptionContext :=
         map[
@@ -278,6 +299,85 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
       Success(ec)
   }
 
+  function method {:opaque} {:vcs_split_on_every_assert} MakeEncryptionContextV2(
+    config : InternalConfig,
+    item : DynamoToStruct.TerminalDataMap)
+    : (ret : Result<CMP.EncryptionContext, Error>)
+
+    //= specification/dynamodb-encryption-client/encrypt-item.md#dynamodb-item-base-context-version-2
+    //= type=implication
+    //# The DynamoDB Item Base Context MUST contain:
+    //#  - the key "aws-crypto-table-name" with a value equal to the DynamoDB Table Name of the DynamoDB Table
+    //#    this item is stored in (or will be stored in).
+    //#  - the key "aws-crypto-partition-name" with a value equal to the name of the Partition Key on this item.
+    ensures ret.Success? ==>
+              && config.partitionKeyName in item
+              && TABLE_NAME in ret.value
+              && DDBEncode(config.logicalTableName).Success?
+              && var logicalTableName : ValidUTF8Bytes := DDBEncode(config.logicalTableName).value;
+              && ret.value[TABLE_NAME] == logicalTableName
+
+              && PARTITION_NAME in ret.value
+              && DDBEncode(config.partitionKeyName).Success?
+              && var partitionName : ValidUTF8Bytes := DDBEncode(config.partitionKeyName).value;
+              && ret.value[PARTITION_NAME] == partitionName
+
+    //= specification/dynamodb-encryption-client/encrypt-item.md#dynamodb-item-base-context-version-2
+    //= type=implication
+    //# If this item has a Sort Key attribute, the DynamoDB Item Base Context MUST contain:
+    //#  - the key "aws-crypto-sort-name" with a value equal to the [DynamoDB Sort Key Name](./ddb-table-encryption-config.md#dynamodb-sort-key-name).
+    ensures ret.Success? && config.sortKeyName.Some? ==>
+              && config.sortKeyName.value in item
+              && SORT_NAME in ret.value
+              && DDBEncode(config.sortKeyName.value).Success?
+              && var sortName := DDBEncode(config.sortKeyName.value).value;
+              && ret.value[SORT_NAME] == sortName
+
+    //= specification/dynamodb-encryption-client/encrypt-item.md#dynamodb-item-base-context-version-2
+    //= type=implication
+    //# If this item does not have a sort key attribute,
+    //# the DynamoDB Item Context MUST NOT contain the key `aws-crypto-sort-name`.
+    ensures ret.Success? && config.sortKeyName.None? ==>
+              SORT_NAME !in ret.value
+  {
+    UTF8.EncodeAsciiUnique();
+    :- Need(config.partitionKeyName in item, DDBError("Partition key " + config.partitionKeyName + " not found in Item to be encrypted or decrypted"));
+    var logicalTableName : ValidUTF8Bytes :- DDBEncode(config.logicalTableName);
+    var partitionName : ValidUTF8Bytes :- DDBEncode(config.partitionKeyName);
+    var partitionKeyName : ValidUTF8Bytes :- EncodeName(config.partitionKeyName);
+    if (config.sortKeyName.None?) then
+      assert |{TABLE_NAME, PARTITION_NAME, SORT_NAME}| == 3;
+      var ec : CMP.EncryptionContext :=
+        map[
+          TABLE_NAME := logicalTableName,
+          PARTITION_NAME := partitionName
+        ];
+      assert TABLE_NAME in ec;
+      assert PARTITION_NAME in ec;
+      assert SORT_NAME !in ec;
+      assert ec[TABLE_NAME] == logicalTableName;
+      assert ec[PARTITION_NAME] == partitionName;
+      Success(ec)
+    else
+      :- Need(config.sortKeyName.value in item, DDBError("Sort key " + config.sortKeyName.value + " not found in Item to be encrypted or decrypted"));
+      var sortName :- DDBEncode(config.sortKeyName.value);
+      var sortKeyName : ValidUTF8Bytes :- EncodeName(config.sortKeyName.value);
+      assert |{TABLE_NAME, PARTITION_NAME, SORT_NAME}| == 3;
+      var ec : CMP.EncryptionContext :=
+        map[
+          TABLE_NAME := logicalTableName,
+          PARTITION_NAME := partitionName,
+          SORT_NAME := sortName
+        ];
+      assert TABLE_NAME in ec;
+      assert PARTITION_NAME in ec;
+      assert SORT_NAME in ec;
+      assert ec[TABLE_NAME] == logicalTableName;
+      assert ec[PARTITION_NAME] == partitionName;
+      assert ec[SORT_NAME] == sortName;
+      Success(ec)
+  }
+
   // string to Error
   function method DDBError(s : string) : Error {
     Error.DynamoDbItemEncryptorException(message := s)
@@ -287,6 +387,47 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
   function method DDBEncode(s : string) : Result<UTF8.ValidUTF8Bytes, Error>
   {
     UTF8.Encode(s).MapFailure(e => DDBError(e))
+  }
+
+  predicate method IsVersion2Schema(actions : DDBE.AttributeActions)
+  {
+    exists x <- actions :: actions[x] == CSE.SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT
+  }
+  function method VersionFromActions(actions : DDBE.AttributeActions) : (ret : StructuredEncryptionHeader.Version)
+    //= specification/dynamodb-encryption-client/ddb-table-encryption-config.md#configuration-version
+    //= type=implication
+    //# If any of the [Attribute Actions](#attribute-actions) are configured as
+    //# [SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT](../structured-encryption/structures.md#contextandsign)
+    //# then the configuration version MUST be 2; otherwise,
+    //# the configuration version MUST be 1.
+    ensures (exists x <- actions :: actions[x] == CSE.SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT) <==> ret == 2
+    ensures !(exists x <- actions :: actions[x] == CSE.SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT) <==> ret == 1
+  {
+    if IsVersion2Schema(actions) then
+      2
+    else
+      1
+  }
+  function method KeyActionFromVersion(version : StructuredEncryptionHeader.Version) : (ret : CSE.CryptoAction)
+    //= specification/dynamodb-encryption-client/ddb-table-encryption-config.md#key-action
+    //= type=implication
+    //# if the [configuration version](#configuration-version) is 2, then
+    //# the key action MUST be [SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT](../structured-encryption/structures.md#contextandsign);
+    //# otherwise, the key action MUST be [SIGN_ONLY](../structured-encryption/structures.md#signonly).
+    ensures version == 1 <==> ret == CSE.SIGN_ONLY
+    ensures version == 2 <==> ret == CSE.SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT
+  {
+    if version == 2 then
+      CSE.SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT
+    else
+      CSE.SIGN_ONLY
+  }
+  function method KeyActionStringFromVersion(version : StructuredEncryptionHeader.Version) : string
+  {
+    if version == 2 then
+      "SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT"
+    else
+      "SIGN_ONLY"
   }
 
   predicate ValidInternalConfig?(config: InternalConfig)
@@ -299,11 +440,11 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
 
     // The partition key MUST be CSE.SIGN_ONLY
     && config.partitionKeyName in config.attributeActionsOnEncrypt
-    && config.attributeActionsOnEncrypt[config.partitionKeyName] == CSE.SIGN_ONLY
+    && config.attributeActionsOnEncrypt[config.partitionKeyName] == KeyActionFromVersion(config.version)
        // The sort key MUST be CSE.SIGN_ONLY
     && (config.sortKeyName.Some? ==>
           && config.sortKeyName.value in config.attributeActionsOnEncrypt
-          && config.attributeActionsOnEncrypt[config.sortKeyName.value] == CSE.SIGN_ONLY)
+          && config.attributeActionsOnEncrypt[config.sortKeyName.value] == KeyActionFromVersion(config.version))
 
     // attributeActionsOnEncrypt only apply on Encrypt.
     // The config on Encrypt MAY NOT be the same as the config on Decrypt.
@@ -371,19 +512,17 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
   function method GetCryptoSchemaAction(
     config : InternalConfig,
     attr : ComAmazonawsDynamodbTypes.AttributeName)
-    : (ret : Result<CSE.CryptoSchema, string>)
+    : (ret : Result<CSE.CryptoAction, string>)
     ensures (attr !in config.attributeActionsOnEncrypt && InSignatureScope(config, attr)) ==> ret.Failure?
   {
-    var action :- GetCryptoSchemaActionInner(config, attr);
-    var newElement := CSE.CryptoSchemaContent.Action(action);
-    Success(CSE.CryptoSchema(content := newElement, attributes := None))
+    GetCryptoSchemaActionInner(config, attr)
   }
 
   // return proper Authenticate Action by name
   function method GetAuthenticateSchemaAction(
     config : InternalConfig,
     attr : ComAmazonawsDynamodbTypes.AttributeName)
-    : (ret : CSE.AuthenticateSchema)
+    : (ret : CSE.AuthenticateAction)
     requires ValidInternalConfig?(config)
 
     //= specification/dynamodb-encryption-client/decrypt-item.md#signature-scope
@@ -396,19 +535,19 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
     //= specification/dynamodb-encryption-client/decrypt-item.md#signature-scope
     //= type=implication
     //# Otherwise, Attributes MUST be considered as within the signature scope.
-    ensures (ret == DoNotSign) <==> !InSignatureScope(config, attr)
+    ensures (ret == CSE.DO_NOT_SIGN) <==> !InSignatureScope(config, attr)
   {
     if InSignatureScope(config, attr) then
-      DoSign
+      CSE.SIGN
     else
-      DoNotSign
+      CSE.DO_NOT_SIGN
   }
 
   // get CryptoSchema for this item
   function method ConfigToCryptoSchema(
     config : InternalConfig,
     item : ComAmazonawsDynamodbTypes.AttributeMap)
-    : (ret : Result<CSE.CryptoSchema, DDBE.Error>)
+    : (ret : Result<CSE.CryptoSchemaMap, DDBE.Error>)
 
     //= specification/dynamodb-encryption-client/encrypt-item.md#behavior
     //= type=implication
@@ -423,7 +562,7 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
     //= specification/dynamodb-encryption-client/encrypt-item.md#behavior
     //= type=implication
     //# - The Crypto Schema MUST NOT contain more Crypto Actions than those specified by the previous point.
-    ensures ret.Success? ==> ret.value.content.SchemaMap? && item.Keys == ret.value.content.SchemaMap.Keys
+    ensures ret.Success? ==> item.Keys == ret.value.Keys
 
     //= specification/dynamodb-encryption-client/encrypt-item.md#behavior
     //= type=implication
@@ -433,10 +572,9 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
     //# equals the Crypto Action indexed by that attribute name in the configured Attribute Actions.
     ensures ret.Success? ==> forall k <-item.Keys ::
                 && GetCryptoSchemaAction(config, k).Success?
-                && ret.value.content.SchemaMap[k] == GetCryptoSchemaAction(config, k).value
+                && ret.value[k] == GetCryptoSchemaAction(config, k).value
                 && (k in config.attributeActionsOnEncrypt ==>
-                      ret.value.content.SchemaMap[k].content ==
-                      CSE.CryptoSchemaContent.Action(config.attributeActionsOnEncrypt[k]))
+                      ret.value[k] == config.attributeActionsOnEncrypt[k])
   {
     var schema := map k <- item :: k := GetCryptoSchemaAction(config, k);
     DynamoToStruct.MapKeysMatchItems(item);
@@ -446,53 +584,41 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
     assert actionMapRes.Failure? <==> exists k <- item.Keys :: schema[k].Failure?;
     assert actionMapRes.Failure? <==> exists k <- item.Keys :: GetCryptoSchemaAction(config, k).Failure?;
 
-    var actionMap :- DynamoToStruct.MapError(actionMapRes);
-    var schemaContent := CSE.CryptoSchemaContent.SchemaMap(actionMap);
-    var finalSchema := CSE.CryptoSchema(content := schemaContent, attributes := None);
-    Success(finalSchema)
+    DynamoToStruct.MapError(actionMapRes)
   }
 
   // get AuthenticateSchema for this item
   function method ConfigToAuthenticateSchema(
     config : InternalConfig,
     item : ComAmazonawsDynamodbTypes.AttributeMap)
-    : (ret : CSE.AuthenticateSchema)
+    : (ret : CSE.AuthenticateSchemaMap)
     requires ValidInternalConfig?(config)
 
     //= specification/dynamodb-encryption-client/decrypt-item.md#behavior
     //= type=implication
     //# - The number of Authenticate Actions in the Authenticate Schema
-    //# MUST EQUAL the number of Attributes on the [input DynamoDB Item](#dynamodb-item).
-    ensures ret.content.SchemaMap? && item.Keys == ret.content.SchemaMap.Keys
+    //# MUST EQUAL the number of Attributes on the [input DynamoDB Item](#input-dynamodb-item).
+    ensures item.Keys == ret.Keys
 
     //= specification/dynamodb-encryption-client/decrypt-item.md#behavior
     //= type=implication
-    //# - For every Attribute in the [input DynamoDB Item](#dynamodb-item)
+    //# - For every Attribute in the [input DynamoDB Item](#input-dynamodb-item)
     //# that is not in the [signature scope](#signature-scope),
     //# there MUST exist a [DO_NOT_SIGN Authenticate Action](../structured-encryption/structures.md#do_not_sign)
     //# in the Authenticate Schema,
     //# string indexed at the top level by that attribute name.
-    ensures forall k <-item.Keys ::
-              !InSignatureScope(config, k) ==>
-                ret.content.SchemaMap[k].content ==
-                CSE.AuthenticateSchemaContent.Action(CSE.AuthenticateAction.DO_NOT_SIGN)
+    ensures forall k <-item.Keys :: !InSignatureScope(config, k) ==> ret[k] == CSE.DO_NOT_SIGN
 
     //= specification/dynamodb-encryption-client/decrypt-item.md#behavior
     //= type=implication
-    //# - For every Attribute in the [input DynamoDB Item](#dynamodb-item)
+    //# - For every Attribute in the [input DynamoDB Item](#input-dynamodb-item)
     //# that is in the [signature scope](#signature-scope),
     //# there MUST exist a [SIGN Authenticate Action](../structured-encryption/structures.md#sign)
     //# in the Authenticate Schema,
     //# string indexed at the top level by that attribute name.
-    ensures forall k <-item.Keys ::
-              && InSignatureScope(config, k) ==>
-                ret.content.SchemaMap[k].content ==
-                CSE.AuthenticateSchemaContent.Action(CSE.AuthenticateAction.SIGN)
+    ensures forall k <-item.Keys :: InSignatureScope(config, k) ==> ret[k] == CSE.SIGN
   {
-    var authMap := map k <- item | true :: k := GetAuthenticateSchemaAction(config, k);
-    var schemaContent := CSE.AuthenticateSchemaContent.SchemaMap(authMap);
-    var finalSchema := CSE.AuthenticateSchema(content := schemaContent, attributes := None);
-    finalSchema
+    map k <- item | true :: k := GetAuthenticateSchemaAction(config, k)
   }
 
   //= specification/dynamodb-encryption-client/decrypt-item.md#determining-plaintext-items
@@ -500,24 +626,21 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
   //# An item MUST be determined to be plaintext if it does not contain
   //# attributes with the names "aws_dbe_head" and "aws_dbe_foot".
   predicate method IsPlaintextItem(ddbItem: ComAmazonawsDynamodbTypes.AttributeMap) {
-    && StructuredEncryptionUtil.HeaderField !in ddbItem
-    && StructuredEncryptionUtil.FooterField !in ddbItem
+    && SE.HeaderField !in ddbItem
+    && SE.FooterField !in ddbItem
   }
 
-  function method ConvertCryptoSchemaToAttributeActions(config: ValidConfig, schema: CSE.CryptoSchema)
+  function method ConvertCryptoSchemaToAttributeActions(config: ValidConfig, schema: CSE.CryptoSchemaMap)
     : (ret: Result<map<ComAmazonawsDynamodbTypes.AttributeName, CSE.CryptoAction>, Error>)
-    requires schema.content.SchemaMap?;
-    requires forall k <- schema.content.SchemaMap :: schema.content.SchemaMap[k].content.Action?
-    requires forall v <- schema.content.SchemaMap.Values :: v.content.Action.SIGN_ONLY? || v.content.Action.ENCRYPT_AND_SIGN?
+    requires forall k <- schema :: SE.IsAuthAttr(schema[k])
     ensures ret.Success? ==> forall k <- ret.value.Keys :: InSignatureScope(config, k)
     ensures ret.Success? ==> forall k <- ret.value.Keys :: !ret.value[k].DO_NOTHING?
   {
-    // We can formally verify these properties, but it is too resource intensive
-    :- Need(forall k <- schema.content.SchemaMap :: InSignatureScope(config, k),
+    :- Need(forall k <- schema :: InSignatureScope(config, k),
             DynamoDbItemEncryptorException( message := "Received unexpected Crypto Schema: mismatch with signature scope"));
-    :- Need(forall k <- schema.content.SchemaMap :: ComAmazonawsDynamodbTypes.IsValid_AttributeName(k),
+    :- Need(forall k <- schema :: ComAmazonawsDynamodbTypes.IsValid_AttributeName(k),
             DynamoDbItemEncryptorException( message := "Received unexpected Crypto Schema: Invalid attribute names"));
-    Success(map k <- schema.content.SchemaMap :: k := schema.content.SchemaMap[k].content.Action)
+    Success(schema)
   }
 
   predicate EncryptItemEnsuresPublicly(input: EncryptItemInput, output: Result<EncryptItemOutput, Error>)
@@ -556,6 +679,25 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
     + GetItemNames(item) + "."
   }
 
+  predicate method ContextAttrsExist(actions : DDBE.AttributeActions, item : DDB.AttributeMap)
+  {
+    forall k <- actions :: (actions[k] == CSE.SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT) ==> (k in item)
+  }
+  function method ContextMissingMsg(actions : DDBE.AttributeActions, item : DDB.AttributeMap) : string
+  {
+    var s := set k <- actions |
+                 && actions[k] == CSE.SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT
+                 && k !in item;
+    var missing := SortedSets.ComputeSetToOrderedSequence2(s, CharLess);
+    if |missing| == 0 then
+      "No missing SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT attributes."
+    else if |missing| == 1 then
+      "Attribute " + missing[0] + " was configured with SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT but was not present in item to be encrypted."
+    else
+      "These attributes were configured with SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT but were not present in item to be encrypted."
+      + Join(missing, ",")
+  }
+
   // public Encrypt method
   method {:vcs_split_on_every_assert} EncryptItem(config: InternalConfig, input: EncryptItemInput)
     returns (output: Result<EncryptItemOutput, Error>)
@@ -580,6 +722,16 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
 
     // Otherwise this operation MUST yield an error.
     ensures config.sortKeyName.Some? && config.sortKeyName.value !in input.plaintextItem ==> output.Failure?
+
+    //= specification/dynamodb-encryption-client/encrypt-item.md#dynamodb-item
+    //= type=implication
+    //# If the [DynamoDB Item Encryptor](./ddb-item-encryptor.md)
+    //# has any attribute configured as
+    //# [SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT](../structured-encryption/structures.md#contextandsign)
+    //# then this item MUST include an Attribute with that name.
+    ensures output.Success? ==>
+              forall k <- config.attributeActionsOnEncrypt :: (config.attributeActionsOnEncrypt[k] == CSE.SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT) ==> (k in input.plaintextItem)
+    // ContextAttrsExist(config.attributeActionsOnEncrypt, input.plaintextItem)
 
     ensures
       && output.Success?
@@ -609,31 +761,31 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
         && DynamoToStruct.ItemToStructured(input.plaintextItem).Success?
         && var plaintextStructure := DynamoToStruct.ItemToStructured(input.plaintextItem).value;
         && Seq.Last(config.structuredEncryption.History.EncryptStructure).input.plaintextStructure
-           == CSE.StructuredData(
-                content := CSE.StructuredDataContent.DataMap(plaintextStructure),
-                attributes := None)
+           == plaintextStructure
 
         //= specification/dynamodb-encryption-client/encrypt-item.md#behavior
         //= type=implication
         //# - Encryption Context MUST be this input Item's [DynamoDB Item Base Context](#dynamodb-item-base-context).
-        && MakeEncryptionContext(config, plaintextStructure).Success?
+        && MakeEncryptionContextForEncrypt(config, plaintextStructure).Success?
         && Seq.Last(config.structuredEncryption.History.EncryptStructure).input.encryptionContext
-           == Some(MakeEncryptionContext(config, plaintextStructure).value)
+           == Some(MakeEncryptionContextForEncrypt(config, plaintextStructure).value)
 
         && output.value.parsedHeader.Some?
-        && var structuredEncParsed := Seq.Last(config.structuredEncryption.History.EncryptStructure).output.value.parsedHeader;
-        && structuredEncParsed.cryptoSchema.content.SchemaMap?
-        && var parsedHeaderMap := structuredEncParsed.cryptoSchema.content.SchemaMap;
+        && var structuredEncOut := Seq.Last(config.structuredEncryption.History.EncryptStructure).output.value;
+        && var parsedHeaderMap := structuredEncOut.cryptoSchema;
         && (forall k <- parsedHeaderMap ::
-              && parsedHeaderMap[k].content.Action?
-              && (parsedHeaderMap[k].content.Action.ENCRYPT_AND_SIGN? || parsedHeaderMap[k].content.Action.SIGN_ONLY?))
-        && var maybeCryptoSchema := ConvertCryptoSchemaToAttributeActions(config, structuredEncParsed.cryptoSchema);
+              && SE.IsAuthAttr(parsedHeaderMap[k]))
+        && var maybeCryptoSchema := ConvertCryptoSchemaToAttributeActions(config, structuredEncOut.cryptoSchema);
         && maybeCryptoSchema.Success?
+        && ConvertContextForSelector(structuredEncOut.parsedHeader.encryptionContext).Success?
+        && var selectorContext := ConvertContextForSelector(structuredEncOut.parsedHeader.encryptionContext).value;
         && output.value.parsedHeader.value == ParsedHeader(
                                                 attributeActionsOnEncrypt := maybeCryptoSchema.value,
-                                                algorithmSuiteId := structuredEncParsed.algorithmSuiteId,
-                                                storedEncryptionContext := structuredEncParsed.storedEncryptionContext,
-                                                encryptedDataKeys := structuredEncParsed.encryptedDataKeys
+                                                algorithmSuiteId := structuredEncOut.parsedHeader.algorithmSuiteId,
+                                                storedEncryptionContext := structuredEncOut.parsedHeader.storedEncryptionContext,
+                                                encryptedDataKeys := structuredEncOut.parsedHeader.encryptedDataKeys,
+                                                encryptionContext := structuredEncOut.parsedHeader.encryptionContext,
+                                                selectorContext := selectorContext
                                               )
 
     //= specification/dynamodb-encryption-client/encrypt-item.md#behavior
@@ -655,6 +807,9 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
       && config.partitionKeyName in input.plaintextItem
       && (config.sortKeyName.None? || config.sortKeyName.value in input.plaintextItem)
     , E(KeyMissingMsg(config, input.plaintextItem, "Encrypt")));
+
+    :- Need(ContextAttrsExist(config.attributeActionsOnEncrypt, input.plaintextItem),
+            E(ContextMissingMsg(config.attributeActionsOnEncrypt, input.plaintextItem)));
 
     if |input.plaintextItem| > MAX_ATTRIBUTE_COUNT {
       var actCount := String.Base10Int2String(|input.plaintextItem|);
@@ -686,14 +841,9 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
 
     var plaintextStructure :- DynamoToStruct.ItemToStructured(input.plaintextItem)
     .MapFailure(e => Error.AwsCryptographyDbEncryptionSdkDynamoDb(e));
-    var context :- MakeEncryptionContext(config, plaintextStructure);
+    var context :- MakeEncryptionContextForEncrypt(config, plaintextStructure);
     var cryptoSchema :- ConfigToCryptoSchema(config, input.plaintextItem)
     .MapFailure(e => Error.AwsCryptographyDbEncryptionSdkDynamoDb(e));
-    var wrappedStruct := CSE.StructuredData(
-      content := CSE.StructuredDataContent.DataMap(plaintextStructure),
-      attributes := None);
-
-    assert {:split_here} true;
 
     //= specification/dynamodb-encryption-client/encrypt-item.md#behavior
     //# This operation MUST create a
@@ -702,18 +852,25 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
     //# - This item encryptor's [CMM](./ddb-table-encryption-config.md#cmm) as the underlying CMM.
     //# - The keys from the [DynamoDB Item Base Context](#dynamodb-item-base-context)
 
+    var contextKeysX : seq<seq<uint8>> := SortedSets.ComputeSetToOrderedSequence2(context.Keys, ByteLess);
+    assert forall k <- contextKeysX :: ValidUTF8Seq(k) by {
+      assert forall k <- contextKeysX :: k in context.Keys;
+      assert forall k <- context.Keys :: ValidUTF8Seq(k);
+    }
+
+    var contextKeys : seq<CMP.Utf8Bytes> := contextKeysX;
     var reqCMMR := config.cmpClient.CreateRequiredEncryptionContextCMM(
       CMP.CreateRequiredEncryptionContextCMMInput(
         underlyingCMM := Some(config.cmm),
         keyring := None,
-        requiredEncryptionContextKeys := SortedSets.ComputeSetToOrderedSequence2(context.Keys, ByteLess)
+        requiredEncryptionContextKeys := contextKeys
       )
     );
     var reqCMM :- reqCMMR.MapFailure(e => AwsCryptographyMaterialProviders(e));
     var encryptRes := config.structuredEncryption.EncryptStructure(
       CSE.EncryptStructureInput(
         tableName := config.logicalTableName,
-        plaintextStructure:=wrappedStruct,
+        plaintextStructure:=plaintextStructure,
         cryptoSchema:=cryptoSchema,
         //= specification/dynamodb-encryption-client/encrypt-item.md#behavior
         //# - The CMM MUST be the CMM created above.
@@ -735,15 +892,20 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
     var encryptVal :- encryptRes.MapFailure(
       e => Error.AwsCryptographyDbEncryptionSdkDynamoDb(DDBE.AwsCryptographyDbEncryptionSdkStructuredEncryption(e)));
     var encryptedData := encryptVal.encryptedStructure;
-    var ddbKey :- DynamoToStruct.StructuredToItem(encryptedData.content.DataMap)
+    :- Need(forall k <- encryptedData :: DDB.IsValid_AttributeName(k), E(""));
+    var ddbKey :- DynamoToStruct.StructuredToItem(encryptedData)
     .MapFailure(e => Error.AwsCryptographyDbEncryptionSdkDynamoDb(e));
 
-    var parsedActions :- ConvertCryptoSchemaToAttributeActions(config, encryptVal.parsedHeader.cryptoSchema);
+    var parsedActions :- ConvertCryptoSchemaToAttributeActions(config, encryptVal.cryptoSchema);
+    var selectorContextR := ConvertContextForSelector(encryptVal.parsedHeader.encryptionContext);
+    var selectorContext :- selectorContextR.MapFailure(e => E(e));
     var parsedHeader := ParsedHeader(
       attributeActionsOnEncrypt := parsedActions,
       algorithmSuiteId := encryptVal.parsedHeader.algorithmSuiteId,
       storedEncryptionContext := encryptVal.parsedHeader.storedEncryptionContext,
-      encryptedDataKeys := encryptVal.parsedHeader.encryptedDataKeys
+      encryptedDataKeys := encryptVal.parsedHeader.encryptedDataKeys,
+      encryptionContext := encryptVal.parsedHeader.encryptionContext,
+      selectorContext := selectorContext
     );
 
     output := Success(EncryptItemOutput(
@@ -759,19 +921,19 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
   method {:vcs_split_on_every_assert} DecryptItem(config: InternalConfig, input: DecryptItemInput)
     returns (output: Result<DecryptItemOutput, Error>)
 
-    //= specification/dynamodb-encryption-client/decrypt-item.md#dynamodb-item
+    //= specification/dynamodb-encryption-client/decrypt-item.md#input-dynamodb-item
     //= type=implication
     //# This item MUST include an Attribute with a name that matches the
     //# [DynamoDB Partition Key Name](./ddb-table-encryption-config.md#dynamodb-partition-key-name)
     //# configured on the [DynamoDB Item Encryptor](./ddb-item-encryptor.md).
     ensures output.Success? ==> config.partitionKeyName in input.encryptedItem
 
-    //= specification/dynamodb-encryption-client/decrypt-item.md#dynamodb-item
+    //= specification/dynamodb-encryption-client/decrypt-item.md#input-dynamodb-item
     //= type=implication
     //# Otherwise this operation MUST yield an error.
     ensures config.partitionKeyName !in input.encryptedItem ==> output.Failure?
 
-    //= specification/dynamodb-encryption-client/decrypt-item.md#dynamodb-item
+    //= specification/dynamodb-encryption-client/decrypt-item.md#input-dynamodb-item
     //= type=implication
     //# If the [DynamoDB Item Encryptor](./ddb-item-encryptor.md)
     //# has a [DynamoDB Sort Key Name](./ddb-table-encryption-config.md#dynamodb-sort-key-name) configured,
@@ -808,16 +970,27 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
         && DynamoToStruct.ItemToStructured(input.encryptedItem).Success?
         && var plaintextStructure := DynamoToStruct.ItemToStructured(input.encryptedItem).value;
         && Seq.Last(config.structuredEncryption.History.DecryptStructure).input.encryptedStructure
-           == CSE.StructuredData(
-                content := CSE.StructuredDataContent.DataMap(plaintextStructure),
-                attributes := None)
+           == plaintextStructure
+
+        //= specification/dynamodb-encryption-client/decrypt-item.md#dynamodb-item-base-context
+        //= type=implication
+        //# The item to be encrypted MUST have an attribute named `aws_dbe_head`.
+        && SE.HeaderField in input.encryptedItem
+        && var header := input.encryptedItem[SE.HeaderField];
+
+        //= specification/dynamodb-encryption-client/decrypt-item.md#dynamodb-item-base-context
+        //= type=implication
+        //# The attribute named `aws_dbe_head` MUST be of type `B` Binary.
+        && header.B?
+        && 0 < |header.B|
 
         //= specification/dynamodb-encryption-client/decrypt-item.md#behavior
         //= type=implication
         //# - Encryption Context MUST be the input Item's [DynamoDB Item Base Context](./encrypt-item.md#dynamodb-item-base-context).
-        && MakeEncryptionContext(config, plaintextStructure).Success?
+        && MakeEncryptionContextForDecrypt(config, header.B, plaintextStructure).Success?
+
         && Seq.Last(config.structuredEncryption.History.DecryptStructure).input.encryptionContext
-           == Some(MakeEncryptionContext(config, plaintextStructure).value)
+           == Some(MakeEncryptionContextForDecrypt(config, header.B, plaintextStructure).value)
 
         //= specification/dynamodb-encryption-client/decrypt-item.md#output
         //= type=implication
@@ -832,18 +1005,20 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
         //# The output MUST also include a [Parsed Header](#parsed-header) that contains
         //# data that was serialized into the header included in the output DynamoDb Item.
         && output.value.parsedHeader.Some?
-        && var structuredEncParsed := Seq.Last(config.structuredEncryption.History.DecryptStructure).output.value.parsedHeader;
-        && structuredEncParsed.cryptoSchema.content.SchemaMap?
-        && (forall k <- structuredEncParsed.cryptoSchema.content.SchemaMap ::
-              && structuredEncParsed.cryptoSchema.content.SchemaMap[k].content.Action?
-              && (structuredEncParsed.cryptoSchema.content.SchemaMap[k].content.Action.ENCRYPT_AND_SIGN? || structuredEncParsed.cryptoSchema.content.SchemaMap[k].content.Action.SIGN_ONLY?))
-        && var maybeCryptoSchema := ConvertCryptoSchemaToAttributeActions(config, structuredEncParsed.cryptoSchema);
+        && var structuredEncOut := Seq.Last(config.structuredEncryption.History.DecryptStructure).output.value;
+        && (forall k <- structuredEncOut.cryptoSchema ::
+              && SE.IsAuthAttr(structuredEncOut.cryptoSchema[k]))
+        && var maybeCryptoSchema := ConvertCryptoSchemaToAttributeActions(config, structuredEncOut.cryptoSchema);
         && maybeCryptoSchema.Success?
+        && ConvertContextForSelector(structuredEncOut.parsedHeader.encryptionContext).Success?
+        && var selectorContext := ConvertContextForSelector(structuredEncOut.parsedHeader.encryptionContext).value;
         && output.value.parsedHeader.value == ParsedHeader(
                                                 attributeActionsOnEncrypt := maybeCryptoSchema.value,
-                                                algorithmSuiteId := structuredEncParsed.algorithmSuiteId,
-                                                storedEncryptionContext := structuredEncParsed.storedEncryptionContext,
-                                                encryptedDataKeys := structuredEncParsed.encryptedDataKeys
+                                                algorithmSuiteId := structuredEncOut.parsedHeader.algorithmSuiteId,
+                                                storedEncryptionContext := structuredEncOut.parsedHeader.storedEncryptionContext,
+                                                encryptedDataKeys := structuredEncOut.parsedHeader.encryptedDataKeys,
+                                                encryptionContext := structuredEncOut.parsedHeader.encryptionContext,
+                                                selectorContext := selectorContext
                                               )
 
     //= specification/dynamodb-encryption-client/decrypt-item.md#behavior
@@ -908,18 +1083,20 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
 
     var encryptedStructure :- DynamoToStruct.ItemToStructured(input.encryptedItem)
     .MapFailure(e => Error.AwsCryptographyDbEncryptionSdkDynamoDb(e));
-    var context :- MakeEncryptionContext(config, encryptedStructure);
+    :- Need(SE.HeaderField in input.encryptedItem, E("Header field, \"aws_dbe_head\", not in item."));
+    var header := input.encryptedItem[SE.HeaderField];
+    :- Need(header.B?, E("Header field, \"aws_dbe_head\", not binary"));
+    assert header.B?;
+    :- Need(0 < |header.B|, E("Unexpected empty header field."));
+    var context :- MakeEncryptionContextForDecrypt(config, header.B, encryptedStructure);
     var authenticateSchema := ConfigToAuthenticateSchema(config, input.encryptedItem);
-    var wrappedStruct := CSE.StructuredData(
-      content := CSE.StructuredDataContent.DataMap(encryptedStructure),
-      attributes := None);
 
     //= specification/dynamodb-encryption-client/decrypt-item.md#behavior
     //# This operation MUST create a
     //# [Required Encryption Context CMM](https://github.com/awslabs/private-aws-encryption-sdk-specification-staging/blob/dafny-verified/framework/required-encryption-context-cmm.md)
     //# with the following inputs:
     //# - This item encryptor's [CMM](./ddb-table-encryption-config.md#cmm) as the underlying CMM.
-    //# - The keys from the [DynamoDB Item Base Context](./encrypt-item.md#dynamodb-item-base-context).
+    //# - The keys from the [DynamoDB Item Base Context](#dynamodb-item-base-context).
 
     var reqCMMR := config.cmpClient.CreateRequiredEncryptionContextCMM(
       CMP.CreateRequiredEncryptionContextCMMInput(
@@ -933,7 +1110,7 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
     var decryptRes := config.structuredEncryption.DecryptStructure(
       CSE.DecryptStructureInput(
         tableName := config.logicalTableName,
-        encryptedStructure := wrappedStruct,
+        encryptedStructure := encryptedStructure,
         authenticateSchema := authenticateSchema,
         //= specification/dynamodb-encryption-client/decrypt-item.md#behavior
         //# - CMM MUST be the CMM constructed above.
@@ -945,18 +1122,23 @@ module AwsCryptographyDbEncryptionSdkDynamoDbItemEncryptorOperations refines Abs
     var decryptVal :- decryptRes.MapFailure(
       e => Error.AwsCryptographyDbEncryptionSdkDynamoDb(DDBE.AwsCryptographyDbEncryptionSdkStructuredEncryption(e)));
     var decryptedData := decryptVal.plaintextStructure;
-    var ddbItem :- DynamoToStruct.StructuredToItem(decryptedData.content.DataMap)
+    :- Need(forall k <- decryptedData :: DDB.IsValid_AttributeName(k), E(""));
+    var ddbItem :- DynamoToStruct.StructuredToItem(decryptedData)
     .MapFailure(e => Error.AwsCryptographyDbEncryptionSdkDynamoDb(e));
 
-    var schemaToConvert := decryptVal.parsedHeader.cryptoSchema;
+    var schemaToConvert := decryptVal.cryptoSchema;
 
     var parsedAuthActions :- ConvertCryptoSchemaToAttributeActions(config, schemaToConvert);
+    var selectorContextR := ConvertContextForSelector(decryptVal.parsedHeader.encryptionContext);
+    var selectorContext :- selectorContextR.MapFailure(e => E(e));
 
     var parsedHeader := ParsedHeader(
       attributeActionsOnEncrypt := parsedAuthActions,
       algorithmSuiteId := decryptVal.parsedHeader.algorithmSuiteId,
       storedEncryptionContext := decryptVal.parsedHeader.storedEncryptionContext,
-      encryptedDataKeys := decryptVal.parsedHeader.encryptedDataKeys
+      encryptedDataKeys := decryptVal.parsedHeader.encryptedDataKeys,
+      encryptionContext := decryptVal.parsedHeader.encryptionContext,
+      selectorContext := selectorContext
     );
 
     output := Success(

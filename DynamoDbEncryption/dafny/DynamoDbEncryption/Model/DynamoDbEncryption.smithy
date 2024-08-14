@@ -20,6 +20,7 @@ use aws.cryptography.keyStore#KeyStore
 use aws.cryptography.dbEncryptionSdk.structuredEncryption#CryptoAction
 
 use com.amazonaws.dynamodb#DynamoDB_20120810
+use com.amazonaws.dynamodb#AttributeMap
 use com.amazonaws.dynamodb#TableName
 use com.amazonaws.dynamodb#AttributeName
 use com.amazonaws.dynamodb#Key
@@ -42,11 +43,69 @@ use aws.cryptography.materialProviders#AwsCryptographicMaterialProviders
   ]
 )
 service DynamoDbEncryption {
-    version: "2022-11-21",
-    operations: [ CreateDynamoDbEncryptionBranchKeyIdSupplier ],
+    version: "2024-04-02",
+    operations: [ CreateDynamoDbEncryptionBranchKeyIdSupplier, GetEncryptedDataKeyDescription],
     errors: [ DynamoDbEncryptionException ]
 }
 
+@javadoc("Returns encrypted data key description.")
+operation GetEncryptedDataKeyDescription {
+    input: GetEncryptedDataKeyDescriptionInput,
+    output: GetEncryptedDataKeyDescriptionOutput,
+}
+
+@javadoc("Input for getting encrypted data key description.")
+structure GetEncryptedDataKeyDescriptionInput {
+    @required
+    input: GetEncryptedDataKeyDescriptionUnion
+}
+
+//= specification/dynamodb-encryption-client/ddb-get-encrypted-data-key-description.md#input
+//= type=implication
+//# This operation MUST take in either of the following:
+//# - A binary [header](https://github.com/aws/aws-database-encryption-sdk-dynamodb/blob/main/specification/structured-encryption/header.md)
+//# - A [encrypted DynamoDB item](https://github.com/aws/aws-database-encryption-sdk-dynamodb/blob/ff9f08a355a20c81540e4ca652e09aaeffe90c4b/specification/dynamodb-encryption-client/encrypt-item.md#encrypted-dynamodb-item)
+
+union GetEncryptedDataKeyDescriptionUnion {
+  @javadoc("A binary header value.")
+  header: Blob,
+  @javadoc("A DynamoDB item.")
+  item: AttributeMap,
+}
+
+@javadoc("Output for getting encrypted data key description.")
+structure GetEncryptedDataKeyDescriptionOutput {
+    @required
+    @javadoc("A list of encrypted data key description.")
+    EncryptedDataKeyDescriptionOutput: EncryptedDataKeyDescriptionList
+}
+
+list EncryptedDataKeyDescriptionList {
+  member: EncryptedDataKeyDescription
+}
+
+//= specification/dynamodb-encryption-client/ddb-get-encrypted-data-key-description.md#output
+//= type=implication
+//# This operation MUST return the following:
+//# - [keyProviderId](https://github.com/aws/aws-database-encryption-sdk-dynamodb/blob/main/specification/structured-encryption/header.md#key-provider-id)
+//#- [keyProviderInfo](https://github.com/aws/aws-database-encryption-sdk-dynamodb/blob/main/specification/structured-encryption/header.md#key-provider-information) (only for AWS Cryptographic Materials Provider Keyring)
+//#- [branchKeyId](https://github.com/aws/aws-database-encryption-sdk-dynamodb/blob/main/specification/structured-encryption/header.md#key-provider-information) (only for hierarchy keyring)
+//#- [branchKeyVersion](https://github.com/aws/aws-database-encryption-sdk-dynamodb/blob/main/specification/structured-encryption/header.md#key-provider-information) (only for hierarchy keyring)
+
+structure EncryptedDataKeyDescription {
+  @required
+  @javadoc("Key provider id of the encrypted data key.")
+  keyProviderId: String,
+
+  @javadoc("Key provider information of the encrypted data key.")
+  keyProviderInfo: String,
+
+  @javadoc("Branch key id of the encrypted data key.")
+  branchKeyId: String,
+
+  @javadoc("Branch key version of the encrypted data key.")
+  branchKeyVersion: String
+}
 // The top level DynamoDbEncryption local service takes in no config
 structure DynamoDbEncryptionConfig {
 }
@@ -288,8 +347,8 @@ list ConstructorPartList {
 //= specification/searchable-encryption/virtual.md#virtual-field-initialization
 //= type=implication
 //# On initialization of a Virtual Field, the caller MUST provide:
-//#  * A name -- a string
-//#  * A list of [Virtual Parts](#virtual-part-initialization)
+//# - A name -- a string
+//# - A list of [Virtual Parts](#virtual-part-initialization)
 
 @javadoc("The configuration for a Virtual Field. A Virtual Field is a field constructed from parts of other fields for use with beacons, but never itself stored on items.")
 structure VirtualField {
@@ -383,8 +442,8 @@ structure GetSuffix {
 //= specification/searchable-encryption/virtual.md#getsubstring-transform-initialization
 //= type=implication
 //# On initialization of a GetSubstring Transform, the caller MUST provide:
-//#  * low : an integer [position](#position-definition)
-//#  * high : an integer [position](#position-definition)
+//# - low : an integer [position](#position-definition)
+//# - high : an integer [position](#position-definition)
 
 // return range of characters, 0-based counting
 // low is inclusive, high is exclusive
@@ -405,8 +464,8 @@ structure GetSubstring {
 //= specification/searchable-encryption/virtual.md#getsegment-transform-initialization
 //= type=implication
 //# On initialization of a GetSegment Transform, the caller MUST provide:
-//#  * split : an character
-//#  * index : an integer [position](#position-definition)
+//# - split : an character
+//# - index : an integer [position](#position-definition)
 
 // split string on character, then return one piece.
 // 'index' has the same semantics as 'low' in GetSubstring
@@ -423,9 +482,9 @@ structure GetSegment {
 //= specification/searchable-encryption/virtual.md#getsegments-transform-initialization
 //= type=implication
 //# On initialization of a GetSegments Transform, the caller MUST provide:
-//#  * split : an character
-//#  * low : an integer [position](#position-definition)
-//#  * high : an integer [position](#position-definition)
+//# - split : an character
+//# - low : an integer [position](#position-definition)
+//# - high : an integer [position](#position-definition)
 
 // split string on character, then return range of pieces.
 // 'low' and 'high' have the same semantics as GetSubstring
@@ -445,14 +504,14 @@ structure GetSegments {
 //= specification/searchable-encryption/virtual.md#virtual-transform-initialization
 //= type=implication
 //# On initialization of a Virtual Transform, the caller MUST provide exactly one of
-//#  * an [Upper](#upper-transform-initialization) transform
-//#  * a [Lower](#lower-transform-initialization) transform
-//#  * an [Insert](#insert-transform-initialization) transform
-//#  * a [GetPrefix](#getprefix-transform-initialization) transform
-//#  * a [GetSuffix](#getsuffix-transform-initialization) transform
-//#  * a [GetSubstring](#getsubstring-transform-initialization) transform
-//#  * a [GetSegment](#getsegment-transform-initialization) transform
-//#  * a [GetSegments](#getsegments-transform-initialization) transform
+//# - an [Upper](#upper-transform-initialization) transform
+//# - a [Lower](#lower-transform-initialization) transform
+//# - an [Insert](#insert-transform-initialization) transform
+//# - a [GetPrefix](#getprefix-transform-initialization) transform
+//# - a [GetSuffix](#getsuffix-transform-initialization) transform
+//# - a [GetSubstring](#getsubstring-transform-initialization) transform
+//# - a [GetSegment](#getsegment-transform-initialization) transform
+//# - a [GetSegments](#getsegments-transform-initialization) transform
 
 union VirtualTransform {
   upper: Upper,
@@ -507,10 +566,10 @@ structure SharedSet {
 //= type=implication
 //# On initialization of a Beacon Style, the caller MUST provide exactly one of
 //# 
-//#  * a [PartOnly](#partonly-initialization)
-//#  * a [Shared](#shared-initialization)
-//#  * an [AsSet](#asset-initialization)
-//#  * a [SharedSet](#sharedset-initialization)
+//# - a [PartOnly](#partonly-initialization)
+//# - a [Shared](#shared-initialization)
+//# - an [AsSet](#asset-initialization)
+//# - a [SharedSet](#sharedset-initialization)
 
 union BeaconStyle {
   partOnly: PartOnly,
@@ -522,8 +581,8 @@ union BeaconStyle {
 //= specification/searchable-encryption/beacons.md#encrypted-part-initialization
 //= type=implication
 //# On initialization of a [encrypted part](#encrypted-part-initialization), the caller MUST provide:
-//#  * A name -- a string, the name of a standard beacon
-//#  * A prefix -- a string
+//# - A name -- a string, the name of a standard beacon
+//# - A prefix -- a string
 
 @javadoc("A part of a Compound Beacon that contains a beacon over encrypted data.")
 structure EncryptedPart {
@@ -538,8 +597,8 @@ structure EncryptedPart {
 //= specification/searchable-encryption/beacons.md#signed-part-initialization
 //= type=implication
 //# On initialization of a [signed part](#signed-part-initialization), the caller MUST provide:
-//#  * A name -- a string
-//#  * A prefix -- a string
+//# - A name -- a string
+//# - A prefix -- a string
 
 //= specification/searchable-encryption/beacons.md#signed-part-initialization
 //= type=implication
@@ -561,7 +620,7 @@ structure SignedPart {
 //= specification/searchable-encryption/beacons.md#constructor-initialization
 //= type=implication
 //# On initialization of a constructor, the caller MUST provide:
-//# * A non-empty list of [Constructor parts](#constructor-part-initialization)
+//# - A non-empty list of [Constructor parts](#constructor-part-initialization)
 
 @javadoc("The configuration for a particular Compound Beacon construction.")
 structure Constructor {
@@ -573,8 +632,8 @@ structure Constructor {
 //= specification/searchable-encryption/beacons.md#constructor-part-initialization
 //= type=implication
 //# On initialization of a constructor part, the caller MUST provide:
-//#  * A name -- a string
-//#  * A required flag -- a boolean
+//# - A name -- a string
+//# - A required flag -- a boolean
 
 @javadoc("A part of a Compound Becaon Construction.")
 structure ConstructorPart {
@@ -589,13 +648,13 @@ structure ConstructorPart {
 //= specification/searchable-encryption/beacons.md#standard-beacon-initialization
 //= type=implication
 //# On initialization of a Standard Beacon, the caller MUST provide:
-//#  * A name -- a string
-//#  * A `length` -- a [beacon length](#beacon-length)
+//# - A name -- a string
+//# - A `length` -- a [beacon length](#beacon-length)
 
 //= specification/searchable-encryption/beacons.md#standard-beacon-initialization
 //= type=implication
 //# On initialization of a Standard Beacon, the caller MAY provide:
-//# * a [terminal location](virtual.md#terminal-location) -- a string
+//# - a [terminal location](virtual.md#terminal-location) -- a string
 
 @javadoc("The configuration for a Standard Beacon.")
 structure StandardBeacon {
@@ -614,15 +673,15 @@ structure StandardBeacon {
 //= specification/searchable-encryption/beacons.md#compound-beacon-initialization
 //= type=implication
 //# On initialization of a Compound Beacon, the caller MUST provide:
-//#  * A name -- a string
-//#  * A split character -- a character
+//# - A name -- a string
+//# - A split character -- a character
 
 //= specification/searchable-encryption/beacons.md#compound-beacon-initialization
 //= type=implication
 //# On initialization of a Compound Beacon, the caller MAY provide:
-//#  * A list of [encrypted parts](#encrypted-part-initialization)
-//#  * A list of [signed parts](#signed-part-initialization)
-//#  * A list of constructors
+//# - A list of [encrypted parts](#encrypted-part-initialization)
+//# - A list of [signed parts](#signed-part-initialization)
+//# - A list of constructors
 
 @javadoc("The configuration for a Compound Beacon.")
 structure CompoundBeacon {
@@ -681,8 +740,8 @@ structure MultiKeyStore {
 //= specification/searchable-encryption/search-config.md#beacon-key-source
 //= type=implication
 //# On initialization of a Beacon Key Source, the caller MUST provide exactly one of
-//#  * a [Single Key Store](#single-key-store-initialization)
-//#  * a [Multi Key Store](#multi-key-store-initialization)
+//# - a [Single Key Store](#single-key-store-initialization)
+//# - a [Multi Key Store](#multi-key-store-initialization)
 
 union BeaconKeySource {
   single : SingleKeyStore,
@@ -732,8 +791,8 @@ structure BeaconVersion {
 //= specification/searchable-encryption/search-config.md#initialization
 //= type=implication
 //# On initialization of the Search Config, the caller MUST provide:
-//#  - A list of [beacon versions](#beacon-version-initialization)
-//#  - The [version number](#version-number) of the [beacon versions](#beacon-version) to be used for writing.
+//# - A list of [beacon versions](#beacon-version-initialization)
+//# - The [version number](#version-number) of the [beacon versions](#beacon-version-initialization) to be used for writing.
 
 @javadoc("The configuration for searchable encryption.")
 structure SearchConfig {
@@ -756,19 +815,28 @@ resource DynamoDbKeyBranchKeyIdSupplier{
 @reference(resource: DynamoDbKeyBranchKeyIdSupplier)
 structure DynamoDbKeyBranchKeyIdSupplierReference {}
 
-@javadoc("Get the Branch Key that should be used for wrapping and unwrapping data keys based on the primary key of the item being read or written.")
+@javadoc("Get the Branch Key that should be used for wrapping and unwrapping data keys based on the primary key of the item being read or written, along with the values of any attributes configured as SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT.")
 operation GetBranchKeyIdFromDdbKey {
   input: GetBranchKeyIdFromDdbKeyInput,
   output: GetBranchKeyIdFromDdbKeyOutput
 }
 
+//= specification/dynamodb-encryption-client/ddb-encryption-branch-key-id-supplier.md#dynamodbkeybranchkeyidsupplier
+//= type=implication
+//# This operation MUST take in a DDB `Key` structure
+//# (an attribute map containing the partition and sort attributes,
+//# along with the values of any attributes configured as SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT)
+//# as input.
 @javadoc("Inputs for getting the Branch Key that should be used for wrapping and unwrapping data keys.")
 structure GetBranchKeyIdFromDdbKeyInput {
   @required
-  @javadoc("The partition and sort (if it exists) attributes on the item being read or written.")
+  @javadoc("The partition and sort (if it exists) attributes on the item being read or written, along with the values of any attributes configured as SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT.")
   ddbKey: Key
 }
 
+//= specification/dynamodb-encryption-client/ddb-encryption-branch-key-id-supplier.md#dynamodbkeybranchkeyidsupplier
+//= type=implication
+//# This operation MUST return a branch key id (string) as output.
 @javadoc("Outputs for getting the Branch Key that should be used for wrapping and unwrapping data keys.")
 structure GetBranchKeyIdFromDdbKeyOutput {
   @required
@@ -776,12 +844,18 @@ structure GetBranchKeyIdFromDdbKeyOutput {
   branchKeyId: String
 }
 
+//= specification/dynamodb-encryption-client/ddb-encryption-branch-key-id-supplier.md#operation
+//= type=implication
+//# The `CreateDynamoDbEncryptionBranchKeyIdSupplier` is an operation that MUST be vended alongside the DynamoDb Item Encryptor.
 @javadoc("Create a Branch Key Supplier for use with the Hierarchical Keyring that decides what Branch Key to use based on the primary key of the DynamoDB item being read or written.")
 operation CreateDynamoDbEncryptionBranchKeyIdSupplier {
   input: CreateDynamoDbEncryptionBranchKeyIdSupplierInput,
   output: CreateDynamoDbEncryptionBranchKeyIdSupplierOutput
 }
 
+//= specification/dynamodb-encryption-client/ddb-encryption-branch-key-id-supplier.md#input
+//= type=implication
+//# This operation MUST take in a [DynamoDbKeyBranchKeyIdSupplier](#dynamodbkeybranchkeyidsupplier) as input.
 @javadoc("Inputs for creating a Branch Key Supplier from a DynamoDB Key Branch Key Id Supplier")
 structure CreateDynamoDbEncryptionBranchKeyIdSupplierInput {
   @required
@@ -789,6 +863,9 @@ structure CreateDynamoDbEncryptionBranchKeyIdSupplierInput {
   ddbKeyBranchKeyIdSupplier: DynamoDbKeyBranchKeyIdSupplierReference,
 }
 
+//= specification/dynamodb-encryption-client/ddb-encryption-branch-key-id-supplier.md#output
+//= type=implication
+//# This operation MUST output a BranchKeyIdSupplierReference.
 @javadoc("Outputs for creating a Branch Key Supplier from a DynamoDB Key Branch Key Id Supplier")
 structure CreateDynamoDbEncryptionBranchKeyIdSupplierOutput {
   @required

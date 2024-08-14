@@ -31,12 +31,8 @@ module {:options "-functionSyntax:4"} DdbEncryptionTestVectors {
   import DDB = ComAmazonawsDynamodbTypes
   import Filter = DynamoDBFilterExpr
   import SE = AwsCryptographyDbEncryptionSdkStructuredEncryptionTypes
-  import SKS = CreateStaticKeyStores
-  import KeyMaterial
   import UTF8
-  import KeyVectorsTypes = AwsCryptographyMaterialProvidersTestVectorKeysTypes
   import CMP = AwsCryptographyMaterialProvidersTypes
-  import KeyVectors
   import CreateInterceptedDDBClient
   import SortedSets
   import Seq
@@ -86,10 +82,14 @@ module {:options "-functionSyntax:4"} DdbEncryptionTestVectors {
         print |roundTripTests[1].configs|, " configs and ", |roundTripTests[1].records|, " records for round trip.\n";
       }
 
-      var _ :- expect DecryptManifest.Decrypt("decrypt_dotnet.json");
-      var _ :- expect DecryptManifest.Decrypt("decrypt_java.json");
+      var _ :- expect DecryptManifest.Decrypt("decrypt_dotnet_32.json");
+      var _ :- expect DecryptManifest.Decrypt("decrypt_java_32.json");
+      var _ :- expect DecryptManifest.Decrypt("decrypt_dotnet_33.json");
+      var _ :- expect DecryptManifest.Decrypt("decrypt_java_33.json");
+      var _ :- expect DecryptManifest.Decrypt("decrypt_dotnet_33a.json");
+      var _ :- expect DecryptManifest.Decrypt("decrypt_java_33a.json");
       var _ :- expect WriteManifest.Write("encrypt.json");
-      var _ :- expect EncryptManifest.Encrypt("encrypt.json", "decrypt.json", "java", "3.2");
+      var _ :- expect EncryptManifest.Encrypt("encrypt.json", "decrypt.json", "java", "3.3");
       var _ :- expect DecryptManifest.Decrypt("decrypt.json");
       if |globalRecords| + |tableEncryptionConfigs| + |queries| == 0 {
         print "\nRunning no tests\n";
@@ -567,7 +567,7 @@ module {:options "-functionSyntax:4"} DdbEncryptionTestVectors {
         var res := client.Query(GetQueryInput(failingQueries[i], usedNames, usedValues));
         expect res.Failure?;
       }
-      var results := new DDB.ItemList[|queries|];
+      var results := new DDB.ItemList[|queries|](i => []);
       for i := 0 to |queries| {
         results[i] := FullSearch(client, queries[i]);
       }

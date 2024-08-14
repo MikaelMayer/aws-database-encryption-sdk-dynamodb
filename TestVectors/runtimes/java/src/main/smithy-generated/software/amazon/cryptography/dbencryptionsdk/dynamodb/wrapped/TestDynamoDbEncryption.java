@@ -13,9 +13,12 @@ import software.amazon.cryptography.dbencryptionsdk.dynamodb.ToNative;
 import software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.CreateDynamoDbEncryptionBranchKeyIdSupplierInput;
 import software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.CreateDynamoDbEncryptionBranchKeyIdSupplierOutput;
 import software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.Error;
+import software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetEncryptedDataKeyDescriptionInput;
+import software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetEncryptedDataKeyDescriptionOutput;
 import software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.IDynamoDbEncryptionClient;
 
 public class TestDynamoDbEncryption implements IDynamoDbEncryptionClient {
+
   private final DynamoDbEncryption _impl;
 
   protected TestDynamoDbEncryption(BuilderImpl builder) {
@@ -26,12 +29,38 @@ public class TestDynamoDbEncryption implements IDynamoDbEncryptionClient {
     return new BuilderImpl();
   }
 
-  public Result<CreateDynamoDbEncryptionBranchKeyIdSupplierOutput, Error> CreateDynamoDbEncryptionBranchKeyIdSupplier(
-      CreateDynamoDbEncryptionBranchKeyIdSupplierInput dafnyInput) {
-    software.amazon.cryptography.dbencryptionsdk.dynamodb.model.CreateDynamoDbEncryptionBranchKeyIdSupplierInput nativeInput = ToNative.CreateDynamoDbEncryptionBranchKeyIdSupplierInput(dafnyInput);
+  public Result<
+    CreateDynamoDbEncryptionBranchKeyIdSupplierOutput,
+    Error
+  > CreateDynamoDbEncryptionBranchKeyIdSupplier(
+    CreateDynamoDbEncryptionBranchKeyIdSupplierInput dafnyInput
+  ) {
     try {
-      software.amazon.cryptography.dbencryptionsdk.dynamodb.model.CreateDynamoDbEncryptionBranchKeyIdSupplierOutput nativeOutput = this._impl.CreateDynamoDbEncryptionBranchKeyIdSupplier(nativeInput);
-      CreateDynamoDbEncryptionBranchKeyIdSupplierOutput dafnyOutput = ToDafny.CreateDynamoDbEncryptionBranchKeyIdSupplierOutput(nativeOutput);
+      software.amazon.cryptography.dbencryptionsdk.dynamodb.model.CreateDynamoDbEncryptionBranchKeyIdSupplierInput nativeInput =
+        ToNative.CreateDynamoDbEncryptionBranchKeyIdSupplierInput(dafnyInput);
+      software.amazon.cryptography.dbencryptionsdk.dynamodb.model.CreateDynamoDbEncryptionBranchKeyIdSupplierOutput nativeOutput =
+        this._impl.CreateDynamoDbEncryptionBranchKeyIdSupplier(nativeInput);
+      CreateDynamoDbEncryptionBranchKeyIdSupplierOutput dafnyOutput =
+        ToDafny.CreateDynamoDbEncryptionBranchKeyIdSupplierOutput(nativeOutput);
+      return Result.create_Success(dafnyOutput);
+    } catch (RuntimeException ex) {
+      return Result.create_Failure(ToDafny.Error(ex));
+    }
+  }
+
+  public Result<
+    GetEncryptedDataKeyDescriptionOutput,
+    Error
+  > GetEncryptedDataKeyDescription(
+    GetEncryptedDataKeyDescriptionInput dafnyInput
+  ) {
+    try {
+      software.amazon.cryptography.dbencryptionsdk.dynamodb.model.GetEncryptedDataKeyDescriptionInput nativeInput =
+        ToNative.GetEncryptedDataKeyDescriptionInput(dafnyInput);
+      software.amazon.cryptography.dbencryptionsdk.dynamodb.model.GetEncryptedDataKeyDescriptionOutput nativeOutput =
+        this._impl.GetEncryptedDataKeyDescription(nativeInput);
+      GetEncryptedDataKeyDescriptionOutput dafnyOutput =
+        ToDafny.GetEncryptedDataKeyDescriptionOutput(nativeOutput);
       return Result.create_Success(dafnyOutput);
     } catch (RuntimeException ex) {
       return Result.create_Failure(ToDafny.Error(ex));
@@ -47,10 +76,10 @@ public class TestDynamoDbEncryption implements IDynamoDbEncryptionClient {
   }
 
   static class BuilderImpl implements Builder {
+
     protected DynamoDbEncryption impl;
 
-    protected BuilderImpl() {
-    }
+    protected BuilderImpl() {}
 
     public Builder impl(DynamoDbEncryption impl) {
       this.impl = impl;
@@ -62,8 +91,10 @@ public class TestDynamoDbEncryption implements IDynamoDbEncryptionClient {
     }
 
     public TestDynamoDbEncryption build() {
-      if (Objects.isNull(this.impl()))  {
-        throw new IllegalArgumentException("Missing value for required field `impl`");
+      if (Objects.isNull(this.impl())) {
+        throw new IllegalArgumentException(
+          "Missing value for required field `impl`"
+        );
       }
       return new TestDynamoDbEncryption(this);
     }

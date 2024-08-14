@@ -9,11 +9,12 @@ import software.amazon.cryptography.materialproviders.CryptographicMaterialsMana
 import software.amazon.cryptography.materialproviders.ICryptographicMaterialsManager;
 
 public class DecryptStructureInput {
+
   private final String tableName;
 
-  private final StructuredData encryptedStructure;
+  private final Map<String, StructuredDataTerminal> encryptedStructure;
 
-  private final AuthenticateSchema authenticateSchema;
+  private final Map<String, AuthenticateAction> authenticateSchema;
 
   private final ICryptographicMaterialsManager cmm;
 
@@ -31,11 +32,11 @@ public class DecryptStructureInput {
     return this.tableName;
   }
 
-  public StructuredData encryptedStructure() {
+  public Map<String, StructuredDataTerminal> encryptedStructure() {
     return this.encryptedStructure;
   }
 
-  public AuthenticateSchema authenticateSchema() {
+  public Map<String, AuthenticateAction> authenticateSchema() {
     return this.authenticateSchema;
   }
 
@@ -60,13 +61,17 @@ public class DecryptStructureInput {
 
     String tableName();
 
-    Builder encryptedStructure(StructuredData encryptedStructure);
+    Builder encryptedStructure(
+      Map<String, StructuredDataTerminal> encryptedStructure
+    );
 
-    StructuredData encryptedStructure();
+    Map<String, StructuredDataTerminal> encryptedStructure();
 
-    Builder authenticateSchema(AuthenticateSchema authenticateSchema);
+    Builder authenticateSchema(
+      Map<String, AuthenticateAction> authenticateSchema
+    );
 
-    AuthenticateSchema authenticateSchema();
+    Map<String, AuthenticateAction> authenticateSchema();
 
     Builder cmm(ICryptographicMaterialsManager cmm);
 
@@ -80,18 +85,18 @@ public class DecryptStructureInput {
   }
 
   static class BuilderImpl implements Builder {
+
     protected String tableName;
 
-    protected StructuredData encryptedStructure;
+    protected Map<String, StructuredDataTerminal> encryptedStructure;
 
-    protected AuthenticateSchema authenticateSchema;
+    protected Map<String, AuthenticateAction> authenticateSchema;
 
     protected ICryptographicMaterialsManager cmm;
 
     protected Map<String, String> encryptionContext;
 
-    protected BuilderImpl() {
-    }
+    protected BuilderImpl() {}
 
     protected BuilderImpl(DecryptStructureInput model) {
       this.tableName = model.tableName();
@@ -110,21 +115,25 @@ public class DecryptStructureInput {
       return this.tableName;
     }
 
-    public Builder encryptedStructure(StructuredData encryptedStructure) {
+    public Builder encryptedStructure(
+      Map<String, StructuredDataTerminal> encryptedStructure
+    ) {
       this.encryptedStructure = encryptedStructure;
       return this;
     }
 
-    public StructuredData encryptedStructure() {
+    public Map<String, StructuredDataTerminal> encryptedStructure() {
       return this.encryptedStructure;
     }
 
-    public Builder authenticateSchema(AuthenticateSchema authenticateSchema) {
+    public Builder authenticateSchema(
+      Map<String, AuthenticateAction> authenticateSchema
+    ) {
       this.authenticateSchema = authenticateSchema;
       return this;
     }
 
-    public AuthenticateSchema authenticateSchema() {
+    public Map<String, AuthenticateAction> authenticateSchema() {
       return this.authenticateSchema;
     }
 
@@ -147,17 +156,25 @@ public class DecryptStructureInput {
     }
 
     public DecryptStructureInput build() {
-      if (Objects.isNull(this.tableName()))  {
-        throw new IllegalArgumentException("Missing value for required field `tableName`");
+      if (Objects.isNull(this.tableName())) {
+        throw new IllegalArgumentException(
+          "Missing value for required field `tableName`"
+        );
       }
-      if (Objects.isNull(this.encryptedStructure()))  {
-        throw new IllegalArgumentException("Missing value for required field `encryptedStructure`");
+      if (Objects.isNull(this.encryptedStructure())) {
+        throw new IllegalArgumentException(
+          "Missing value for required field `encryptedStructure`"
+        );
       }
-      if (Objects.isNull(this.authenticateSchema()))  {
-        throw new IllegalArgumentException("Missing value for required field `authenticateSchema`");
+      if (Objects.isNull(this.authenticateSchema())) {
+        throw new IllegalArgumentException(
+          "Missing value for required field `authenticateSchema`"
+        );
       }
-      if (Objects.isNull(this.cmm()))  {
-        throw new IllegalArgumentException("Missing value for required field `cmm`");
+      if (Objects.isNull(this.cmm())) {
+        throw new IllegalArgumentException(
+          "Missing value for required field `cmm`"
+        );
       }
       return new DecryptStructureInput(this);
     }

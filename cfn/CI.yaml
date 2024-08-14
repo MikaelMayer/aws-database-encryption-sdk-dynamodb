@@ -18,12 +18,28 @@ Parameters:
     Type: String
     Description: Testing Keystore Table Name
     Default: CiKeystoreTestTable
+  BasicTestJavaTableName:
+    Type: String
+    Description: Table Name for Basic Examples in Java
+    Default: DynamoDbEncryptionInterceptorTestTable
+  BasicTestDotNetTableName:
+    Type: String
+    Description: Table Name for Basic Examples in Dotnet
+    Default: DynamoDbEncryptionInterceptorTestTableCS
+  SearchTestJavaTableName:
+    Type: String
+    Description: Table Name for Search Examples in Java
+    Default: UnitInspectionTestTable
+  SearchTestDotnetTableName:
+    Type: String
+    Description: Table Name for Search Examples in Dotnet
+    Default: UnitInspectionTestTableCS
   ProjectName:
     Type: String
     Description: A prefix that will be applied to any names
     Default: DDBEC-Dafny
   # This parameter is no longer used.
-  # However removing it causes CloudFormation indigestion 
+  # However removing it causes CloudFormation indigestion
   GitHubRepo:
     Type: String
     Description: GitHub Repo that invokes CI
@@ -47,6 +63,132 @@ Resources:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
       TableName: !Ref TableName
+
+  BasicTestJavaTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "partition_key"
+          AttributeType: "S"
+        - AttributeName: "sort_key"
+          AttributeType: "N"
+      KeySchema:
+        - AttributeName: "partition_key"
+          KeyType: "HASH"
+        - AttributeName: "sort_key"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      TableName: !Ref BasicTestJavaTableName
+
+  BasicTestDotnetTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "partition_key"
+          AttributeType: "S"
+        - AttributeName: "sort_key"
+          AttributeType: "N"
+      KeySchema:
+        - AttributeName: "partition_key"
+          KeyType: "HASH"
+        - AttributeName: "sort_key"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      TableName: !Ref BasicTestDotnetTableName
+
+  SearchTestJavaTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "aws_dbe_b_inspector_id_last4"
+          AttributeType: "S"
+        - AttributeName: "aws_dbe_b_last4UnitCompound"
+          AttributeType: "S"
+        - AttributeName: "aws_dbe_b_unit"
+          AttributeType: "S"
+        - AttributeName: "inspection_date"
+          AttributeType: "S"
+        - AttributeName: "work_id"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "work_id"
+          KeyType: "HASH"
+        - AttributeName: "inspection_date"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      TableName: !Ref SearchTestJavaTableName
+      GlobalSecondaryIndexes:
+        - IndexName: "last4-unit-index"
+          KeySchema:
+            - AttributeName: "aws_dbe_b_inspector_id_last4"
+              KeyType: "HASH"
+            - AttributeName: "aws_dbe_b_unit"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"
+        - IndexName: "last4UnitCompound-index"
+          KeySchema:
+            - AttributeName: "aws_dbe_b_last4UnitCompound"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"
+
+  SearchTestDotnetTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "aws_dbe_b_inspector_id_last4"
+          AttributeType: "S"
+        - AttributeName: "aws_dbe_b_last4UnitCompound"
+          AttributeType: "S"
+        - AttributeName: "aws_dbe_b_unit"
+          AttributeType: "S"
+        - AttributeName: "inspection_date"
+          AttributeType: "S"
+        - AttributeName: "work_id"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "work_id"
+          KeyType: "HASH"
+        - AttributeName: "inspection_date"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      TableName: !Ref SearchTestDotnetTableName
+      GlobalSecondaryIndexes:
+        - IndexName: "last4-unit-index"
+          KeySchema:
+            - AttributeName: "aws_dbe_b_inspector_id_last4"
+              KeyType: "HASH"
+            - AttributeName: "aws_dbe_b_unit"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"
+        - IndexName: "last4UnitCompound-index"
+          KeySchema:
+            - AttributeName: "aws_dbe_b_last4UnitCompound"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"
 
   TestTableWithSimpleBeaconIndex:
     Type: AWS::DynamoDB::Table
@@ -219,7 +361,7 @@ Resources:
       Description: "Allow Read, Write, and Delete of Items in Test Tables"
       ManagedPolicyName: !Sub "${ProjectName}-DDB-ReadWriteDelete-Policy-${AWS::Region}"
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Action:
@@ -241,13 +383,19 @@ Resources:
               - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableWithComplexBeaconIndexName}/index/*"
               - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${KeystoreTableName}"
               - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${KeystoreTableName}/index/*"
+              - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${BasicTestJavaTableName}"
+              - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${BasicTestDotnetTableName}"
+              - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${SearchTestJavaTableName}"
+              - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${SearchTestJavaTableName}/index/*"
+              - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${SearchTestDotnetTableName}"
+              - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${SearchTestDotnetTableName}/index/*"
 
   KMSUsage:
     Type: "AWS::IAM::ManagedPolicy"
     Properties:
       ManagedPolicyName: !Sub "${ProjectName}-KMS-${AWS::Region}"
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Action:
@@ -264,7 +412,7 @@ Resources:
     Properties:
       ManagedPolicyName: !Sub "${ProjectName}-KMS-only-us-east-1"
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Action:
@@ -281,7 +429,7 @@ Resources:
     Properties:
       ManagedPolicyName: !Sub "${ProjectName}-KMS-only-eu-west-1"
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Action:
@@ -294,7 +442,7 @@ Resources:
               - !Sub "arn:aws:kms:eu-west-1:658956600833:alias/*"
 
   GitHubCIRole:
-    Type: 'AWS::IAM::Role'
+    Type: "AWS::IAM::Role"
     Properties:
       RoleName: !Sub "GitHub-CI-${ProjectName}-Role-${AWS::Region}"
       Description: "Access DDB, KMS, & CA Resources for CI from GitHub"
@@ -344,7 +492,7 @@ Resources:
         }
 
   GithubCIRoleOnlyUsEast1Keys:
-    Type: 'AWS::IAM::Role'
+    Type: "AWS::IAM::Role"
     Properties:
       RoleName: !Sub "GitHub-CI-${ProjectName}-Role-only-us-east-1-KMS-keys"
       Description: "Access DDB, KMS, & CA Resources for CI from GitHub. Only grants access to use keys in us-east-1 region. Created for use by CI while executing Custom Client Supplier Example."
@@ -399,7 +547,7 @@ Resources:
         }
 
   GithubCIRoleOnlyEuWest1Keys:
-    Type: 'AWS::IAM::Role'
+    Type: "AWS::IAM::Role"
     Properties:
       RoleName: !Sub "GitHub-CI-${ProjectName}-Role-only-eu-west-1-KMS-keys"
       Description: "Access DDB, KMS, & CA Resources for CI from GitHub. Only grants access to use keys in eu-west-1 region. Created for use by CI while executing Custom Client Supplier Example."

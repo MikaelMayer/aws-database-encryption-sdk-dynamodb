@@ -48,7 +48,7 @@ module SearchConfigToInfo {
 
     //= specification/searchable-encryption/search-config.md#initialization
     //= type=implication
-    //# Initialization MUST fail if the length of the list of [beacon versions](#beacon-version) is not 1.
+    //# Initialization MUST fail if the length of the list of [beacon versions](#beacon-version-initialization) is not 1.
     ensures outer.search.Some? && |outer.search.value.versions| != 1 ==> output.Failure?
   {
     if outer.search.None? {
@@ -88,6 +88,7 @@ module SearchConfigToInfo {
       match outer.attributeActionsOnEncrypt[keyFieldName] {
         case DO_NOTHING => Success(true)
         case SIGN_ONLY => Success(false)
+        case SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT => Success(false)
         case ENCRYPT_AND_SIGN => Failure(E("Beacon key field name " + keyFieldName + " is configured as ENCRYPT_AND_SIGN which is not allowed."))
       }
   }
@@ -264,7 +265,10 @@ module SearchConfigToInfo {
   {
     && var name := loc[0].key;
     && name in outer.attributeActionsOnEncrypt
-    && outer.attributeActionsOnEncrypt[name] == SE.SIGN_ONLY
+    && (
+         || outer.attributeActionsOnEncrypt[name] == SE.SIGN_AND_INCLUDE_IN_ENCRYPTION_CONTEXT
+         || outer.attributeActionsOnEncrypt[name] == SE.SIGN_ONLY
+       )
   }
 
   // is this terminal location encrypted
@@ -734,7 +738,7 @@ module SearchConfigToInfo {
 
     //= specification/searchable-encryption/beacons.md#initialization-failure
     //= type=implication
-    //# Initialization MUST fail if any [constructor](#constructor) is configured with a field name
+    //# Initialization MUST fail if any [constructor](#constructor-initialization) is configured with a field name
     //# that is not a defined [part](#part).
     ensures ret.Success? && 0 < |c| ==>
               exists p : CB.BeaconPart | p in parts :: p.getName() == c[0].name
@@ -769,14 +773,14 @@ module SearchConfigToInfo {
     ensures ret.Success? ==> |ret.value| == origSize
     //= specification/searchable-encryption/beacons.md#initialization-failure
     //= type=implication
-    //# Initialization MUST fail if any [constructor](#constructor) is configured without at least one
+    //# Initialization MUST fail if any [constructor](#constructor-initialization) is configured without at least one
     //# required part.
     ensures ret.Success? && 0 < |constructors| ==>
               0 < SeqCount((p : ConstructorPart) => p.required, constructors[0].parts)
 
     //= specification/searchable-encryption/beacons.md#initialization-failure
     //= type=implication
-    //# Initialization MUST fail if two [constructors](#constructor) are configured
+    //# Initialization MUST fail if two [constructors](#constructor-initialization) are configured
     //# with the same set of required parts.
     ensures ret.Success? && 0 < |constructors| ==>
               && MakeConstructor(constructors[0], parts).Success?

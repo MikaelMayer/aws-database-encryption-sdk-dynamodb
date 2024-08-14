@@ -61,7 +61,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IBeaconKeySource ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S15_BeaconKeySource(AWS.Cryptography.DbEncryptionSDK.DynamoDb.BeaconKeySource value)
     {
-      if (value.IsSetSingle())
+      value.Validate(); if (value.IsSetSingle())
       {
         return software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.BeaconKeySource.create_single(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S15_BeaconKeySource__M6_single(value.Single));
       }
@@ -98,7 +98,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IBeaconStyle ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S11_BeaconStyle(AWS.Cryptography.DbEncryptionSDK.DynamoDb.BeaconStyle value)
     {
-      if (value.IsSetPartOnly())
+      value.Validate(); if (value.IsSetPartOnly())
       {
         return software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.BeaconStyle.create_partOnly(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S11_BeaconStyle__M8_partOnly(value.PartOnly));
       }
@@ -122,6 +122,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._ICreateDynamoDbEncryptionBranchKeyIdSupplierInput ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S48_CreateDynamoDbEncryptionBranchKeyIdSupplierInput(AWS.Cryptography.DbEncryptionSDK.DynamoDb.CreateDynamoDbEncryptionBranchKeyIdSupplierInput value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.CreateDynamoDbEncryptionBranchKeyIdSupplierInput(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S48_CreateDynamoDbEncryptionBranchKeyIdSupplierInput__M25_ddbKeyBranchKeyIdSupplier(value.DdbKeyBranchKeyIdSupplier));
     }
@@ -131,6 +132,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._ICreateDynamoDbEncryptionBranchKeyIdSupplierOutput ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S49_CreateDynamoDbEncryptionBranchKeyIdSupplierOutput(AWS.Cryptography.DbEncryptionSDK.DynamoDb.CreateDynamoDbEncryptionBranchKeyIdSupplierOutput value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.CreateDynamoDbEncryptionBranchKeyIdSupplierOutput(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S49_CreateDynamoDbEncryptionBranchKeyIdSupplierOutput__M19_branchKeyIdSupplier(value.BranchKeyIdSupplier));
     }
@@ -140,6 +142,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IDynamoDbEncryptionConfig ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S24_DynamoDbEncryptionConfig(AWS.Cryptography.DbEncryptionSDK.DynamoDb.DynamoDbEncryptionConfig value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.DynamoDbEncryptionConfig();
     }
@@ -162,6 +165,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetBranchKeyIdFromDdbKeyInput ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S29_GetBranchKeyIdFromDdbKeyInput(AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetBranchKeyIdFromDdbKeyInput value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetBranchKeyIdFromDdbKeyInput(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S29_GetBranchKeyIdFromDdbKeyInput__M6_ddbKey(value.DdbKey));
     }
@@ -171,8 +175,56 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetBranchKeyIdFromDdbKeyOutput ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S30_GetBranchKeyIdFromDdbKeyOutput(AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetBranchKeyIdFromDdbKeyOutput value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetBranchKeyIdFromDdbKeyOutput(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S30_GetBranchKeyIdFromDdbKeyOutput__M11_branchKeyId(value.BranchKeyId));
+    }
+    public static AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionInput FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionInput(software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetEncryptedDataKeyDescriptionInput value)
+    {
+      software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetEncryptedDataKeyDescriptionInput concrete = (software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetEncryptedDataKeyDescriptionInput)value; AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionInput converted = new AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionInput(); converted.Input = (AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionUnion)FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionInput__M5_input(concrete._input); return converted;
+    }
+    public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetEncryptedDataKeyDescriptionInput ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionInput(AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionInput value)
+    {
+      value.Validate();
+
+      return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetEncryptedDataKeyDescriptionInput(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionInput__M5_input(value.Input));
+    }
+    public static AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionOutput FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S36_GetEncryptedDataKeyDescriptionOutput(software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetEncryptedDataKeyDescriptionOutput value)
+    {
+      software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetEncryptedDataKeyDescriptionOutput concrete = (software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetEncryptedDataKeyDescriptionOutput)value; AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionOutput converted = new AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionOutput(); converted.EncryptedDataKeyDescriptionOutput = (System.Collections.Generic.List<AWS.Cryptography.DbEncryptionSDK.DynamoDb.EncryptedDataKeyDescription>)FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S36_GetEncryptedDataKeyDescriptionOutput__M33_EncryptedDataKeyDescriptionOutput(concrete._EncryptedDataKeyDescriptionOutput); return converted;
+    }
+    public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetEncryptedDataKeyDescriptionOutput ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S36_GetEncryptedDataKeyDescriptionOutput(AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionOutput value)
+    {
+      value.Validate();
+
+      return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetEncryptedDataKeyDescriptionOutput(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S36_GetEncryptedDataKeyDescriptionOutput__M33_EncryptedDataKeyDescriptionOutput(value.EncryptedDataKeyDescriptionOutput));
+    }
+    public static AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionUnion FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionUnion(software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetEncryptedDataKeyDescriptionUnion value)
+    {
+      software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetEncryptedDataKeyDescriptionUnion concrete = (software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetEncryptedDataKeyDescriptionUnion)value;
+      var converted = new AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionUnion(); if (value.is_header)
+      {
+        converted.Header = FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionUnion__M6_header(concrete.dtor_header);
+        return converted;
+      }
+      if (value.is_item)
+      {
+        converted.Item = FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionUnion__M4_item(concrete.dtor_item);
+        return converted;
+      }
+      throw new System.ArgumentException("Invalid AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionUnion state");
+    }
+    public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetEncryptedDataKeyDescriptionUnion ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionUnion(AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionUnion value)
+    {
+      value.Validate(); if (value.IsSetHeader())
+      {
+        return software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetEncryptedDataKeyDescriptionUnion.create_header(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionUnion__M6_header(value.Header));
+      }
+      if (value.IsSetItem())
+      {
+        return software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetEncryptedDataKeyDescriptionUnion.create_item(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionUnion__M4_item(value.Item));
+      }
+      throw new System.ArgumentException("Invalid AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionUnion state");
     }
     public static AWS.Cryptography.DbEncryptionSDK.DynamoDb.LegacyPolicy FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S12_LegacyPolicy(software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._ILegacyPolicy value)
     {
@@ -249,7 +301,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IVirtualTransform ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S16_VirtualTransform(AWS.Cryptography.DbEncryptionSDK.DynamoDb.VirtualTransform value)
     {
-      if (value.IsSetUpper())
+      value.Validate(); if (value.IsSetUpper())
       {
         return software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.VirtualTransform.create_upper(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S16_VirtualTransform__M5_upper(value.Upper));
       }
@@ -371,6 +423,38 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     {
       return ToDafny_N6_smithy__N3_api__S6_String(value);
     }
+    public static AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionUnion FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionInput__M5_input(software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetEncryptedDataKeyDescriptionUnion value)
+    {
+      return FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionUnion(value);
+    }
+    public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetEncryptedDataKeyDescriptionUnion ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionInput__M5_input(AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetEncryptedDataKeyDescriptionUnion value)
+    {
+      return ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionUnion(value);
+    }
+    public static System.Collections.Generic.List<AWS.Cryptography.DbEncryptionSDK.DynamoDb.EncryptedDataKeyDescription> FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S36_GetEncryptedDataKeyDescriptionOutput__M33_EncryptedDataKeyDescriptionOutput(Dafny.ISequence<software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IEncryptedDataKeyDescription> value)
+    {
+      return FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S31_EncryptedDataKeyDescriptionList(value);
+    }
+    public static Dafny.ISequence<software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IEncryptedDataKeyDescription> ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S36_GetEncryptedDataKeyDescriptionOutput__M33_EncryptedDataKeyDescriptionOutput(System.Collections.Generic.List<AWS.Cryptography.DbEncryptionSDK.DynamoDb.EncryptedDataKeyDescription> value)
+    {
+      return ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S31_EncryptedDataKeyDescriptionList(value);
+    }
+    public static System.IO.MemoryStream FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionUnion__M6_header(Dafny.ISequence<byte> value)
+    {
+      return FromDafny_N6_smithy__N3_api__S4_Blob(value);
+    }
+    public static Dafny.ISequence<byte> ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionUnion__M6_header(System.IO.MemoryStream value)
+    {
+      return ToDafny_N6_smithy__N3_api__S4_Blob(value);
+    }
+    public static System.Collections.Generic.Dictionary<string, Amazon.DynamoDBv2.Model.AttributeValue> FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionUnion__M4_item(Dafny.IMap<Dafny.ISequence<char>, software.amazon.cryptography.services.dynamodb.internaldafny.types._IAttributeValue> value)
+    {
+      return FromDafny_N3_com__N9_amazonaws__N8_dynamodb__S12_AttributeMap(value);
+    }
+    public static Dafny.IMap<Dafny.ISequence<char>, software.amazon.cryptography.services.dynamodb.internaldafny.types._IAttributeValue> ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S35_GetEncryptedDataKeyDescriptionUnion__M4_item(System.Collections.Generic.Dictionary<string, Amazon.DynamoDBv2.Model.AttributeValue> value)
+    {
+      return ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S12_AttributeMap(value);
+    }
     public static AWS.Cryptography.DbEncryptionSDK.DynamoDb.Upper FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S16_VirtualTransform__M5_upper(software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IUpper value)
     {
       return FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S5_Upper(value);
@@ -442,6 +526,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._ISingleKeyStore ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S14_SingleKeyStore(AWS.Cryptography.DbEncryptionSDK.DynamoDb.SingleKeyStore value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.SingleKeyStore(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S14_SingleKeyStore__M5_keyId(value.KeyId), ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S14_SingleKeyStore__M8_cacheTTL(value.CacheTTL));
     }
@@ -453,6 +538,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IMultiKeyStore ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S13_MultiKeyStore(AWS.Cryptography.DbEncryptionSDK.DynamoDb.MultiKeyStore value)
     {
+      value.Validate();
       AWS.Cryptography.MaterialProviders.CacheType var_cache = value.IsSetCache() ? value.Cache : (AWS.Cryptography.MaterialProviders.CacheType)null;
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.MultiKeyStore(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S13_MultiKeyStore__M12_keyFieldName(value.KeyFieldName), ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S13_MultiKeyStore__M8_cacheTTL(value.CacheTTL), ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S13_MultiKeyStore__M5_cache(var_cache));
     }
@@ -462,6 +548,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IPartOnly ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S8_PartOnly(AWS.Cryptography.DbEncryptionSDK.DynamoDb.PartOnly value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.PartOnly();
     }
@@ -471,6 +558,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IShared ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S6_Shared(AWS.Cryptography.DbEncryptionSDK.DynamoDb.Shared value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.Shared(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S6_Shared__M5_other(value.Other));
     }
@@ -480,6 +568,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IAsSet ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S5_AsSet(AWS.Cryptography.DbEncryptionSDK.DynamoDb.AsSet value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.AsSet();
     }
@@ -489,6 +578,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._ISharedSet ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S9_SharedSet(AWS.Cryptography.DbEncryptionSDK.DynamoDb.SharedSet value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.SharedSet(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S9_SharedSet__M5_other(value.Other));
     }
@@ -541,12 +631,44 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
          new Dafny.Pair<Dafny.ISequence<char>, software.amazon.cryptography.services.dynamodb.internaldafny.types._IAttributeValue>(ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S3_Key__M3_key(pair.Key), ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S3_Key__M5_value(pair.Value))
      ));
     }
+    public static System.Collections.Generic.List<AWS.Cryptography.DbEncryptionSDK.DynamoDb.EncryptedDataKeyDescription> FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S31_EncryptedDataKeyDescriptionList(Dafny.ISequence<software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IEncryptedDataKeyDescription> value)
+    {
+      return new System.Collections.Generic.List<AWS.Cryptography.DbEncryptionSDK.DynamoDb.EncryptedDataKeyDescription>(value.Elements.Select(FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S31_EncryptedDataKeyDescriptionList__M6_member));
+    }
+    public static Dafny.ISequence<software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IEncryptedDataKeyDescription> ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S31_EncryptedDataKeyDescriptionList(System.Collections.Generic.List<AWS.Cryptography.DbEncryptionSDK.DynamoDb.EncryptedDataKeyDescription> value)
+    {
+      return Dafny.Sequence<software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IEncryptedDataKeyDescription>.FromArray(value.Select(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S31_EncryptedDataKeyDescriptionList__M6_member).ToArray());
+    }
+    public static System.IO.MemoryStream FromDafny_N6_smithy__N3_api__S4_Blob(Dafny.ISequence<byte> value)
+    {
+      return new System.IO.MemoryStream(value.Elements);
+    }
+    public static Dafny.ISequence<byte> ToDafny_N6_smithy__N3_api__S4_Blob(System.IO.MemoryStream value)
+    {
+      if (value.ToArray().Length == 0 && value.Length > 0)
+      {
+        throw new System.ArgumentException("Fatal Error: MemoryStream instance not backed by an array!");
+      }
+      return Dafny.Sequence<byte>.FromArray(value.ToArray());
+
+    }
+    public static System.Collections.Generic.Dictionary<string, Amazon.DynamoDBv2.Model.AttributeValue> FromDafny_N3_com__N9_amazonaws__N8_dynamodb__S12_AttributeMap(Dafny.IMap<Dafny.ISequence<char>, software.amazon.cryptography.services.dynamodb.internaldafny.types._IAttributeValue> value)
+    {
+      return value.ItemEnumerable.ToDictionary(pair => FromDafny_N3_com__N9_amazonaws__N8_dynamodb__S12_AttributeMap__M3_key(pair.Car), pair => FromDafny_N3_com__N9_amazonaws__N8_dynamodb__S12_AttributeMap__M5_value(pair.Cdr));
+    }
+    public static Dafny.IMap<Dafny.ISequence<char>, software.amazon.cryptography.services.dynamodb.internaldafny.types._IAttributeValue> ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S12_AttributeMap(System.Collections.Generic.Dictionary<string, Amazon.DynamoDBv2.Model.AttributeValue> value)
+    {
+      return Dafny.Map<Dafny.ISequence<char>, software.amazon.cryptography.services.dynamodb.internaldafny.types._IAttributeValue>.FromCollection(value.Select(pair =>
+         new Dafny.Pair<Dafny.ISequence<char>, software.amazon.cryptography.services.dynamodb.internaldafny.types._IAttributeValue>(ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S12_AttributeMap__M3_key(pair.Key), ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S12_AttributeMap__M5_value(pair.Value))
+     ));
+    }
     public static AWS.Cryptography.DbEncryptionSDK.DynamoDb.Upper FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S5_Upper(software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IUpper value)
     {
       software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.Upper concrete = (software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.Upper)value; AWS.Cryptography.DbEncryptionSDK.DynamoDb.Upper converted = new AWS.Cryptography.DbEncryptionSDK.DynamoDb.Upper(); return converted;
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IUpper ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S5_Upper(AWS.Cryptography.DbEncryptionSDK.DynamoDb.Upper value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.Upper();
     }
@@ -556,6 +678,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._ILower ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S5_Lower(AWS.Cryptography.DbEncryptionSDK.DynamoDb.Lower value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.Lower();
     }
@@ -565,6 +688,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IInsert ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S6_Insert(AWS.Cryptography.DbEncryptionSDK.DynamoDb.Insert value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.Insert(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S6_Insert__M7_literal(value.Literal));
     }
@@ -574,6 +698,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetPrefix ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S9_GetPrefix(AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetPrefix value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetPrefix(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S9_GetPrefix__M6_length(value.Length));
     }
@@ -583,6 +708,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetSuffix ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S9_GetSuffix(AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetSuffix value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetSuffix(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S9_GetSuffix__M6_length(value.Length));
     }
@@ -593,6 +719,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetSubstring ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S12_GetSubstring(AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetSubstring value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetSubstring(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S12_GetSubstring__M3_low(value.Low), ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S12_GetSubstring__M4_high(value.High));
     }
@@ -603,6 +730,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetSegment ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S10_GetSegment(AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetSegment value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetSegment(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S10_GetSegment__M5_split(value.Split), ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S10_GetSegment__M5_index(value.Index));
     }
@@ -614,6 +742,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IGetSegments ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S11_GetSegments(AWS.Cryptography.DbEncryptionSDK.DynamoDb.GetSegments value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetSegments(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S11_GetSegments__M5_split(value.Split), ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S11_GetSegments__M3_low(value.Low), ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S11_GetSegments__M4_high(value.High));
     }
@@ -686,6 +815,30 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
       return FromDafny_N3_com__N9_amazonaws__N8_dynamodb__S14_AttributeValue(value);
     }
     public static software.amazon.cryptography.services.dynamodb.internaldafny.types._IAttributeValue ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S3_Key__M5_value(Amazon.DynamoDBv2.Model.AttributeValue value)
+    {
+      return ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S14_AttributeValue(value);
+    }
+    public static AWS.Cryptography.DbEncryptionSDK.DynamoDb.EncryptedDataKeyDescription FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S31_EncryptedDataKeyDescriptionList__M6_member(software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IEncryptedDataKeyDescription value)
+    {
+      return FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription(value);
+    }
+    public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IEncryptedDataKeyDescription ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S31_EncryptedDataKeyDescriptionList__M6_member(AWS.Cryptography.DbEncryptionSDK.DynamoDb.EncryptedDataKeyDescription value)
+    {
+      return ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription(value);
+    }
+    public static string FromDafny_N3_com__N9_amazonaws__N8_dynamodb__S12_AttributeMap__M3_key(Dafny.ISequence<char> value)
+    {
+      return FromDafny_N3_com__N9_amazonaws__N8_dynamodb__S13_AttributeName(value);
+    }
+    public static Dafny.ISequence<char> ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S12_AttributeMap__M3_key(string value)
+    {
+      return ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S13_AttributeName(value);
+    }
+    public static Amazon.DynamoDBv2.Model.AttributeValue FromDafny_N3_com__N9_amazonaws__N8_dynamodb__S12_AttributeMap__M5_value(software.amazon.cryptography.services.dynamodb.internaldafny.types._IAttributeValue value)
+    {
+      return FromDafny_N3_com__N9_amazonaws__N8_dynamodb__S14_AttributeValue(value);
+    }
+    public static software.amazon.cryptography.services.dynamodb.internaldafny.types._IAttributeValue ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S12_AttributeMap__M5_value(Amazon.DynamoDBv2.Model.AttributeValue value)
     {
       return ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S14_AttributeValue(value);
     }
@@ -809,7 +962,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.materialproviders.internaldafny.types._ICacheType ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S9_CacheType(AWS.Cryptography.MaterialProviders.CacheType value)
     {
-      if (value.IsSetDefault())
+      value.Validate(); if (value.IsSetDefault())
       {
         return software.amazon.cryptography.materialproviders.internaldafny.types.CacheType.create_Default(ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S9_CacheType__M7_Default(value.Default));
       }
@@ -937,6 +1090,21 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
         return software.amazon.cryptography.services.dynamodb.internaldafny.types.AttributeValue.create_BOOL(ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S14_AttributeValue__M4_BOOL(value.BOOL));
       }
       throw new System.ArgumentException("Invalid Amazon.DynamoDBv2.Model.AttributeValue state");
+    }
+    public static AWS.Cryptography.DbEncryptionSDK.DynamoDb.EncryptedDataKeyDescription FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription(software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IEncryptedDataKeyDescription value)
+    {
+      software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.EncryptedDataKeyDescription concrete = (software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.EncryptedDataKeyDescription)value; AWS.Cryptography.DbEncryptionSDK.DynamoDb.EncryptedDataKeyDescription converted = new AWS.Cryptography.DbEncryptionSDK.DynamoDb.EncryptedDataKeyDescription(); converted.KeyProviderId = (string)FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M13_keyProviderId(concrete._keyProviderId);
+      if (concrete._keyProviderInfo.is_Some) converted.KeyProviderInfo = (string)FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M15_keyProviderInfo(concrete._keyProviderInfo);
+      if (concrete._branchKeyId.is_Some) converted.BranchKeyId = (string)FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M11_branchKeyId(concrete._branchKeyId);
+      if (concrete._branchKeyVersion.is_Some) converted.BranchKeyVersion = (string)FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M16_branchKeyVersion(concrete._branchKeyVersion); return converted;
+    }
+    public static software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types._IEncryptedDataKeyDescription ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription(AWS.Cryptography.DbEncryptionSDK.DynamoDb.EncryptedDataKeyDescription value)
+    {
+      value.Validate();
+      string var_keyProviderInfo = value.IsSetKeyProviderInfo() ? value.KeyProviderInfo : (string)null;
+      string var_branchKeyId = value.IsSetBranchKeyId() ? value.BranchKeyId : (string)null;
+      string var_branchKeyVersion = value.IsSetBranchKeyVersion() ? value.BranchKeyVersion : (string)null;
+      return new software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.EncryptedDataKeyDescription(ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M13_keyProviderId(value.KeyProviderId), ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M15_keyProviderInfo(var_keyProviderInfo), ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M11_branchKeyId(var_branchKeyId), ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M16_branchKeyVersion(var_branchKeyVersion));
     }
     public static string FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S4_Char(Dafny.ISequence<char> value)
     {
@@ -1066,12 +1234,45 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     {
       return ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S21_BooleanAttributeValue(value);
     }
+    public static string FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M13_keyProviderId(Dafny.ISequence<char> value)
+    {
+      return FromDafny_N6_smithy__N3_api__S6_String(value);
+    }
+    public static Dafny.ISequence<char> ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M13_keyProviderId(string value)
+    {
+      return ToDafny_N6_smithy__N3_api__S6_String(value);
+    }
+    public static string FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M15_keyProviderInfo(Wrappers_Compile._IOption<Dafny.ISequence<char>> value)
+    {
+      return value.is_None ? (string)null : FromDafny_N6_smithy__N3_api__S6_String(value.Extract());
+    }
+    public static Wrappers_Compile._IOption<Dafny.ISequence<char>> ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M15_keyProviderInfo(string value)
+    {
+      return value == null ? Wrappers_Compile.Option<Dafny.ISequence<char>>.create_None() : Wrappers_Compile.Option<Dafny.ISequence<char>>.create_Some(ToDafny_N6_smithy__N3_api__S6_String((string)value));
+    }
+    public static string FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M11_branchKeyId(Wrappers_Compile._IOption<Dafny.ISequence<char>> value)
+    {
+      return value.is_None ? (string)null : FromDafny_N6_smithy__N3_api__S6_String(value.Extract());
+    }
+    public static Wrappers_Compile._IOption<Dafny.ISequence<char>> ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M11_branchKeyId(string value)
+    {
+      return value == null ? Wrappers_Compile.Option<Dafny.ISequence<char>>.create_None() : Wrappers_Compile.Option<Dafny.ISequence<char>>.create_Some(ToDafny_N6_smithy__N3_api__S6_String((string)value));
+    }
+    public static string FromDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M16_branchKeyVersion(Wrappers_Compile._IOption<Dafny.ISequence<char>> value)
+    {
+      return value.is_None ? (string)null : FromDafny_N6_smithy__N3_api__S6_String(value.Extract());
+    }
+    public static Wrappers_Compile._IOption<Dafny.ISequence<char>> ToDafny_N3_aws__N12_cryptography__N15_dbEncryptionSdk__N8_dynamoDb__S27_EncryptedDataKeyDescription__M16_branchKeyVersion(string value)
+    {
+      return value == null ? Wrappers_Compile.Option<Dafny.ISequence<char>>.create_None() : Wrappers_Compile.Option<Dafny.ISequence<char>>.create_Some(ToDafny_N6_smithy__N3_api__S6_String((string)value));
+    }
     public static AWS.Cryptography.MaterialProviders.DefaultCache FromDafny_N3_aws__N12_cryptography__N17_materialProviders__S12_DefaultCache(software.amazon.cryptography.materialproviders.internaldafny.types._IDefaultCache value)
     {
       software.amazon.cryptography.materialproviders.internaldafny.types.DefaultCache concrete = (software.amazon.cryptography.materialproviders.internaldafny.types.DefaultCache)value; AWS.Cryptography.MaterialProviders.DefaultCache converted = new AWS.Cryptography.MaterialProviders.DefaultCache(); converted.EntryCapacity = (int)FromDafny_N3_aws__N12_cryptography__N17_materialProviders__S12_DefaultCache__M13_entryCapacity(concrete._entryCapacity); return converted;
     }
     public static software.amazon.cryptography.materialproviders.internaldafny.types._IDefaultCache ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S12_DefaultCache(AWS.Cryptography.MaterialProviders.DefaultCache value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.materialproviders.internaldafny.types.DefaultCache(ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S12_DefaultCache__M13_entryCapacity(value.EntryCapacity));
     }
@@ -1081,6 +1282,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.materialproviders.internaldafny.types._INoCache ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S7_NoCache(AWS.Cryptography.MaterialProviders.NoCache value)
     {
+      value.Validate();
 
       return new software.amazon.cryptography.materialproviders.internaldafny.types.NoCache();
     }
@@ -1091,6 +1293,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.materialproviders.internaldafny.types._ISingleThreadedCache ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S19_SingleThreadedCache(AWS.Cryptography.MaterialProviders.SingleThreadedCache value)
     {
+      value.Validate();
       int? var_entryPruningTailSize = value.IsSetEntryPruningTailSize() ? value.EntryPruningTailSize : (int?)null;
       return new software.amazon.cryptography.materialproviders.internaldafny.types.SingleThreadedCache(ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S19_SingleThreadedCache__M13_entryCapacity(value.EntryCapacity), ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S19_SingleThreadedCache__M20_entryPruningTailSize(var_entryPruningTailSize));
     }
@@ -1101,6 +1304,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.materialproviders.internaldafny.types._IMultiThreadedCache ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S18_MultiThreadedCache(AWS.Cryptography.MaterialProviders.MultiThreadedCache value)
     {
+      value.Validate();
       int? var_entryPruningTailSize = value.IsSetEntryPruningTailSize() ? value.EntryPruningTailSize : (int?)null;
       return new software.amazon.cryptography.materialproviders.internaldafny.types.MultiThreadedCache(ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S18_MultiThreadedCache__M13_entryCapacity(value.EntryCapacity), ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S18_MultiThreadedCache__M20_entryPruningTailSize(var_entryPruningTailSize));
     }
@@ -1116,6 +1320,7 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static software.amazon.cryptography.materialproviders.internaldafny.types._IStormTrackingCache ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S18_StormTrackingCache(AWS.Cryptography.MaterialProviders.StormTrackingCache value)
     {
+      value.Validate();
       int? var_entryPruningTailSize = value.IsSetEntryPruningTailSize() ? value.EntryPruningTailSize : (int?)null;
       return new software.amazon.cryptography.materialproviders.internaldafny.types.StormTrackingCache(ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S18_StormTrackingCache__M13_entryCapacity(value.EntryCapacity), ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S18_StormTrackingCache__M20_entryPruningTailSize(var_entryPruningTailSize), ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S18_StormTrackingCache__M11_gracePeriod(value.GracePeriod), ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S18_StormTrackingCache__M13_graceInterval(value.GraceInterval), ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S18_StormTrackingCache__M6_fanOut(value.FanOut), ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S18_StormTrackingCache__M11_inFlightTTL(value.InFlightTTL), ToDafny_N3_aws__N12_cryptography__N17_materialProviders__S18_StormTrackingCache__M10_sleepMilli(value.SleepMilli));
     }
@@ -1141,7 +1346,12 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     }
     public static Dafny.ISequence<byte> ToDafny_N3_com__N9_amazonaws__N8_dynamodb__S20_BinaryAttributeValue(System.IO.MemoryStream value)
     {
+      if (value.ToArray().Length == 0 && value.Length > 0)
+      {
+        throw new System.ArgumentException("Fatal Error: MemoryStream instance not backed by an array!");
+      }
       return Dafny.Sequence<byte>.FromArray(value.ToArray());
+
     }
     public static System.Collections.Generic.List<string> FromDafny_N3_com__N9_amazonaws__N8_dynamodb__S23_StringSetAttributeValue(Dafny.ISequence<Dafny.ISequence<char>> value)
     {
@@ -1357,6 +1567,10 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
     {
       switch (value)
       {
+        case software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.Error_AwsCryptographyDbEncryptionSdkStructuredEncryption dafnyVal:
+          return AWS.Cryptography.DbEncryptionSDK.StructuredEncryption.TypeConversion.FromDafny_CommonError(
+            dafnyVal._AwsCryptographyDbEncryptionSdkStructuredEncryption
+          );
         case software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.Error_AwsCryptographyMaterialProviders dafnyVal:
           return AWS.Cryptography.MaterialProviders.TypeConversion.FromDafny_CommonError(
             dafnyVal._AwsCryptographyMaterialProviders
@@ -1364,10 +1578,6 @@ namespace AWS.Cryptography.DbEncryptionSDK.DynamoDb
         case software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.Error_AwsCryptographyPrimitives dafnyVal:
           return AWS.Cryptography.Primitives.TypeConversion.FromDafny_CommonError(
             dafnyVal._AwsCryptographyPrimitives
-          );
-        case software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.Error_AwsCryptographyDbEncryptionSdkStructuredEncryption dafnyVal:
-          return AWS.Cryptography.DbEncryptionSDK.StructuredEncryption.TypeConversion.FromDafny_CommonError(
-            dafnyVal._AwsCryptographyDbEncryptionSdkStructuredEncryption
           );
         case software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.Error_ComAmazonawsDynamodb dafnyVal:
           return Com.Amazonaws.Dynamodb.TypeConversion.FromDafny_CommonError(

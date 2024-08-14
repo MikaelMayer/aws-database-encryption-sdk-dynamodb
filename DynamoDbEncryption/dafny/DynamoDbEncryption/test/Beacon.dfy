@@ -308,9 +308,9 @@ module TestBaseBeacon {
   {
     var version := GetLotsaBeacons();
     var shareBeacon := T.StandardBeacon(name := "shareBeacon", length := 24, loc := None,
-                                       style := Some(
-                                         T.shared(T.Shared(other := "NameTitle"))
-                                       ));
+                                        style := Some(
+                                          T.shared(T.Shared(other := "NameTitle"))
+                                        ));
 
     var newConfig := FullTableConfig.(attributeActionsOnEncrypt := FullTableConfig.attributeActionsOnEncrypt["shareBeacon" := SE.ENCRYPT_AND_SIGN]);
     version := version.(standardBeacons := version.standardBeacons + [shareBeacon]);
@@ -324,13 +324,13 @@ module TestBaseBeacon {
   {
     var version := GetLotsaBeacons();
     var shareBeacon := T.StandardBeacon(name := "shareBeacon", length := 24, loc := None,
-                                       style := Some(
-                                         T.shared(T.Shared(other := "std2"))
-                                       ));
+                                        style := Some(
+                                          T.shared(T.Shared(other := "std2"))
+                                        ));
     var other := T.StandardBeacon(name := "std4", length := 24, loc := None,
-                                       style := Some(
-                                         T.shared(T.Shared(other := "shareBeacon"))
-                                       ));
+                                  style := Some(
+                                    T.shared(T.Shared(other := "shareBeacon"))
+                                  ));
 
     var newConfig := FullTableConfig.(attributeActionsOnEncrypt := FullTableConfig.attributeActionsOnEncrypt["shareBeacon" := SE.ENCRYPT_AND_SIGN]);
     version := version.(compoundBeacons := None, standardBeacons :=  [std2, shareBeacon, other]);
@@ -344,16 +344,15 @@ module TestBaseBeacon {
   {
     var version := GetLotsaBeacons();
     var shareBeacon := T.StandardBeacon(name := "shareBeacon", length := 24, loc := None,
-                                       style := Some(
-                                         T.shared(T.Shared(other := "shareBeacon"))
-                                       ));
+                                        style := Some(
+                                          T.shared(T.Shared(other := "shareBeacon"))
+                                        ));
 
     var newConfig := FullTableConfig.(attributeActionsOnEncrypt := FullTableConfig.attributeActionsOnEncrypt["shareBeacon" := SE.ENCRYPT_AND_SIGN]);
     version := version.(compoundBeacons := None, standardBeacons :=  [std2, shareBeacon]);
     var src := GetLiteralSource([1,2,3,4,5], version);
     var bv := C.ConvertVersionWithSource(newConfig, version, src);
     expect bv.Failure?;
-    print "\n", bv.error, "\n";
     expect bv.error == E("Beacon shareBeacon is shared to itself.");
   }
 
@@ -361,9 +360,9 @@ module TestBaseBeacon {
   {
     var version := GetLotsaBeacons();
     var shareBeacon := T.StandardBeacon(name := "shareBeacon", length := 24, loc := None,
-                                       style := Some(
-                                         T.shared(T.Shared(other := "DoesNotExist"))
-                                       ));
+                                        style := Some(
+                                          T.shared(T.Shared(other := "DoesNotExist"))
+                                        ));
 
     version := version.(standardBeacons := version.standardBeacons + [shareBeacon]);
     var newConfig := FullTableConfig.(attributeActionsOnEncrypt := FullTableConfig.attributeActionsOnEncrypt["shareBeacon" := SE.ENCRYPT_AND_SIGN]);
@@ -378,9 +377,9 @@ module TestBaseBeacon {
   {
     var version := GetLotsaBeacons();
     var shareBeacon := T.StandardBeacon(name := "shareBeacon", length := 23, loc := None,
-                                       style := Some(
-                                         T.shared(T.Shared(other := "std2"))
-                                       ));
+                                        style := Some(
+                                          T.shared(T.Shared(other := "std2"))
+                                        ));
 
     version := version.(standardBeacons := version.standardBeacons + [shareBeacon]);
     var newConfig := FullTableConfig.(attributeActionsOnEncrypt := FullTableConfig.attributeActionsOnEncrypt["shareBeacon" := SE.ENCRYPT_AND_SIGN]);
@@ -724,20 +723,36 @@ module TestBaseBeacon {
 
   method {:test} CompoundMixed()
   {
-  var Mixed := T.CompoundBeacon (
-                   name := "Mixed",
-                   split := ".",
-                   encrypted := Some([Title]),
-                   signed := Some([Month]),
-                   constructors := Some([
-                                          T.Constructor(parts := [T.ConstructorPart(name := "Name", required := true), T.ConstructorPart(name := "Year", required := true)]),
-                                          T.Constructor(parts := [T.ConstructorPart(name := "Title", required := true), T.ConstructorPart(name := "Month", required := false)])
-                                        ])
-                 );
+    var Mixed := T.CompoundBeacon (
+      name := "Mixed",
+      split := ".",
+      encrypted := Some([Title]),
+      signed := Some([Month]),
+      constructors := Some([
+                             T.Constructor(parts := [T.ConstructorPart(name := "Name", required := true), T.ConstructorPart(name := "Year", required := true)]),
+                             T.Constructor(parts := [T.ConstructorPart(name := "Title", required := true), T.ConstructorPart(name := "Month", required := false)])
+                           ])
+    );
 
     var version := GetLotsaBeacons();
     version := version.(compoundBeacons := Some([Mixed]), signedParts := Some([Year]), encryptedParts := Some([Name]));
     var src := GetLiteralSource([1,2,3,4,5], version);
     var bv :- expect C.ConvertVersionWithSource(FullTableConfig, version, src);
+  }
+
+  method {:test} CheckBytesToHex()
+  {
+    var bytes := [1,2,3,4,5,6,7,0xb7];
+    // These could be asserted instead,
+    // but they get too expensive
+    // on more recent versions of Dafny.
+    expect BytesToHex(bytes, 1) == "1";
+    expect BytesToHex(bytes, 2) == "3";
+    expect BytesToHex(bytes, 3) == "7";
+    expect BytesToHex(bytes, 4) == "7";
+    expect BytesToHex(bytes, 5) == "17";
+    expect BytesToHex(bytes, 6) == "37";
+    expect BytesToHex(bytes, 7) == "37";
+    expect BytesToHex(bytes, 8) == "b7";
   }
 }

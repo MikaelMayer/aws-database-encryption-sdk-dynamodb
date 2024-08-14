@@ -1,44 +1,31 @@
 # This workflow performs tests in .NET.
 name: test dotnet
 
-on: 
-  pull_request:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
-    # Manual trigger for this workflow, either the normal version
-    # or the nightly build that uses the latest Dafny prerelease
-    # (accordingly to the "nightly" parameter).
+on:
+  workflow_call:
     inputs:
-      nightly:
-        description: 'Run the nightly build'
+      dafny:
+        description: "The Dafny version to run"
+        required: true
+        type: string
+      regenerate-code:
+        description: "Regenerate code using smithy-dafny"
         required: false
+        default: false
         type: boolean
-  schedule:
-    # Nightly build against Dafny's nightly prereleases,
-    # for early warning of verification issues or regressions.
-    # Timing chosen to be adequately after Dafny's own nightly build,
-    # but this might need to be tweaked:
-    # https://github.com/dafny-lang/dafny/blob/master/.github/workflows/deep-tests.yml#L16
-    - cron: "30 16 * * *"
+      mpl-head:
+        description: "Running on MPL HEAD"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   testDotNet:
-    # Don't run the nightly build on forks
-    # Disabled until we reintroduce DynamoDbEncryption, since a matrix vector cannot be empty
-    if: (github.event_name != 'schedule' || github.repository_owner == 'aws')
     strategy:
       matrix:
-        library: [
-          DynamoDbEncryption,
-        ]
-        dotnet-version: [ '6.0.x' ]
-        os: [
-          macos-latest,
-          ubuntu-latest,
-          windows-latest
-        ]
+        library: [DynamoDbEncryption]
+        dotnet-version: ["6.0.x"]
+        os: [macos-12, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     permissions:
       id-token: write
@@ -52,25 +39,42 @@ jobs:
           git config --global core.longpaths true
       - uses: actions/checkout@v3
         with:
-          submodules: recursive        
+          submodules: recursive
 
       - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
 
       - name: Setup Dafny
-        uses: dafny-lang/setup-dafny-action@v1.6.1
+        uses: dafny-lang/setup-dafny-action@v1.7.2
         with:
-          # A && B || C is the closest thing to an if .. then ... else ... or ?: expression the GitHub Actions syntax supports.
-          dafny-version: ${{ (github.event_name == 'schedule' || inputs.nightly) && 'nightly-latest' || '4.2.0' }}
+          dafny-version: ${{ inputs.dafny }}
 
-      - name: Download Dependencies 
+      - name: Update MPL submodule if using MPL HEAD
+        if: ${{ inputs.mpl-head == true }}
+        working-directory: submodules/MaterialProviders
+        run: |
+          git checkout main
+          git pull
+          git submodule update --init --recursive
+          git rev-parse HEAD
+
+      - name: Regenerate code using smithy-dafny if necessary
+        if: ${{ inputs.regenerate-code }}
+        uses: ./.github/actions/polymorph_codegen
+        with:
+          dafny: ${{ env.DAFNY_VERSION }}
+          library: ${{ matrix.library }}
+          diff-generated-code: false
+          update-and-regenerate-mpl: true
+
+      - name: Download Dependencies
         working-directory: ./${{ matrix.library }}
         run: make setup_net
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-west-2
           role-to-assume: arn:aws:iam::370957321024:role/GitHub-CI-DDBEC-Dafny-Role-us-west-2
@@ -83,16 +87,16 @@ jobs:
           # This works because `node` is installed by default on GHA runners
           CORES=$(node -e 'console.log(os.cpus().length)')
           make transpile_net CORES=$CORES
-      
+
       - name: Test ${{ matrix.library }} net48
         if: matrix.os == 'windows-latest'
         working-directory: ./${{ matrix.library }}
         shell: bash
         run: |
-            dotnet restore runtimes/net/tests
-            dotnet build runtimes/net/tests
-            make test_net FRAMEWORK=net48
-      
+          dotnet restore runtimes/net/tests
+          dotnet build runtimes/net/tests
+          make test_net FRAMEWORK=net48
+
       - name: Test ${{ matrix.library }} net6.0
         working-directory: ./${{ matrix.library }}
         shell: bash
@@ -104,3 +108,11 @@ jobs:
           else
             make test_net FRAMEWORK=net6.0
           fi
+
+      - name: Test Build and Pack ${{ matrix.library}}
+        shell: bash
+        if: matrix.os != 'windows-latest'
+        working-directory: ./${{ matrix.library }}
+        run: |
+          dotnet build runtimes/net /p:Configuration=Release -nowarn:CS0162,CS0168
+          dotnet pack runtimes/net/DynamoDbEncryption.csproj --no-build /p:Configuration=Release --output build

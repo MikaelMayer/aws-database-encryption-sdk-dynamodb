@@ -13,14 +13,19 @@ import software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types
 import software.amazon.cryptography.dbencryptionsdk.dynamodb.model.CreateDynamoDbEncryptionBranchKeyIdSupplierInput;
 import software.amazon.cryptography.dbencryptionsdk.dynamodb.model.CreateDynamoDbEncryptionBranchKeyIdSupplierOutput;
 import software.amazon.cryptography.dbencryptionsdk.dynamodb.model.DynamoDbEncryptionConfig;
+import software.amazon.cryptography.dbencryptionsdk.dynamodb.model.GetEncryptedDataKeyDescriptionInput;
+import software.amazon.cryptography.dbencryptionsdk.dynamodb.model.GetEncryptedDataKeyDescriptionOutput;
 
 public class DynamoDbEncryption {
+
   private final IDynamoDbEncryptionClient _impl;
 
   protected DynamoDbEncryption(BuilderImpl builder) {
     DynamoDbEncryptionConfig input = builder.DynamoDbEncryptionConfig();
-    software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.DynamoDbEncryptionConfig dafnyValue = ToDafny.DynamoDbEncryptionConfig(input);
-    Result<DynamoDbEncryptionClient, Error> result = __default.DynamoDbEncryption(dafnyValue);
+    software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.DynamoDbEncryptionConfig dafnyValue =
+      ToDafny.DynamoDbEncryptionConfig(input);
+    Result<DynamoDbEncryptionClient, Error> result =
+      __default.DynamoDbEncryption(dafnyValue);
     if (result.is_Failure()) {
       throw ToNative.Error(result.dtor_error());
     }
@@ -42,13 +47,42 @@ public class DynamoDbEncryption {
    * @return Outputs for creating a Branch Key Supplier from a DynamoDB Key Branch Key Id Supplier
    */
   public CreateDynamoDbEncryptionBranchKeyIdSupplierOutput CreateDynamoDbEncryptionBranchKeyIdSupplier(
-      CreateDynamoDbEncryptionBranchKeyIdSupplierInput input) {
-    software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.CreateDynamoDbEncryptionBranchKeyIdSupplierInput dafnyValue = ToDafny.CreateDynamoDbEncryptionBranchKeyIdSupplierInput(input);
-    Result<software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.CreateDynamoDbEncryptionBranchKeyIdSupplierOutput, Error> result = this._impl.CreateDynamoDbEncryptionBranchKeyIdSupplier(dafnyValue);
+    CreateDynamoDbEncryptionBranchKeyIdSupplierInput input
+  ) {
+    software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.CreateDynamoDbEncryptionBranchKeyIdSupplierInput dafnyValue =
+      ToDafny.CreateDynamoDbEncryptionBranchKeyIdSupplierInput(input);
+    Result<
+      software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.CreateDynamoDbEncryptionBranchKeyIdSupplierOutput,
+      Error
+    > result =
+      this._impl.CreateDynamoDbEncryptionBranchKeyIdSupplier(dafnyValue);
     if (result.is_Failure()) {
       throw ToNative.Error(result.dtor_error());
     }
-    return ToNative.CreateDynamoDbEncryptionBranchKeyIdSupplierOutput(result.dtor_value());
+    return ToNative.CreateDynamoDbEncryptionBranchKeyIdSupplierOutput(
+      result.dtor_value()
+    );
+  }
+
+  /**
+   * Returns encrypted data key description.
+   *
+   * @param input Input for getting encrypted data key description.
+   * @return Output for getting encrypted data key description.
+   */
+  public GetEncryptedDataKeyDescriptionOutput GetEncryptedDataKeyDescription(
+    GetEncryptedDataKeyDescriptionInput input
+  ) {
+    software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetEncryptedDataKeyDescriptionInput dafnyValue =
+      ToDafny.GetEncryptedDataKeyDescriptionInput(input);
+    Result<
+      software.amazon.cryptography.dbencryptionsdk.dynamodb.internaldafny.types.GetEncryptedDataKeyDescriptionOutput,
+      Error
+    > result = this._impl.GetEncryptedDataKeyDescription(dafnyValue);
+    if (result.is_Failure()) {
+      throw ToNative.Error(result.dtor_error());
+    }
+    return ToNative.GetEncryptedDataKeyDescriptionOutput(result.dtor_value());
   }
 
   protected IDynamoDbEncryptionClient impl() {
@@ -56,7 +90,9 @@ public class DynamoDbEncryption {
   }
 
   public interface Builder {
-    Builder DynamoDbEncryptionConfig(DynamoDbEncryptionConfig DynamoDbEncryptionConfig);
+    Builder DynamoDbEncryptionConfig(
+      DynamoDbEncryptionConfig DynamoDbEncryptionConfig
+    );
 
     DynamoDbEncryptionConfig DynamoDbEncryptionConfig();
 
@@ -64,12 +100,14 @@ public class DynamoDbEncryption {
   }
 
   static class BuilderImpl implements Builder {
+
     protected DynamoDbEncryptionConfig DynamoDbEncryptionConfig;
 
-    protected BuilderImpl() {
-    }
+    protected BuilderImpl() {}
 
-    public Builder DynamoDbEncryptionConfig(DynamoDbEncryptionConfig DynamoDbEncryptionConfig) {
+    public Builder DynamoDbEncryptionConfig(
+      DynamoDbEncryptionConfig DynamoDbEncryptionConfig
+    ) {
       this.DynamoDbEncryptionConfig = DynamoDbEncryptionConfig;
       return this;
     }
@@ -79,8 +117,10 @@ public class DynamoDbEncryption {
     }
 
     public DynamoDbEncryption build() {
-      if (Objects.isNull(this.DynamoDbEncryptionConfig()))  {
-        throw new IllegalArgumentException("Missing value for required field `DynamoDbEncryptionConfig`");
+      if (Objects.isNull(this.DynamoDbEncryptionConfig())) {
+        throw new IllegalArgumentException(
+          "Missing value for required field `DynamoDbEncryptionConfig`"
+        );
       }
       return new DynamoDbEncryption(this);
     }
