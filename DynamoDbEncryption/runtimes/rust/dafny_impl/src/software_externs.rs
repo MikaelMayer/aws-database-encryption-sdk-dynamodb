@@ -1,3 +1,18 @@
+
+use crate::*;
+
+impl crate::software::amazon::cryptography::services::kms::internaldafny::_default {
+    pub fn KMSClient() -> ::std::rc::Rc<crate::Wrappers::Result<::dafny_runtime::Object<dyn crate::software::amazon::cryptography::services::kms::internaldafny::types::IKMSClient>, ::std::rc::Rc<crate::software::amazon::cryptography::services::kms::internaldafny::types::Error>>> {
+        todo!("amazon::cryptography::services::kms::internaldafny::_default::KMSClient()")
+    }
+}
+
+impl crate::software::amazon::cryptography::services::dynamodb::internaldafny::_default {
+    pub fn DynamoDBClient() -> ::std::rc::Rc<crate::Wrappers::Result<::dafny_runtime::Object<dyn crate::software::amazon::cryptography::services::dynamodb::internaldafny::types::IDynamoDBClient>, ::std::rc::Rc<crate::software::amazon::cryptography::services::dynamodb::internaldafny::types::Error>>> {
+        todo!("amazon::cryptography::services::dynamodb::internaldafny::_default::DynamoDBClient()")
+    }
+}
+
 pub mod software {
     pub mod amazon {
         pub mod cryptography {

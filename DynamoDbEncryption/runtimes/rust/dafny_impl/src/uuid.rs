@@ -6,8 +6,7 @@
 
 pub mod UUID {
     use crate::*;
-    pub struct _default {}
-    impl _default {
+    impl crate::UUID::_default {
         pub fn ToByteArray(
             _bytes: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
         ) -> ::std::rc::Rc<

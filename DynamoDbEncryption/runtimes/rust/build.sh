@@ -12,7 +12,7 @@ ALL_EXTERNS=$(ls dafny_impl/src | grep .rs | grep -v ImplementationFromDafny.rs 
 (cd ../../../DynamoDbEncryption;
 $DAFNY  translate rs --no-verify --emit-uncompilable-code:true \
 --allow-warnings --optimize-erasable-datatype-wrapper:false --allow-external-contracts \
---quantifier-syntax:3 --unicode-char:false --function-syntax:3 \
+--unicode-char:false --function-syntax:3 \
 --include-runtime:true --output runtimes/rust/ImplementationFromDafny UniqueToBuildInRust.dfy $ALL_EXTERNS)
 
 echo "Removing externs";
