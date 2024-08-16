@@ -1,24 +1,34 @@
 // Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-#![allow(warnings, unconditional_panic)]
-#![allow(nonstandard_style)]
+#![deny(warnings, unconditional_panic)]
+#![deny(nonstandard_style)]
+#![deny(clippy::all)]
+
+use crate::*;
+use aws_lc_rs::digest;
+use software::amazon::cryptography::primitives::internaldafny::types::DigestAlgorithm;
 
 impl crate::ExternDigest::_default {
     #[allow(non_snake_case)]
     pub fn Digest(
-        _digestAlgorithm: &::std::rc::Rc<
-            crate::software::amazon::cryptography::primitives::internaldafny::types::DigestAlgorithm,
-        >,
-        _message: &::dafny_runtime::Sequence<u8>,
+        digest_algorithm: &::std::rc::Rc<DigestAlgorithm>,
+        message: &::dafny_runtime::Sequence<u8>,
     ) -> ::std::rc::Rc<
-        crate::Wrappers::Result<
+        Wrappers::Result<
             ::dafny_runtime::Sequence<u8>,
-            ::std::rc::Rc<
-                crate::software::amazon::cryptography::primitives::internaldafny::types::Error,
-            >,
+            ::std::rc::Rc<software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     > {
-        todo!("Digest not implemented");
+        let algorithm = match **digest_algorithm {
+            DigestAlgorithm::SHA_512 {} => &digest::SHA512,
+            DigestAlgorithm::SHA_384 {} => &digest::SHA384,
+            DigestAlgorithm::SHA_256 {} => &digest::SHA256,
+        };
+        let message_vec: Vec<u8> = message.iter().collect();
+        let result = digest::digest(algorithm, &message_vec);
+        ::std::rc::Rc::new(Wrappers::Result::Success {
+            value: result.as_ref().iter().cloned().collect(),
+        })
     }
 }

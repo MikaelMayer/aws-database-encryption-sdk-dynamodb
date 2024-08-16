@@ -1,41 +1,76 @@
 // Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-#![allow(warnings, unconditional_panic)]
-#![allow(nonstandard_style)]
+#![deny(warnings, unconditional_panic)]
+#![deny(nonstandard_style)]
+#![deny(clippy::all)]
 
-pub mod UUID {
-    use crate::*;
-    impl crate::UUID::_default {
-        pub fn ToByteArray(
-            _bytes: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
-        ) -> ::std::rc::Rc<
-            Wrappers::Result<
-                ::dafny_runtime::Sequence<u8>,
-                ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
-            >,
-        > {
-            todo!("UUID::ToByteArray not implemented");
-        }
+use ::uuid::Uuid;
+use crate::*;
 
-        pub fn FromByteArray(
-            _bytes: &::dafny_runtime::Sequence<u8>,
-        ) -> ::std::rc::Rc<
-            Wrappers::Result<
-                ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
-                ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
-            >,
-        > {
-            todo!("UUID::FromByteArray not implemented");
-        }
+impl crate::UUID::_default {
+    #[allow(non_snake_case)]
+    pub fn ToByteArray(
+        bytes: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+    ) -> ::std::rc::Rc<
+        Wrappers::Result<
+            ::dafny_runtime::Sequence<u8>,
+            ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+        >,
+    > {
+        let my_str =
+            dafny_runtime::dafny_runtime_conversions::unicode_chars_false::dafny_string_to_string(
+                bytes,
+            );
+        match Uuid::parse_str(&my_str) {
+                Ok(u) => {
+                    let b = u.as_bytes();
+                    std::rc::Rc::new(Wrappers::Result::Success { value :
+                        b.iter().cloned().collect()
+                    })
+                }
+                Err(e) => {
+                    std::rc::Rc::new(Wrappers::Result::Failure{ error :
+                        dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(
+                            &format!("{my_str} is not a valid UUID ({e})."))
+                    })
+                }
+            }
+    }
 
-        pub fn GenerateUUID() -> ::std::rc::Rc<
-            Wrappers::Result<
-                ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
-                ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
-            >,
-        > {
-            todo!("UUID::GenerateUUID not implemented");
+    #[allow(non_snake_case)]
+    pub fn FromByteArray(
+        bytes: &::dafny_runtime::Sequence<u8>,
+    ) -> ::std::rc::Rc<
+        Wrappers::Result<
+            ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+            ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+        >,
+    > {
+        let vec: Vec<u8> = bytes.iter().collect();
+        if vec.len() != 16 {
+            return std::rc::Rc::new(Wrappers::Result::Failure{ error :
+                    dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string("Not 16 bytes of input to FromByteArray.")
+                });
         }
+        let bytes: ::uuid::Bytes = vec[..16].try_into().unwrap();
+        let uuid = Uuid::from_bytes_ref(&bytes);
+        let my_str = uuid.to_string();
+        std::rc::Rc::new(Wrappers::Result::Success { value :
+                dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&my_str)
+            })
+    }
+
+    #[allow(non_snake_case)]
+    pub fn GenerateUUID() -> ::std::rc::Rc<
+        Wrappers::Result<
+            ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+            ::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>,
+        >,
+    > {
+        let my_str = Uuid::new_v4().to_string();
+        std::rc::Rc::new(Wrappers::Result::Success { value :
+                dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&my_str)
+            })
     }
 }
