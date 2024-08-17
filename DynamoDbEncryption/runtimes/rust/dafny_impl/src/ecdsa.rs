@@ -30,10 +30,12 @@ pub mod Signature {
         fn get_alg(x: &ECDSASignatureAlgorithm) -> &'static EcdsaSigningAlgorithm {
             match x {
                 ECDSASignatureAlgorithm::ECDSA_P256 {} => {
-                    &aws_lc_rs::signature::ECDSA_P256_SHA256_FIXED_SIGNING
+                    // &aws_lc_rs::signature::ECDSA_P256_SHA256_FIXED_SIGNING
+                    &aws_lc_rs::signature::ECDSA_P256_SHA256_ASN1_SIGNING
                 }
                 ECDSASignatureAlgorithm::ECDSA_P384 {} => {
-                    &aws_lc_rs::signature::ECDSA_P384_SHA384_FIXED_SIGNING
+                    // &aws_lc_rs::signature::ECDSA_P384_SHA384_FIXED_SIGNING
+                    &aws_lc_rs::signature::ECDSA_P384_SHA384_ASN1_SIGNING
                 }
             }
         }
@@ -41,10 +43,12 @@ pub mod Signature {
         fn get_ver_alg(x: &ECDSASignatureAlgorithm) -> &'static EcdsaVerificationAlgorithm {
             match x {
                 ECDSASignatureAlgorithm::ECDSA_P256 {} => {
-                    &aws_lc_rs::signature::ECDSA_P256_SHA256_FIXED
+                    // &aws_lc_rs::signature::ECDSA_P256_SHA256_FIXED
+                    &aws_lc_rs::signature::ECDSA_P256_SHA256_ASN1
                 }
                 ECDSASignatureAlgorithm::ECDSA_P384 {} => {
-                    &aws_lc_rs::signature::ECDSA_P384_SHA384_FIXED
+                    // &aws_lc_rs::signature::ECDSA_P384_SHA384_FIXED
+                    &aws_lc_rs::signature::ECDSA_P384_SHA384_ASN1
                 }
             }
         }
@@ -140,7 +144,7 @@ pub mod Signature {
             }
         }
 
-        fn ecdsa_sign(
+        fn ecdsa_sign_inner(
             alg: &ECDSASignatureAlgorithm,
             key: &[u8],
             msg: &[u8],
@@ -152,6 +156,18 @@ pub mod Signature {
                 .sign(&rng, msg)
                 .map_err(|e| format!("{:?}", e))?;
             Ok(sig.as_ref().to_vec())
+        }
+        fn ecdsa_sign(
+            alg: &ECDSASignatureAlgorithm,
+            key: &[u8],
+            msg: &[u8],
+        ) -> Result<Vec<u8>, String> {
+            loop {
+                let result = ecdsa_sign_inner(alg, key, msg)?;
+                if result.len() == 103 {
+                    return Ok(result);
+                }
+            }
         }
 
         pub fn Sign(

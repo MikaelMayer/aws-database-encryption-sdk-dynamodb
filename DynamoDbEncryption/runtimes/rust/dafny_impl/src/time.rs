@@ -5,8 +5,8 @@
 #![deny(nonstandard_style)]
 #![deny(clippy::all)]
 
-use std::time::SystemTime;
 use crate::*;
+use std::time::SystemTime;
 
 impl crate::Time::_default {
     #[allow(non_snake_case)]

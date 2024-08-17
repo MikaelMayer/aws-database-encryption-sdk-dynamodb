@@ -8,9 +8,9 @@
 use crate::software::amazon::cryptography::primitives::internaldafny::types::AESEncryptOutput;
 use crate::software::amazon::cryptography::primitives::internaldafny::types::Error as DafnyError;
 use crate::software::amazon::cryptography::primitives::internaldafny::types::AES_GCM;
+use crate::*;
 use ::std::rc::Rc;
 use aws_lc_rs::aead::{Aad, LessSafeKey, Nonce, UnboundKey};
-use crate::*;
 
 struct DoAESEncryptOutput {
     cipher_text: Vec<u8>,

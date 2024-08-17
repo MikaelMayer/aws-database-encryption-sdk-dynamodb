@@ -20,9 +20,9 @@ pub mod ECDH {
     pub mod ECCUtils {
         use crate::software::amazon::cryptography::primitives::internaldafny::types::ECDHCurveSpec;
         use crate::software::amazon::cryptography::primitives::internaldafny::types::Error as DafnyError;
+        use crate::*;
         use aws_lc_sys;
         use std::rc::Rc;
-        use crate::*;
 
         fn get_nid(x: &ECDHCurveSpec) -> i32 {
             match x {
@@ -73,7 +73,11 @@ pub mod ECDH {
         const ELEM_MAX_BYTES: usize = (ELEM_MAX_BITS + 7) / 8;
         const PUBLIC_KEY_MAX_LEN: usize = 1 + (2 * ELEM_MAX_BYTES);
 
-        pub(crate) fn X509_to_X962(public_key: &[u8], compress: bool, nid : Option<i32>) -> Result<Vec<u8>, String> {
+        pub(crate) fn X509_to_X962(
+            public_key: &[u8],
+            compress: bool,
+            nid: Option<i32>,
+        ) -> Result<Vec<u8>, String> {
             let mut cbs = CBS {
                 data: public_key.as_ptr(),
                 len: public_key.len(),
@@ -393,8 +397,8 @@ pub mod ECDH {
     pub mod DeriveSharedSecret {
         use crate::software::amazon::cryptography::primitives::internaldafny::types::ECDHCurveSpec;
         use crate::software::amazon::cryptography::primitives::internaldafny::types::Error as DafnyError;
-        use std::rc::Rc;
         use crate::*;
+        use std::rc::Rc;
 
         pub fn agree(
             curve_algorithm: &ECDHCurveSpec,
@@ -441,10 +445,10 @@ pub mod ECDH {
     pub mod KeyGeneration {
         use crate::software::amazon::cryptography::primitives::internaldafny::types::ECDHCurveSpec;
         use crate::software::amazon::cryptography::primitives::internaldafny::types::Error as DafnyError;
+        use crate::*;
         use aws_lc_rs::encoding::AsDer;
         use aws_lc_rs::encoding::EcPrivateKeyRfc5915Der;
         use std::rc::Rc;
-        use crate::*;
 
         fn ecdsa_key_gen(alg: &ECDHCurveSpec) -> Result<(Vec<u8>, Vec<u8>), String> {
             let private_key =
@@ -489,8 +493,8 @@ pub mod ECDH {
     mod tests {
         use super::*;
         use crate::software::amazon::cryptography::primitives::internaldafny::types::ECDHCurveSpec;
-        use std::rc::Rc;
         use crate::*;
+        use std::rc::Rc;
 
         #[test]
         fn test_generate() {
