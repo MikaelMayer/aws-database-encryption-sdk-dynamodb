@@ -18,11 +18,14 @@ TEST_FILES_DYNAMODBITEMENCRYPTOR=$(ls ../../dafny/DynamoDbItemEncryptor/test | g
 # Same but for StructuredEncryption
 TEST_FILES_STRUCTUREDENCRYPTION=$(ls ../../dafny/StructuredEncryption/test | grep .dfy | xargs -I{} echo dafny/StructuredEncryption/test/{})
 
+TEST_FILES_TESTVECTORS=../TestVectors/dafny/DDBEncryption/test/RunMain.dfy
+
 (cd ../..;
 $DAFNY  translate rs --no-verify --emit-uncompilable-code:true \
 --allow-warnings --optimize-erasable-datatype-wrapper:false --allow-external-contracts \
 --unicode-char:false --function-syntax:3 \
 --include-runtime:true --output runtimes/rust/ImplementationFromDafny UniqueToBuildInRust.dfy \
+ $TEST_FILES_TESTVECTORS \
  $TEST_FILES_DYNAMODBENCRYPTION \
  $TEST_FILES_DYNAMODBENCRYPTIONTRANSFORMS \
  $TEST_FILES_DYNAMODBITEMENCRYPTOR \
