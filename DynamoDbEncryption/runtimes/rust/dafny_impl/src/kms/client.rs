@@ -196,39 +196,22 @@ use std::any::Any;
 impl crate::r#software::amazon::cryptography::services::kms::internaldafny::_default {
     #[allow(non_snake_case)]
     pub fn KMSClientForRegion(region: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>) -> ::std::rc::Rc<crate::Wrappers::Result<::dafny_runtime::Object<dyn crate::software::amazon::cryptography::services::kms::internaldafny::types::IKMSClient>, ::std::rc::Rc<crate::software::amazon::cryptography::services::kms::internaldafny::types::Error>>>{
-        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
-        println!("KMSClientForRegion-1 fds: {}", num_fds);
         let region =
             dafny_runtime::dafny_runtime_conversions::unicode_chars_false::dafny_string_to_string(
                 region,
             );
 
-        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
-        println!("KMSClientForRegion-2 fds: {}", num_fds);
-
-        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
-        println!("KMSClientForRegion-3 fds: {}", num_fds);
-
         let shared_config = rt().block_on(aws_config::load_defaults(
             aws_config::BehaviorVersion::v2024_03_28(),
         ));
-        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
-        println!("KMSClientForRegion-4 fds: {}", num_fds);
+
         let shared_config = shared_config
             .to_builder()
             .region(Region::new(region))
             .build();
-        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
-        println!("KMSClientForRegion-5 fds: {}", num_fds);
         let inner = aws_sdk_kms::Client::new(&shared_config);
-        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
-        println!("KMSClientForRegion-6 fds: {}", num_fds);
         let client = Client { inner };
-        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
-        println!("KMSClientForRegion-7 fds: {}", num_fds);
         let dafny_client = ::dafny_runtime::upcast_object()(::dafny_runtime::object::new(client));
-        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
-        println!("KMSClientForRegion-8 fds: {}", num_fds);
         std::rc::Rc::new(crate::Wrappers::Result::Success {
             value: dafny_client,
         })

@@ -50,6 +50,8 @@ impl AES_GCM {
             ))
         } else if *self.keyLength() == 32i32 {
             Ok(&aws_lc_rs::aead::AES_256_GCM)
+        } else if *self.keyLength() == 24i32 {
+            Ok(&aws_lc_rs::aead::AES_256_GCM)
         } else if *self.keyLength() == 16i32 {
             Ok(&aws_lc_rs::aead::AES_128_GCM)
         } else {
