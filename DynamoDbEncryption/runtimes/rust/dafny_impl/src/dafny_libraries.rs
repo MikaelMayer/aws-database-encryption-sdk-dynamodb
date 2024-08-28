@@ -86,20 +86,20 @@ pub mod DafnyLibraries {
         ) {
             let file_name = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::dafny_string_to_string(file);
             let path = Path::new(&file_name);
-            let display = path.display();
 
             let mut file = match File::open(path) {
                 Err(why) => {
-                    let err_msg = format!("couldn't open {}: {}", display, why);
+                    let err_msg = format!("couldn't open {} for reading: {}", path.display(), why);
                     let err_msg = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&err_msg);
                     return (true, dafny_runtime::Sequence::default(), err_msg);
                 }
                 Ok(file) => file,
             };
+
             let mut result = Vec::new();
             match file.read_to_end(&mut result) {
                 Err(why) => {
-                    let err_msg = format!("couldn't read {}: {}", display, why);
+                    let err_msg = format!("couldn't read from {}: {}", path.display(), why);
                     let err_msg = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&err_msg);
                     (true, dafny_runtime::Sequence::default(), err_msg)
                 }
@@ -120,20 +120,25 @@ pub mod DafnyLibraries {
         ) {
             let file_name = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::dafny_string_to_string(path);
             let path = Path::new(&file_name);
-            let display = path.display();
 
-            let mut file = match File::open(path) {
+            let maybe_file = std::fs::OpenOptions::new()
+                .write(true)
+                .create(true)
+                .truncate(true)
+                .open(path);
+            let mut file = match maybe_file {
                 Err(why) => {
-                    let err_msg = format!("couldn't open {}: {}", display, why);
+                    let err_msg = format!("couldn't open {} for writing: {}", path.display(), why);
                     let err_msg = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&err_msg);
                     return (true, err_msg);
                 }
                 Ok(file) => file,
             };
+
             let bytes = bytes.to_array();
             match file.write_all(&bytes) {
                 Err(why) => {
-                    let err_msg = format!("couldn't read {}: {}", display, why);
+                    let err_msg = format!("couldn't write all bytes to {}: {}", path.display(), why);
                     let err_msg = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&err_msg);
                     (true, err_msg)
                 }

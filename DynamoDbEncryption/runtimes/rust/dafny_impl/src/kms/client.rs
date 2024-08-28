@@ -5,8 +5,13 @@ use crate::kms::conversions;
 
 struct Client {
     inner: aws_sdk_kms::Client,
+}
 
-    rt: tokio::runtime::Runtime,
+fn rt() -> tokio::runtime::Runtime {
+    tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap()
 }
 
 impl dafny_runtime::UpcastObject<dyn std::any::Any> for Client {
@@ -26,7 +31,7 @@ impl crate::r#software::amazon::cryptography::services::kms::internaldafny::type
     std::rc::Rc<crate::r#software::amazon::cryptography::services::kms::internaldafny::types::Error>
   >
     >{
-        let native_result = self.rt.block_on(
+        let native_result = rt().block_on(
             conversions::decrypt::_decrypt_request::from_dafny(input.clone(), self.inner.clone())
                 .send(),
         );
@@ -42,7 +47,7 @@ impl crate::r#software::amazon::cryptography::services::kms::internaldafny::type
     std::rc::Rc<crate::r#software::amazon::cryptography::services::kms::internaldafny::types::Error>
   >
     >{
-        let native_result = self.rt.block_on(
+        let native_result = rt().block_on(
             conversions::derive_shared_secret::_derive_shared_secret_request::from_dafny(
                 input.clone(),
                 self.inner.clone(),
@@ -61,7 +66,7 @@ impl crate::r#software::amazon::cryptography::services::kms::internaldafny::type
     std::rc::Rc<crate::r#software::amazon::cryptography::services::kms::internaldafny::types::Error>
   >
     >{
-        let native_result = self.rt.block_on(
+        let native_result = rt().block_on(
             conversions::encrypt::_encrypt_request::from_dafny(input.clone(), self.inner.clone())
                 .send(),
         );
@@ -77,7 +82,7 @@ impl crate::r#software::amazon::cryptography::services::kms::internaldafny::type
     std::rc::Rc<crate::r#software::amazon::cryptography::services::kms::internaldafny::types::Error>
   >
     >{
-        let native_result = self.rt.block_on(
+        let native_result = rt().block_on(
             conversions::generate_data_key::_generate_data_key_request::from_dafny(
                 input.clone(),
                 self.inner.clone(),
@@ -97,7 +102,7 @@ impl crate::r#software::amazon::cryptography::services::kms::internaldafny::type
   >
     >{
         let native_result =
-    self.rt.block_on(conversions::generate_data_key_without_plaintext::_generate_data_key_without_plaintext_request::from_dafny(input.clone(), self.inner.clone()).send());
+    rt().block_on(conversions::generate_data_key_without_plaintext::_generate_data_key_without_plaintext_request::from_dafny(input.clone(), self.inner.clone()).send());
         crate::kms::standard_library_conversions::result_to_dafny(&native_result,
     conversions::generate_data_key_without_plaintext::_generate_data_key_without_plaintext_response::to_dafny,
     conversions::generate_data_key_without_plaintext::to_dafny_error)
@@ -108,7 +113,7 @@ impl crate::r#software::amazon::cryptography::services::kms::internaldafny::type
     std::rc::Rc<crate::r#software::amazon::cryptography::services::kms::internaldafny::types::Error>
   >
     >{
-        let native_result = self.rt.block_on(
+        let native_result = rt().block_on(
             conversions::get_public_key::_get_public_key_request::from_dafny(
                 input.clone(),
                 self.inner.clone(),
@@ -127,7 +132,7 @@ impl crate::r#software::amazon::cryptography::services::kms::internaldafny::type
     std::rc::Rc<crate::r#software::amazon::cryptography::services::kms::internaldafny::types::Error>
   >
     >{
-        let native_result = self.rt.block_on(
+        let native_result = rt().block_on(
             conversions::re_encrypt::_re_encrypt_request::from_dafny(
                 input.clone(),
                 self.inner.clone(),
@@ -151,7 +156,7 @@ impl crate::r#software::amazon::cryptography::services::kms::internaldafny::type
             >,
         >,
     > {
-        let native_result = self.rt.block_on(
+        let native_result = rt().block_on(
             conversions::update_primary_region::_update_primary_region_request::from_dafny(
                 input.clone(),
                 self.inner.clone(),
@@ -174,19 +179,11 @@ impl crate::r#software::amazon::cryptography::services::kms::internaldafny::_def
       ::std::rc::Rc<crate::r#software::amazon::cryptography::services::kms::internaldafny::types::Error>
       >
     >{
-        let rt_result = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build();
-        if rt_result.is_err() {
-            return conversions::error::to_opaque_error_result(rt_result.err());
-        }
-        let rt = rt_result.unwrap();
-
-        let shared_config = rt.block_on(aws_config::load_defaults(
+        let shared_config = rt().block_on(aws_config::load_defaults(
             aws_config::BehaviorVersion::v2024_03_28(),
         ));
         let inner = aws_sdk_kms::Client::new(&shared_config);
-        let client = Client { inner, rt };
+        let client = Client { inner };
         let dafny_client = ::dafny_runtime::upcast_object()(::dafny_runtime::object::new(client));
         std::rc::Rc::new(crate::Wrappers::Result::Success {
             value: dafny_client,
@@ -199,29 +196,39 @@ use std::any::Any;
 impl crate::r#software::amazon::cryptography::services::kms::internaldafny::_default {
     #[allow(non_snake_case)]
     pub fn KMSClientForRegion(region: &::dafny_runtime::Sequence<::dafny_runtime::DafnyCharUTF16>) -> ::std::rc::Rc<crate::Wrappers::Result<::dafny_runtime::Object<dyn crate::software::amazon::cryptography::services::kms::internaldafny::types::IKMSClient>, ::std::rc::Rc<crate::software::amazon::cryptography::services::kms::internaldafny::types::Error>>>{
+        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
+        println!("KMSClientForRegion-1 fds: {}", num_fds);
         let region =
             dafny_runtime::dafny_runtime_conversions::unicode_chars_false::dafny_string_to_string(
                 region,
             );
 
-        let rt_result = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build();
-        if rt_result.is_err() {
-            return conversions::error::to_opaque_error_result(rt_result.err());
-        }
-        let rt = rt_result.unwrap();
+        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
+        println!("KMSClientForRegion-2 fds: {}", num_fds);
 
-        let shared_config = rt.block_on(aws_config::load_defaults(
+        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
+        println!("KMSClientForRegion-3 fds: {}", num_fds);
+
+        let shared_config = rt().block_on(aws_config::load_defaults(
             aws_config::BehaviorVersion::v2024_03_28(),
         ));
+        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
+        println!("KMSClientForRegion-4 fds: {}", num_fds);
         let shared_config = shared_config
             .to_builder()
             .region(Region::new(region))
             .build();
+        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
+        println!("KMSClientForRegion-5 fds: {}", num_fds);
         let inner = aws_sdk_kms::Client::new(&shared_config);
-        let client = Client { inner, rt };
+        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
+        println!("KMSClientForRegion-6 fds: {}", num_fds);
+        let client = Client { inner };
+        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
+        println!("KMSClientForRegion-7 fds: {}", num_fds);
         let dafny_client = ::dafny_runtime::upcast_object()(::dafny_runtime::object::new(client));
+        let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
+        println!("KMSClientForRegion-8 fds: {}", num_fds);
         std::rc::Rc::new(crate::Wrappers::Result::Success {
             value: dafny_client,
         })
