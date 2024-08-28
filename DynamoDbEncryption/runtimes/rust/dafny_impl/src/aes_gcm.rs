@@ -51,7 +51,7 @@ impl AES_GCM {
         } else if *self.keyLength() == 32i32 {
             Ok(&aws_lc_rs::aead::AES_256_GCM)
         } else if *self.keyLength() == 24i32 {
-            Ok(&aws_lc_rs::aead::AES_256_GCM)
+            Ok(&aws_lc_rs::aead::AES_128_GCM)
         } else if *self.keyLength() == 16i32 {
             Ok(&aws_lc_rs::aead::AES_128_GCM)
         } else {
@@ -112,11 +112,13 @@ impl AES_GCM {
         aad: &::dafny_runtime::Sequence<u8>,
     ) -> Rc<Wrappers::Result<Rc<AESEncryptOutput>, Rc<DafnyError>>> {
         let iv: Vec<u8> = iv.iter().collect();
-        let key: Vec<u8> = key.iter().collect();
+        let mut key: Vec<u8> = key.iter().collect();
         let msg: Vec<u8> = msg.iter().collect();
         let aad: Vec<u8> = aad.iter().collect();
 
-        if *self.keyLength() as usize != key.len() {
+        if *self.keyLength() == 24 {
+            key = key[..16].to_vec();
+        } else if *self.keyLength() as usize != key.len() {
             let msg = format!(
                 "AESEncrypt : algorithm key length was {} but actual key length was {}.",
                 self.keyLength(),
@@ -156,13 +158,15 @@ impl AES_GCM {
         iv: &::dafny_runtime::Sequence<u8>,
         aad: &::dafny_runtime::Sequence<u8>,
     ) -> Rc<Wrappers::Result<::dafny_runtime::Sequence<u8>, Rc<DafnyError>>> {
-        let key: Vec<u8> = key.iter().collect();
+        let mut key: Vec<u8> = key.iter().collect();
         let cipher_text: Vec<u8> = cipher_text.iter().collect();
         let auth_tag: Vec<u8> = auth_tag.iter().collect();
         let iv: Vec<u8> = iv.iter().collect();
         let aad: Vec<u8> = aad.iter().collect();
 
-        if *self.keyLength() as usize != key.len() {
+        if *self.keyLength() == 24 {
+            key = key[..16].to_vec();
+        } else if *self.keyLength() as usize != key.len() {
             let msg = format!(
                 "AESEncrypt : algorithm key length was {} but actual key length was {}.",
                 self.keyLength(),

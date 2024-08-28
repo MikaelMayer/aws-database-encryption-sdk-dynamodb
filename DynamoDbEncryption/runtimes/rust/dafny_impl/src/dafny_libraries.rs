@@ -138,7 +138,8 @@ pub mod DafnyLibraries {
             let bytes = bytes.to_array();
             match file.write_all(&bytes) {
                 Err(why) => {
-                    let err_msg = format!("couldn't write all bytes to {}: {}", path.display(), why);
+                    let err_msg =
+                        format!("couldn't write all bytes to {}: {}", path.display(), why);
                     let err_msg = dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&err_msg);
                     (true, err_msg)
                 }

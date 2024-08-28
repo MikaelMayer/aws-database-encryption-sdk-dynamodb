@@ -7,11 +7,18 @@ struct Client {
     inner: aws_sdk_kms::Client,
 }
 
-fn rt() -> tokio::runtime::Runtime {
+static THE_RUNTIME: std::sync::LazyLock<tokio::runtime::Runtime> =
+    std::sync::LazyLock::new(|| make_rt());
+
+fn make_rt() -> tokio::runtime::Runtime {
     tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
         .unwrap()
+}
+
+fn rt() -> &'static tokio::runtime::Runtime {
+    &*THE_RUNTIME
 }
 
 impl dafny_runtime::UpcastObject<dyn std::any::Any> for Client {
