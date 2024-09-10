@@ -50,8 +50,6 @@ impl AES_GCM {
             ))
         } else if *self.keyLength() == 32i32 {
             Ok(&aws_lc_rs::aead::AES_256_GCM)
-        } else if *self.keyLength() == 24i32 {
-            Ok(&aws_lc_rs::aead::AES_128_GCM)
         } else if *self.keyLength() == 16i32 {
             Ok(&aws_lc_rs::aead::AES_128_GCM)
         } else {
@@ -116,9 +114,7 @@ impl AES_GCM {
         let msg: Vec<u8> = msg.iter().collect();
         let aad: Vec<u8> = aad.iter().collect();
 
-        if *self.keyLength() == 24 {
-            key = key[..16].to_vec();
-        } else if *self.keyLength() as usize != key.len() {
+        if *self.keyLength() as usize != key.len() {
             let msg = format!(
                 "AESEncrypt : algorithm key length was {} but actual key length was {}.",
                 self.keyLength(),
@@ -164,9 +160,7 @@ impl AES_GCM {
         let iv: Vec<u8> = iv.iter().collect();
         let aad: Vec<u8> = aad.iter().collect();
 
-        if *self.keyLength() == 24 {
-            key = key[..16].to_vec();
-        } else if *self.keyLength() as usize != key.len() {
+        if *self.keyLength() as usize != key.len() {
             let msg = format!(
                 "AESEncrypt : algorithm key length was {} but actual key length was {}.",
                 self.keyLength(),
