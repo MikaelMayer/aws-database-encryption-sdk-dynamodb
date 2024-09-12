@@ -3,162 +3,164 @@
 // Do not modify this file. This file is machine generated, and any changes to it will be overwritten.
 pub mod archival_summary;
 
-pub mod attribute_action;
+ pub mod attribute_action;
 
-pub mod attribute_definition;
+ pub mod attribute_definition;
 
-pub mod attribute_value;
+ pub mod attribute_value;
 
-pub mod attribute_value_update;
+ pub mod attribute_value_update;
 
-pub mod batch_execute_statement;
+ pub mod batch_execute_statement;
 
-pub mod batch_get_item;
+ pub mod batch_get_item;
 
-pub mod batch_statement_error;
+ pub mod batch_statement_error;
 
-pub mod batch_statement_error_code_enum;
+ pub mod batch_statement_error_code_enum;
 
-pub mod batch_statement_request;
+ pub mod batch_statement_request;
 
-pub mod batch_statement_response;
+ pub mod batch_statement_response;
 
-pub mod batch_write_item;
+ pub mod batch_write_item;
 
-pub mod billing_mode;
+ pub mod billing_mode;
 
-pub mod billing_mode_summary;
+ pub mod billing_mode_summary;
 
-pub mod cancellation_reason;
+ pub mod cancellation_reason;
 
-pub mod capacity;
+ pub mod capacity;
 
-pub mod comparison_operator;
+ pub mod client;
 
-pub mod condition;
+ pub mod comparison_operator;
 
-pub mod condition_check;
+ pub mod condition;
 
-pub mod conditional_operator;
+ pub mod condition_check;
 
-pub mod consumed_capacity;
+ pub mod conditional_operator;
 
-pub mod create_table;
+ pub mod consumed_capacity;
 
-pub mod delete;
+ pub mod create_table;
 
-pub mod delete_item;
+ pub mod delete;
 
-pub mod delete_request;
+ pub mod delete_item;
 
-pub mod describe_table;
+ pub mod delete_request;
 
-pub mod error;
+ pub mod describe_table;
 
-pub mod execute_statement;
+ pub mod error;
 
-pub mod execute_transaction;
+ pub mod execute_statement;
 
-pub mod expected_attribute_value;
+ pub mod execute_transaction;
 
-pub mod get;
+ pub mod expected_attribute_value;
 
-pub mod get_item;
+ pub mod get;
 
-pub mod global_secondary_index;
+ pub mod get_item;
 
-pub mod global_secondary_index_description;
+ pub mod global_secondary_index;
 
-pub mod index_status;
+ pub mod global_secondary_index_description;
 
-pub mod item_collection_metrics;
+ pub mod index_status;
 
-pub mod item_response;
+ pub mod item_collection_metrics;
 
-pub mod key_schema_element;
+ pub mod item_response;
 
-pub mod key_type;
+ pub mod key_schema_element;
 
-pub mod keys_and_attributes;
+ pub mod key_type;
 
-pub mod local_secondary_index;
+ pub mod keys_and_attributes;
 
-pub mod local_secondary_index_description;
+ pub mod local_secondary_index;
 
-pub mod parameterized_statement;
+ pub mod local_secondary_index_description;
 
-pub mod projection;
+ pub mod parameterized_statement;
 
-pub mod projection_type;
+ pub mod projection;
 
-pub mod provisioned_throughput;
+ pub mod projection_type;
 
-pub mod provisioned_throughput_description;
+ pub mod provisioned_throughput;
 
-pub mod provisioned_throughput_override;
+ pub mod provisioned_throughput_description;
 
-pub mod put;
+ pub mod provisioned_throughput_override;
 
-pub mod put_item;
+ pub mod put;
 
-pub mod put_request;
+ pub mod put_item;
 
-pub mod query;
+ pub mod put_request;
 
-pub mod replica_description;
+ pub mod query;
 
-pub mod replica_global_secondary_index_description;
+ pub mod replica_description;
 
-pub mod replica_status;
+ pub mod replica_global_secondary_index_description;
 
-pub mod restore_summary;
+ pub mod replica_status;
 
-pub mod return_consumed_capacity;
+ pub mod restore_summary;
 
-pub mod return_item_collection_metrics;
+ pub mod return_consumed_capacity;
 
-pub mod return_value;
+ pub mod return_item_collection_metrics;
 
-pub mod return_values_on_condition_check_failure;
+ pub mod return_value;
 
-pub mod scalar_attribute_type;
+ pub mod return_values_on_condition_check_failure;
 
-pub mod scan;
+ pub mod scalar_attribute_type;
 
-pub mod select;
+ pub mod scan;
 
-pub mod sse_description;
+ pub mod select;
 
-pub mod sse_specification;
+ pub mod sse_description;
 
-pub mod sse_status;
+ pub mod sse_specification;
 
-pub mod sse_type;
+ pub mod sse_status;
 
-pub mod stream_specification;
+ pub mod sse_type;
 
-pub mod stream_view_type;
+ pub mod stream_specification;
 
-pub mod table_class;
+ pub mod stream_view_type;
 
-pub mod table_class_summary;
+ pub mod table_class;
 
-pub mod table_description;
+ pub mod table_class_summary;
 
-pub mod table_status;
+ pub mod table_description;
 
-pub mod tag;
+ pub mod table_status;
 
-pub mod transact_get_item;
+ pub mod tag;
 
-pub mod transact_get_items;
+ pub mod transact_get_item;
 
-pub mod transact_write_item;
+ pub mod transact_get_items;
 
-pub mod transact_write_items;
+ pub mod transact_write_item;
 
-pub mod update;
+ pub mod transact_write_items;
 
-pub mod update_item;
+ pub mod update;
 
-pub mod write_request;
+ pub mod update_item;
+
+ pub mod write_request;

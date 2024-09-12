@@ -13,7 +13,7 @@ pub fn to_dafny(
     Some(x) => crate::Wrappers::Option::Some { value :
         ::dafny_runtime::dafny_runtime_conversions::hashmap_to_dafny_map(x,
             |k| dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&k),
-            |v| crate::ddb::conversions::attribute_value::to_dafny(&v)
+            |v| crate::ddb::conversions::attribute_value::to_dafny(v)
 ,
         )
     },
@@ -21,14 +21,15 @@ pub fn to_dafny(
 })
 ,
  ConsumedCapacity: ::std::rc::Rc::new(match &value.consumed_capacity {
-    Some(x) => crate::Wrappers::Option::Some { value: crate::ddb::conversions::consumed_capacity::to_dafny(&x) },
+    Some(x) => crate::Wrappers::Option::Some { value: crate::ddb::conversions::consumed_capacity::to_dafny(x) },
     None => crate::Wrappers::Option::None { }
 })
 ,
  ItemCollectionMetrics: ::std::rc::Rc::new(match &value.item_collection_metrics {
-    Some(x) => crate::Wrappers::Option::Some { value: crate::ddb::conversions::item_collection_metrics::to_dafny(&x) },
+    Some(x) => crate::Wrappers::Option::Some { value: crate::ddb::conversions::item_collection_metrics::to_dafny(x) },
     None => crate::Wrappers::Option::None { }
 })
 ,
     })
 }
+ 

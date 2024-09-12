@@ -6,7 +6,7 @@ pub fn to_dafny(
     value: &aws_sdk_dynamodb::operation::scan::ScanInput,
 ) -> ::std::rc::Rc<
     crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::ScanInput,
-> {
+>{
     ::std::rc::Rc::new(crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::ScanInput::ScanInput {
         TableName: crate::ddb::standard_library_conversions::ostring_to_dafny(&value.table_name) .Extract(),
  IndexName: crate::ddb::standard_library_conversions::ostring_to_dafny(&value.index_name),
@@ -30,7 +30,7 @@ pub fn to_dafny(
     Some(x) => crate::Wrappers::Option::Some { value :
         ::dafny_runtime::dafny_runtime_conversions::hashmap_to_dafny_map(x,
             |k| dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&k),
-            |v| crate::ddb::conversions::condition::to_dafny(&v)
+            |v| crate::ddb::conversions::condition::to_dafny(v)
 ,
         )
     },
@@ -47,7 +47,7 @@ pub fn to_dafny(
     Some(x) => crate::Wrappers::Option::Some { value :
         ::dafny_runtime::dafny_runtime_conversions::hashmap_to_dafny_map(x,
             |k| dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&k),
-            |v| crate::ddb::conversions::attribute_value::to_dafny(&v)
+            |v| crate::ddb::conversions::attribute_value::to_dafny(v)
 ,
         )
     },
@@ -79,7 +79,7 @@ pub fn to_dafny(
     Some(x) => crate::Wrappers::Option::Some { value :
         ::dafny_runtime::dafny_runtime_conversions::hashmap_to_dafny_map(x,
             |k| dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&k),
-            |v| crate::ddb::conversions::attribute_value::to_dafny(&v)
+            |v| crate::ddb::conversions::attribute_value::to_dafny(v)
 ,
         )
     },
@@ -89,7 +89,7 @@ pub fn to_dafny(
  ConsistentRead: crate::ddb::standard_library_conversions::obool_to_dafny(&value.consistent_read),
     })
 }
-#[allow(dead_code)]
+ #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
         crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::ScanInput,

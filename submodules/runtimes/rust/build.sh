@@ -6,7 +6,7 @@ if [ -z "$DAFNY" ]; then
   DAFNY=~/Documents/dafny/Binaries/Dafny.exe
 fi
 #CURRENT_ABSOLUTE_PATH=`cd ../..; pwd`
-MPL=C:/Users/mimayere/Documents/aws-database-encryption-sdk-dynamodb-java/submodules/MaterialProviders/
+MPL=/Users/ajewell/test_mpl_rust/aws-database-encryption-sdk-dynamodb/submodules/MaterialProviders/
 
 IMPL=runtimes/rust/dafny_impl/src
 # List all the files in the folder $IMPL with extension .rs except ImplementationFromDafny.rs
@@ -14,7 +14,7 @@ IMPL=runtimes/rust/dafny_impl/src
 ALL_EXTERNS=$(ls dafny_impl/src | grep .rs | grep -v ImplementationFromDafny.rs | xargs -I{} echo $IMPL/{})
 
 (cd ../../../submodules;
-$DAFNY translate rs --no-verify --emit-uncompilable-code:true \
+dafny translate rs --no-verify --emit-uncompilable-code:true \
 --allow-warnings --optimize-erasable-datatype-wrapper:false --allow-external-contracts \
 --quantifier-syntax:3 --unicode-char:false --function-syntax:3 \
 --include-runtime:true --output runtimes/rust/ImplementationFromDafny \

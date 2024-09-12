@@ -47,15 +47,20 @@ pub mod HMAC {
     #[allow(non_camel_case_types)]
     pub struct _default {}
 
+    #[derive(Debug)]
     pub struct HMac {
         algorithm: hmac::Algorithm,
         context: Option<hmac::Context>,
+        key: Option<hmac::Key>,
     }
     impl HMac {
         pub fn Init(&mut self, salt: &::dafny_runtime::Sequence<u8>) {
-            let key: Vec<u8> = salt.iter().collect();
-            let s_key = hmac::Key::new(self.algorithm, &key);
-            self.context = Some(hmac::Context::with_key(&s_key));
+            let salt: Vec<u8> = salt.iter().collect();
+            self.key = Some(hmac::Key::new(self.algorithm, &salt));
+            self.context = Some(hmac::Context::with_key(self.key.as_ref().unwrap()));
+        }
+        pub fn re_init(&mut self) {
+            self.context = Some(hmac::Context::with_key(self.key.as_ref().unwrap()));
         }
         pub fn Build(
             input: &::std::rc::Rc<
@@ -72,6 +77,7 @@ pub mod HMAC {
             let inner = dafny_runtime::Object::new(Self {
                 algorithm: super::convert_algorithm(input),
                 context: None,
+                key: None,
             });
 
             ::std::rc::Rc::new(Wrappers::Result::Success { value: inner })
@@ -85,6 +91,9 @@ pub mod HMAC {
             match inner {
                 Some(x) => {
                     let tag = x.sign();
+                    // other languages allow you to call BlockUpdate after GetResult
+                    // so we re-initialize to mimic that behavior
+                    self.re_init();
                     tag.as_ref().iter().cloned().collect()
                 }
                 None => [].iter().cloned().collect(),

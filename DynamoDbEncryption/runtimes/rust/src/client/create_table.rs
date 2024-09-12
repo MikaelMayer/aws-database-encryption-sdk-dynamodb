@@ -1,0 +1,25 @@
+// Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+// Do not modify this file. This file is machine generated, and any changes to it will be overwritten.
+impl crate::client::Client {
+    /// Constructs a fluent builder for the [`CreateTable`](crate::operation::create_table::builders::CreateTableFluentBuilder) operation.
+    ///
+    /// - The fluent builder is configurable:
+    ///   - [`attribute_definitions(impl Into<Option<::std::vec::Vec<dynamodb::types::AttributeDefinition>>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::attribute_definitions) / [`set_attribute_definitions(Option<::std::vec::Vec<dynamodb::types::AttributeDefinition>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::set_attribute_definitions): (undocumented)<br>
+    ///   - [`billing_mode(impl Into<Option<dynamodb::types::BillingMode>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::billing_mode) / [`set_billing_mode(Option<dynamodb::types::BillingMode>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::set_billing_mode): (undocumented)<br>
+    ///   - [`global_secondary_indexes(impl Into<Option<::std::vec::Vec<dynamodb::types::GlobalSecondaryIndex>>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::global_secondary_indexes) / [`set_global_secondary_indexes(Option<::std::vec::Vec<dynamodb::types::GlobalSecondaryIndex>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::set_global_secondary_indexes): (undocumented)<br>
+    ///   - [`key_schema(impl Into<Option<::std::vec::Vec<dynamodb::types::KeySchemaElement>>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::key_schema) / [`set_key_schema(Option<::std::vec::Vec<dynamodb::types::KeySchemaElement>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::set_key_schema): (undocumented)<br>
+    ///   - [`local_secondary_indexes(impl Into<Option<::std::vec::Vec<dynamodb::types::LocalSecondaryIndex>>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::local_secondary_indexes) / [`set_local_secondary_indexes(Option<::std::vec::Vec<dynamodb::types::LocalSecondaryIndex>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::set_local_secondary_indexes): (undocumented)<br>
+    ///   - [`provisioned_throughput(impl Into<Option<dynamodb::types::ProvisionedThroughput>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::provisioned_throughput) / [`set_provisioned_throughput(Option<dynamodb::types::ProvisionedThroughput>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::set_provisioned_throughput): (undocumented)<br>
+    ///   - [`sse_specification(impl Into<Option<dynamodb::types::SseSpecification>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::sse_specification) / [`set_sse_specification(Option<dynamodb::types::SseSpecification>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::set_sse_specification): (undocumented)<br>
+    ///   - [`stream_specification(impl Into<Option<dynamodb::types::StreamSpecification>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::stream_specification) / [`set_stream_specification(Option<dynamodb::types::StreamSpecification>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::set_stream_specification): (undocumented)<br>
+    ///   - [`table_class(impl Into<Option<dynamodb::types::TableClass>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::table_class) / [`set_table_class(Option<dynamodb::types::TableClass>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::set_table_class): (undocumented)<br>
+    ///   - [`table_name(impl Into<Option<::std::string::String>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::table_name) / [`set_table_name(Option<::std::string::String>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::set_table_name): (undocumented)<br>
+    ///   - [`tags(impl Into<Option<::std::vec::Vec<dynamodb::types::Tag>>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::tags) / [`set_tags(Option<::std::vec::Vec<dynamodb::types::Tag>>)`](crate::operation::create_table::builders::CreateTableFluentBuilder::set_tags): (undocumented)<br>
+    /// - On success, responds with [`CreateTableOutput`](crate::operation::create_table::CreateTableOutput) with field(s):
+    ///   - [`table_description(Option<dynamodb::types::TableDescription>)`](crate::operation::create_table::CreateTableOutput::table_description): (undocumented)
+    /// - On failure, responds with [`SdkError<CreateTableError>`](crate::operation::create_table::CreateTableError)
+    pub fn create_table(&self) -> crate::operation::create_table::builders::CreateTableFluentBuilder {
+        crate::operation::create_table::builders::CreateTableFluentBuilder::new(self.clone())
+    }
+}

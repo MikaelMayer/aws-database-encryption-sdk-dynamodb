@@ -75,13 +75,15 @@ pub mod RSAEncryption {
             }
         }
 
-        fn get_alg_for_padding(mode: &RSAPaddingMode) -> &'static OaepAlgorithm {
+        fn get_alg_for_padding(mode: &RSAPaddingMode) -> Result<&'static OaepAlgorithm, String> {
             match mode {
-                RSAPaddingMode::PKCS1 {} => panic!("No support for PKCS1 in Rust"),
-                RSAPaddingMode::OAEP_SHA1 {} => &aws_lc_rs::rsa::OAEP_SHA1_MGF1SHA1,
-                RSAPaddingMode::OAEP_SHA256 {} => &aws_lc_rs::rsa::OAEP_SHA256_MGF1SHA256,
-                RSAPaddingMode::OAEP_SHA384 {} => &aws_lc_rs::rsa::OAEP_SHA384_MGF1SHA384,
-                RSAPaddingMode::OAEP_SHA512 {} => &aws_lc_rs::rsa::OAEP_SHA512_MGF1SHA512,
+                RSAPaddingMode::PKCS1 {} => {
+                    Err("No support for RSA with PKCS1 in Rust.".to_string())
+                }
+                RSAPaddingMode::OAEP_SHA1 {} => Ok(&aws_lc_rs::rsa::OAEP_SHA1_MGF1SHA1),
+                RSAPaddingMode::OAEP_SHA256 {} => Ok(&aws_lc_rs::rsa::OAEP_SHA256_MGF1SHA256),
+                RSAPaddingMode::OAEP_SHA384 {} => Ok(&aws_lc_rs::rsa::OAEP_SHA384_MGF1SHA384),
+                RSAPaddingMode::OAEP_SHA512 {} => Ok(&aws_lc_rs::rsa::OAEP_SHA512_MGF1SHA512),
             }
         }
 
@@ -109,12 +111,15 @@ pub mod RSAEncryption {
             private_key: &[u8],
             cipher_text: &[u8],
         ) -> Result<Vec<u8>, String> {
-            let mode = get_alg_for_padding(mode);
-
             let private_key =
                 std::str::from_utf8(private_key).map_err(|e| format!("from_utf8 : {:?}", e))?;
             let private_key =
                 pem::parse(private_key).map_err(|e| format!("pem::parse : {:?}", e))?;
+            if mode == &(RSAPaddingMode::PKCS1 {}) {
+                return decrypt_pkcs1(private_key.contents(), cipher_text);
+            }
+            let mode = get_alg_for_padding(mode)?;
+
             let private_key = PrivateDecryptingKey::from_pkcs8(private_key.contents())
                 .map_err(|e| format!("from_pkcs8 : {:?}", e))?;
             let private_key =
@@ -150,10 +155,13 @@ pub mod RSAEncryption {
             public_key: &[u8],
             message: &[u8],
         ) -> Result<Vec<u8>, String> {
-            let mode = get_alg_for_padding(mode);
-
             let public_key = std::str::from_utf8(public_key).map_err(|e| format!("{:?}", e))?;
             let public_key = pem::parse(public_key).map_err(|e| format!("{:?}", e))?;
+            if mode == &(RSAPaddingMode::PKCS1 {}) {
+                return encrypt_pkcs1(public_key.contents(), message);
+            }
+            let mode = get_alg_for_padding(mode)?;
+
             let public_key = PublicEncryptingKey::from_der(public_key.contents())
                 .map_err(|e| format!("{:?}", e))?;
             let public_key =
@@ -182,6 +190,105 @@ pub mod RSAEncryption {
                     Rc::new(Wrappers::Result::Failure { error: error(&msg) })
                 }
             }
+        }
+
+        use aws_lc_sys::EVP_PKEY_CTX_free;
+        use aws_lc_sys::EVP_PKEY_CTX_new;
+        use aws_lc_sys::EVP_PKEY_decrypt;
+        use aws_lc_sys::EVP_PKEY_decrypt_init;
+        use aws_lc_sys::EVP_PKEY_encrypt;
+        use aws_lc_sys::EVP_PKEY_encrypt_init;
+        use aws_lc_sys::EVP_PKEY_free;
+        use aws_lc_sys::EVP_PKEY_size;
+        use aws_lc_sys::EVP_parse_private_key;
+        use aws_lc_sys::EVP_parse_public_key;
+        use aws_lc_sys::CBS;
+        use std::ptr::null_mut;
+
+        pub fn encrypt_pkcs1(public_key: &[u8], plain_text: &[u8]) -> Result<Vec<u8>, String> {
+            let mut cbs = CBS {
+                data: public_key.as_ptr(),
+                len: public_key.len(),
+            };
+
+            let key = unsafe { EVP_parse_public_key(&mut cbs) };
+            if key.is_null() {
+                return Err("Invalid X509 Public Key in RSA PKCS1 Encrypt.".to_string());
+            }
+
+            let pkey_ctx = unsafe { EVP_PKEY_CTX_new(key, null_mut()) };
+            if pkey_ctx.is_null() {
+                return Err("Error in EVP_PKEY_CTX_new in encrypt_pkcs1.".to_string());
+            }
+
+            if 1 != unsafe { EVP_PKEY_encrypt_init(pkey_ctx) } {
+                return Err("Error in EVP_PKEY_encrypt_init in encrypt_pkcs1.".to_string());
+            }
+
+            let size: usize = unsafe { EVP_PKEY_size(key) }.try_into().unwrap();
+            let mut cipher_text: Vec<u8> = vec![0; size];
+
+            let mut out_len = cipher_text.len();
+
+            if 1 != unsafe {
+                EVP_PKEY_encrypt(
+                    pkey_ctx,
+                    cipher_text.as_mut_ptr(),
+                    &mut out_len,
+                    plain_text.as_ptr(),
+                    plain_text.len(),
+                )
+            } {
+                return Err("Error in EVP_PKEY_encrypt in encrypt_pkcs1.".to_string());
+            };
+
+            unsafe { EVP_PKEY_CTX_free(pkey_ctx) };
+            unsafe { EVP_PKEY_free(key) };
+            cipher_text.resize(out_len, 0);
+            Ok(cipher_text)
+        }
+
+        pub fn decrypt_pkcs1(private_key: &[u8], cipher_text: &[u8]) -> Result<Vec<u8>, String> {
+            let mut cbs = CBS {
+                data: private_key.as_ptr(),
+                len: private_key.len(),
+            };
+
+            let key = unsafe { EVP_parse_private_key(&mut cbs) };
+            if key.is_null() {
+                return Err("Invalid Private Key in RSA PKCS1 Decrypt.".to_string());
+            }
+
+            let pkey_ctx = unsafe { EVP_PKEY_CTX_new(key, null_mut()) };
+            if pkey_ctx.is_null() {
+                return Err("Error in EVP_PKEY_CTX_new in decrypt_pkcs1.".to_string());
+            }
+
+            if 1 != unsafe { EVP_PKEY_decrypt_init(pkey_ctx) } {
+                return Err("Error in EVP_PKEY_decrypt_init in decrypt_pkcs1.".to_string());
+            }
+
+            let size: usize = unsafe { EVP_PKEY_size(key) }.try_into().unwrap();
+            let mut plain_text: Vec<u8> = vec![0; size];
+
+            let mut out_len = cipher_text.len();
+
+            if 1 != unsafe {
+                EVP_PKEY_decrypt(
+                    pkey_ctx,
+                    plain_text.as_mut_ptr(),
+                    &mut out_len,
+                    cipher_text.as_ptr(),
+                    cipher_text.len(),
+                )
+            } {
+                return Err("Error in EVP_PKEY_decrypt in decrypt_pkcs1.".to_string());
+            };
+
+            unsafe { EVP_PKEY_CTX_free(pkey_ctx) };
+            unsafe { EVP_PKEY_free(key) };
+            plain_text.resize(out_len, 0);
+            Ok(plain_text)
         }
 
         #[cfg(test)]

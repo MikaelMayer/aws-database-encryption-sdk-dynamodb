@@ -1,0 +1,23 @@
+// Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+// Do not modify this file. This file is machine generated, and any changes to it will be overwritten.
+impl crate::client::Client {
+    /// Constructs a fluent builder for the [`UpdateCustomKeyStore`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder) operation.
+    ///
+    /// - The fluent builder is configurable:
+    ///   - [`cloud_hsm_cluster_id(impl Into<Option<::std::string::String>>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::cloud_hsm_cluster_id) / [`set_cloud_hsm_cluster_id(Option<::std::string::String>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::set_cloud_hsm_cluster_id): (undocumented)<br>
+    ///   - [`custom_key_store_id(impl Into<Option<::std::string::String>>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::custom_key_store_id) / [`set_custom_key_store_id(Option<::std::string::String>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::set_custom_key_store_id): (undocumented)<br>
+    ///   - [`key_store_password(impl Into<Option<::std::string::String>>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::key_store_password) / [`set_key_store_password(Option<::std::string::String>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::set_key_store_password): (undocumented)<br>
+    ///   - [`new_custom_key_store_name(impl Into<Option<::std::string::String>>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::new_custom_key_store_name) / [`set_new_custom_key_store_name(Option<::std::string::String>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::set_new_custom_key_store_name): (undocumented)<br>
+    ///   - [`xks_proxy_authentication_credential(impl Into<Option<kms::types::XksProxyAuthenticationCredentialType>>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::xks_proxy_authentication_credential) / [`set_xks_proxy_authentication_credential(Option<kms::types::XksProxyAuthenticationCredentialType>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::set_xks_proxy_authentication_credential): (undocumented)<br>
+    ///   - [`xks_proxy_connectivity(impl Into<Option<kms::types::XksProxyConnectivityType>>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::xks_proxy_connectivity) / [`set_xks_proxy_connectivity(Option<kms::types::XksProxyConnectivityType>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::set_xks_proxy_connectivity): (undocumented)<br>
+    ///   - [`xks_proxy_uri_endpoint(impl Into<Option<::std::string::String>>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::xks_proxy_uri_endpoint) / [`set_xks_proxy_uri_endpoint(Option<::std::string::String>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::set_xks_proxy_uri_endpoint): (undocumented)<br>
+    ///   - [`xks_proxy_uri_path(impl Into<Option<::std::string::String>>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::xks_proxy_uri_path) / [`set_xks_proxy_uri_path(Option<::std::string::String>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::set_xks_proxy_uri_path): (undocumented)<br>
+    ///   - [`xks_proxy_vpc_endpoint_service_name(impl Into<Option<::std::string::String>>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::xks_proxy_vpc_endpoint_service_name) / [`set_xks_proxy_vpc_endpoint_service_name(Option<::std::string::String>)`](crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::set_xks_proxy_vpc_endpoint_service_name): (undocumented)<br>
+    /// - On success, responds with [`UpdateCustomKeyStoreResponse`](crate::operation::update_custom_key_store::UpdateCustomKeyStoreResponse) with field(s):
+
+    /// - On failure, responds with [`SdkError<UpdateCustomKeyStoreError>`](crate::operation::update_custom_key_store::UpdateCustomKeyStoreError)
+    pub fn update_custom_key_store(&self) -> crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder {
+        crate::operation::update_custom_key_store::builders::UpdateCustomKeyStoreFluentBuilder::new(self.clone())
+    }
+}

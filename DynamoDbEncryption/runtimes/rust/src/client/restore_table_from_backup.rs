@@ -1,0 +1,21 @@
+// Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+// Do not modify this file. This file is machine generated, and any changes to it will be overwritten.
+impl crate::client::Client {
+    /// Constructs a fluent builder for the [`RestoreTableFromBackup`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder) operation.
+    ///
+    /// - The fluent builder is configurable:
+    ///   - [`backup_arn(impl Into<Option<::std::string::String>>)`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::backup_arn) / [`set_backup_arn(Option<::std::string::String>)`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::set_backup_arn): (undocumented)<br>
+    ///   - [`billing_mode_override(impl Into<Option<dynamodb::types::BillingMode>>)`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::billing_mode_override) / [`set_billing_mode_override(Option<dynamodb::types::BillingMode>)`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::set_billing_mode_override): (undocumented)<br>
+    ///   - [`global_secondary_index_override(impl Into<Option<::std::vec::Vec<dynamodb::types::GlobalSecondaryIndex>>>)`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::global_secondary_index_override) / [`set_global_secondary_index_override(Option<::std::vec::Vec<dynamodb::types::GlobalSecondaryIndex>>)`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::set_global_secondary_index_override): (undocumented)<br>
+    ///   - [`local_secondary_index_override(impl Into<Option<::std::vec::Vec<dynamodb::types::LocalSecondaryIndex>>>)`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::local_secondary_index_override) / [`set_local_secondary_index_override(Option<::std::vec::Vec<dynamodb::types::LocalSecondaryIndex>>)`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::set_local_secondary_index_override): (undocumented)<br>
+    ///   - [`provisioned_throughput_override(impl Into<Option<dynamodb::types::ProvisionedThroughput>>)`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::provisioned_throughput_override) / [`set_provisioned_throughput_override(Option<dynamodb::types::ProvisionedThroughput>)`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::set_provisioned_throughput_override): (undocumented)<br>
+    ///   - [`sse_specification_override(impl Into<Option<dynamodb::types::SseSpecification>>)`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::sse_specification_override) / [`set_sse_specification_override(Option<dynamodb::types::SseSpecification>)`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::set_sse_specification_override): (undocumented)<br>
+    ///   - [`target_table_name(impl Into<Option<::std::string::String>>)`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::target_table_name) / [`set_target_table_name(Option<::std::string::String>)`](crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::set_target_table_name): (undocumented)<br>
+    /// - On success, responds with [`RestoreTableFromBackupOutput`](crate::operation::restore_table_from_backup::RestoreTableFromBackupOutput) with field(s):
+    ///   - [`table_description(Option<dynamodb::types::TableDescription>)`](crate::operation::restore_table_from_backup::RestoreTableFromBackupOutput::table_description): (undocumented)
+    /// - On failure, responds with [`SdkError<RestoreTableFromBackupError>`](crate::operation::restore_table_from_backup::RestoreTableFromBackupError)
+    pub fn restore_table_from_backup(&self) -> crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder {
+        crate::operation::restore_table_from_backup::builders::RestoreTableFromBackupFluentBuilder::new(self.clone())
+    }
+}

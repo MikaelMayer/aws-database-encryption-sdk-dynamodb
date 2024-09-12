@@ -3,13 +3,13 @@
 // Do not modify this file. This file is machine generated, and any changes to it will be overwritten.
 #[allow(dead_code)]
 pub fn to_dafny(
-    value: &aws_sdk_dynamodb::operation::execute_transaction::ExecuteTransactionInput
+    value: &aws_sdk_dynamodb::operation::execute_transaction::ExecuteTransactionInput,
 ) -> ::std::rc::Rc<
     crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::ExecuteTransactionInput,
 >{
     ::std::rc::Rc::new(crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::ExecuteTransactionInput::ExecuteTransactionInput {
         TransactStatements: ::dafny_runtime::dafny_runtime_conversions::vec_to_dafny_sequence(&value.transact_statements.clone().unwrap(),
-    |e| crate::ddb::conversions::parameterized_statement::to_dafny(&e)
+    |e| crate::ddb::conversions::parameterized_statement::to_dafny(e)
 ,
 )
 ,
@@ -21,30 +21,25 @@ pub fn to_dafny(
 ,
     })
 }
-#[allow(dead_code)]
+ #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
         crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::ExecuteTransactionInput,
     >,
     client: aws_sdk_dynamodb::Client,
 ) -> aws_sdk_dynamodb::operation::execute_transaction::builders::ExecuteTransactionFluentBuilder {
-    client
-        .execute_transaction()
-        .set_transact_statements(Some(
-            ::dafny_runtime::dafny_runtime_conversions::dafny_sequence_to_vec(
-                dafny_value.TransactStatements(),
-                |e| crate::ddb::conversions::parameterized_statement::from_dafny(e.clone()),
-            ),
-        ))
-        .set_client_request_token(
-            crate::ddb::standard_library_conversions::ostring_from_dafny(
-                dafny_value.ClientRequestToken().clone(),
-            ),
-        )
-        .set_return_consumed_capacity(match &**dafny_value.ReturnConsumedCapacity() {
-            crate::Wrappers::Option::Some { value } => {
-                Some(crate::ddb::conversions::return_consumed_capacity::from_dafny(value))
-            }
-            _ => None,
-        })
+    client.execute_transaction()
+          .set_transact_statements(Some( ::dafny_runtime::dafny_runtime_conversions::dafny_sequence_to_vec(dafny_value.TransactStatements(),
+    |e| crate::ddb::conversions::parameterized_statement::from_dafny(e.clone())
+,
+)
+ ))
+ .set_client_request_token(crate::ddb::standard_library_conversions::ostring_from_dafny(dafny_value.ClientRequestToken().clone()))
+ .set_return_consumed_capacity(match &**dafny_value.ReturnConsumedCapacity() {
+    crate::Wrappers::Option::Some { value } => Some(
+        crate::ddb::conversions::return_consumed_capacity::from_dafny(value)
+    ),
+    _ => None,
+}
+)
 }

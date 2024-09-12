@@ -3,17 +3,17 @@
 // Do not modify this file. This file is machine generated, and any changes to it will be overwritten.
 #[allow(dead_code)]
 pub fn to_dafny(
-    value: &aws_sdk_dynamodb::operation::query::QueryOutput,
+    value: &aws_sdk_dynamodb::operation::query::QueryOutput
 ) -> ::std::rc::Rc<
     crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::QueryOutput,
-> {
+>{
     ::std::rc::Rc::new(crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::QueryOutput::QueryOutput {
         Items: ::std::rc::Rc::new(match &value.items {
     Some(x) => crate::Wrappers::Option::Some { value :
         ::dafny_runtime::dafny_runtime_conversions::vec_to_dafny_sequence(x,
             |e| ::dafny_runtime::dafny_runtime_conversions::hashmap_to_dafny_map(&e.clone(),
     |k| dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&k),
-    |v| crate::ddb::conversions::attribute_value::to_dafny(&v)
+    |v| crate::ddb::conversions::attribute_value::to_dafny(v)
 ,
 )
 ,
@@ -29,7 +29,7 @@ pub fn to_dafny(
     Some(x) => crate::Wrappers::Option::Some { value :
         ::dafny_runtime::dafny_runtime_conversions::hashmap_to_dafny_map(x,
             |k| dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&k),
-            |v| crate::ddb::conversions::attribute_value::to_dafny(&v)
+            |v| crate::ddb::conversions::attribute_value::to_dafny(v)
 ,
         )
     },
@@ -37,9 +37,10 @@ pub fn to_dafny(
 })
 ,
  ConsumedCapacity: ::std::rc::Rc::new(match &value.consumed_capacity {
-    Some(x) => crate::Wrappers::Option::Some { value: crate::ddb::conversions::consumed_capacity::to_dafny(&x) },
+    Some(x) => crate::Wrappers::Option::Some { value: crate::ddb::conversions::consumed_capacity::to_dafny(x) },
     None => crate::Wrappers::Option::None { }
 })
 ,
     })
 }
+ 

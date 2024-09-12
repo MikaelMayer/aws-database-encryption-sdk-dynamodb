@@ -1,0 +1,26 @@
+// Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+// Do not modify this file. This file is machine generated, and any changes to it will be overwritten.
+impl crate::client::Client {
+    /// Constructs a fluent builder for the [`DeleteItem`](crate::operation::delete_item::builders::DeleteItemFluentBuilder) operation.
+    ///
+    /// - The fluent builder is configurable:
+    ///   - [`condition_expression(impl Into<Option<::std::string::String>>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::condition_expression) / [`set_condition_expression(Option<::std::string::String>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::set_condition_expression): (undocumented)<br>
+    ///   - [`conditional_operator(impl Into<Option<dynamodb::types::ConditionalOperator>>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::conditional_operator) / [`set_conditional_operator(Option<dynamodb::types::ConditionalOperator>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::set_conditional_operator): (undocumented)<br>
+    ///   - [`expected(impl Into<Option<::std::collections::HashMap<::std::string::String, dynamodb::types::ExpectedAttributeValue>>>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::expected) / [`set_expected(Option<::std::collections::HashMap<::std::string::String, dynamodb::types::ExpectedAttributeValue>>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::set_expected): (undocumented)<br>
+    ///   - [`expression_attribute_names(impl Into<Option<::std::collections::HashMap<::std::string::String, ::std::string::String>>>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::expression_attribute_names) / [`set_expression_attribute_names(Option<::std::collections::HashMap<::std::string::String, ::std::string::String>>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::set_expression_attribute_names): (undocumented)<br>
+    ///   - [`expression_attribute_values(impl Into<Option<::std::collections::HashMap<::std::string::String, dynamodb::types::AttributeValue>>>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::expression_attribute_values) / [`set_expression_attribute_values(Option<::std::collections::HashMap<::std::string::String, dynamodb::types::AttributeValue>>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::set_expression_attribute_values): (undocumented)<br>
+    ///   - [`key(impl Into<Option<::std::collections::HashMap<::std::string::String, dynamodb::types::AttributeValue>>>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::key) / [`set_key(Option<::std::collections::HashMap<::std::string::String, dynamodb::types::AttributeValue>>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::set_key): (undocumented)<br>
+    ///   - [`return_consumed_capacity(impl Into<Option<dynamodb::types::ReturnConsumedCapacity>>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::return_consumed_capacity) / [`set_return_consumed_capacity(Option<dynamodb::types::ReturnConsumedCapacity>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::set_return_consumed_capacity): (undocumented)<br>
+    ///   - [`return_item_collection_metrics(impl Into<Option<dynamodb::types::ReturnItemCollectionMetrics>>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::return_item_collection_metrics) / [`set_return_item_collection_metrics(Option<dynamodb::types::ReturnItemCollectionMetrics>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::set_return_item_collection_metrics): (undocumented)<br>
+    ///   - [`return_values(impl Into<Option<dynamodb::types::ReturnValue>>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::return_values) / [`set_return_values(Option<dynamodb::types::ReturnValue>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::set_return_values): (undocumented)<br>
+    ///   - [`table_name(impl Into<Option<::std::string::String>>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::table_name) / [`set_table_name(Option<::std::string::String>)`](crate::operation::delete_item::builders::DeleteItemFluentBuilder::set_table_name): (undocumented)<br>
+    /// - On success, responds with [`DeleteItemOutput`](crate::operation::delete_item::DeleteItemOutput) with field(s):
+    ///   - [`attributes(Option<::std::collections::HashMap<::std::string::String, dynamodb::types::AttributeValue>>)`](crate::operation::delete_item::DeleteItemOutput::attributes): (undocumented)
+    ///   - [`consumed_capacity(Option<dynamodb::types::ConsumedCapacity>)`](crate::operation::delete_item::DeleteItemOutput::consumed_capacity): (undocumented)
+    ///   - [`item_collection_metrics(Option<dynamodb::types::ItemCollectionMetrics>)`](crate::operation::delete_item::DeleteItemOutput::item_collection_metrics): (undocumented)
+    /// - On failure, responds with [`SdkError<DeleteItemError>`](crate::operation::delete_item::DeleteItemError)
+    pub fn delete_item(&self) -> crate::operation::delete_item::builders::DeleteItemFluentBuilder {
+        crate::operation::delete_item::builders::DeleteItemFluentBuilder::new(self.clone())
+    }
+}

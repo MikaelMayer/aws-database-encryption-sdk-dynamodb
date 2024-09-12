@@ -1,8 +1,8 @@
 // Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-include "../Model/AwsCryptographyDynamoDbEncryptionTypesWrapped.dfy"
-include "CreateInterceptedDDBClient.dfy"
+// include "../Model/AwsCryptographyDynamoDbEncryptionTypesWrapped.dfy"
+// include "CreateInterceptedDDBClient.dfy"
 include "JsonItem.dfy"
 include "WriteManifest.dfy"
 include "EncryptManifest.dfy"
@@ -33,7 +33,7 @@ module {:options "-functionSyntax:4"} DdbEncryptionTestVectors {
   import SE = AwsCryptographyDbEncryptionSdkStructuredEncryptionTypes
   import UTF8
   import CMP = AwsCryptographyMaterialProvidersTypes
-  import CreateInterceptedDDBClient
+  // import CreateInterceptedDDBClient
   import SortedSets
   import Seq
   import SI = SearchableEncryptionInfo
@@ -97,20 +97,20 @@ module {:options "-functionSyntax:4"} DdbEncryptionTestVectors {
       }
         print "\nAll Test Vectors OK. Skipping local tests.\n";
         return;
-      Validate();
-      StringOrdering();
-      BasicIoTest();
-      RunIoTests();
-      BasicQueryTest();
-      ConfigModTest();
-      ComplexTests();
-      WriteTests();
-      RoundTripTests();
-      DecryptTests();
-      var client :- expect CreateInterceptedDDBClient.CreateVanillaDDBClient();
-      DeleteTable(client);
+      // Validate();
+      // StringOrdering();
+      // BasicIoTest();
+      // RunIoTests();
+      // BasicQueryTest();
+      // ConfigModTest();
+      // ComplexTests();
+      // WriteTests();
+      // RoundTripTests();
+      // DecryptTests();
+      // var client :- expect CreateInterceptedDDBClient.CreateVanillaDDBClient();
+      // DeleteTable(client);
     }
-
+/*
     function NewOrderRecord(i : nat, str : string) : Record
     {
       var n := String.Base10Int2String(i);
@@ -928,8 +928,10 @@ module {:options "-functionSyntax:4"} DdbEncryptionTestVectors {
         i := i + count;
       }
     }
+    */
   }
 
+/*
   // For the given query, keep only the names and values actually used
   function {:opaque} TrimMaps(
     keyExpr : string,
@@ -968,7 +970,7 @@ module {:options "-functionSyntax:4"} DdbEncryptionTestVectors {
         if query[0].Value? && query[0].s in origValues then newValues[query[0].s := origValues[query[0].s]] else newValues
       )
   }
-
+*/
   function MakeCreateTableInput() : DDB.CreateTableInput
   {
     DDB.CreateTableInput (
@@ -994,7 +996,7 @@ module {:options "-functionSyntax:4"} DdbEncryptionTestVectors {
   {
     TestVectorConfig(MakeCreateTableInput(), [], map[], [], map[], map[], [], [], [], [], [], [], [], [], [])
   }
-
+/*
   method ParseTestVector(data : JSON, prev : TestVectorConfig) returns (output : Result<TestVectorConfig, string>)
   {
     :- Need(data.Object?, "Top Level JSON must be an object.");
@@ -1056,4 +1058,5 @@ module {:options "-functionSyntax:4"} DdbEncryptionTestVectors {
       )
     );
   }
+  */
 }

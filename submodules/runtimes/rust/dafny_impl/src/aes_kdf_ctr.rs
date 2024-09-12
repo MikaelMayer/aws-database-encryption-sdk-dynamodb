@@ -8,13 +8,13 @@
 #[allow(non_snake_case)]
 pub mod AesKdfCtr {
     use crate::software::amazon::cryptography::primitives::internaldafny::types::Error as DafnyError;
-    use crate::*;
     use ::dafny_runtime::Sequence;
     use aws_lc_rs::cipher::{EncryptingKey, EncryptionContext, UnboundCipherKey, AES_256};
     use std::rc::Rc;
+    use crate::*;
 
     #[allow(non_camel_case_types)]
-    pub struct _default {}
+    // pub struct _default {}
 
     fn error(s: &str) -> Rc<DafnyError> {
         Rc::new(DafnyError::AwsCryptographicPrimitivesError {
@@ -48,7 +48,7 @@ pub mod AesKdfCtr {
         Ok(in_out_buffer)
     }
 
-    impl _default {
+    impl crate::AesKdfCtr::_default {
         #[allow(non_snake_case)]
         pub fn AesKdfCtrStream(
             nonce: &Sequence<u8>,

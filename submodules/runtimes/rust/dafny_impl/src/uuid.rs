@@ -5,8 +5,9 @@
 #![deny(nonstandard_style)]
 #![deny(clippy::all)]
 
-use crate::*;
 use ::uuid::Uuid;
+use crate::*;
+
 impl crate::UUID::_default {
     #[allow(non_snake_case)]
     pub fn ToByteArray(

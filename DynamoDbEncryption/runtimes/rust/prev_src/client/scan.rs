@@ -1,0 +1,34 @@
+// Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+// Do not modify this file. This file is machine generated, and any changes to it will be overwritten.
+impl crate::client::Client {
+    /// Constructs a fluent builder for the [`Scan`](crate::operation::scan::builders::ScanFluentBuilder) operation.
+    ///
+    /// - The fluent builder is configurable:
+    ///   - [`attributes_to_get(impl Into<Option<::std::vec::Vec<::std::string::String>>>)`](crate::operation::scan::builders::ScanFluentBuilder::attributes_to_get) / [`set_attributes_to_get(Option<::std::vec::Vec<::std::string::String>>)`](crate::operation::scan::builders::ScanFluentBuilder::set_attributes_to_get): (undocumented)<br>
+    ///   - [`conditional_operator(impl Into<Option<dynamodb::types::ConditionalOperator>>)`](crate::operation::scan::builders::ScanFluentBuilder::conditional_operator) / [`set_conditional_operator(Option<dynamodb::types::ConditionalOperator>)`](crate::operation::scan::builders::ScanFluentBuilder::set_conditional_operator): (undocumented)<br>
+    ///   - [`consistent_read(impl Into<Option<::std::primitive::bool>>)`](crate::operation::scan::builders::ScanFluentBuilder::consistent_read) / [`set_consistent_read(Option<::std::primitive::bool>)`](crate::operation::scan::builders::ScanFluentBuilder::set_consistent_read): (undocumented)<br>
+    ///   - [`exclusive_start_key(impl Into<Option<::std::collections::HashMap<::std::string::String, dynamodb::types::AttributeValue>>>)`](crate::operation::scan::builders::ScanFluentBuilder::exclusive_start_key) / [`set_exclusive_start_key(Option<::std::collections::HashMap<::std::string::String, dynamodb::types::AttributeValue>>)`](crate::operation::scan::builders::ScanFluentBuilder::set_exclusive_start_key): (undocumented)<br>
+    ///   - [`expression_attribute_names(impl Into<Option<::std::collections::HashMap<::std::string::String, ::std::string::String>>>)`](crate::operation::scan::builders::ScanFluentBuilder::expression_attribute_names) / [`set_expression_attribute_names(Option<::std::collections::HashMap<::std::string::String, ::std::string::String>>)`](crate::operation::scan::builders::ScanFluentBuilder::set_expression_attribute_names): (undocumented)<br>
+    ///   - [`expression_attribute_values(impl Into<Option<::std::collections::HashMap<::std::string::String, dynamodb::types::AttributeValue>>>)`](crate::operation::scan::builders::ScanFluentBuilder::expression_attribute_values) / [`set_expression_attribute_values(Option<::std::collections::HashMap<::std::string::String, dynamodb::types::AttributeValue>>)`](crate::operation::scan::builders::ScanFluentBuilder::set_expression_attribute_values): (undocumented)<br>
+    ///   - [`filter_expression(impl Into<Option<::std::string::String>>)`](crate::operation::scan::builders::ScanFluentBuilder::filter_expression) / [`set_filter_expression(Option<::std::string::String>)`](crate::operation::scan::builders::ScanFluentBuilder::set_filter_expression): (undocumented)<br>
+    ///   - [`index_name(impl Into<Option<::std::string::String>>)`](crate::operation::scan::builders::ScanFluentBuilder::index_name) / [`set_index_name(Option<::std::string::String>)`](crate::operation::scan::builders::ScanFluentBuilder::set_index_name): (undocumented)<br>
+    ///   - [`limit(impl Into<Option<::std::primitive::i32>>)`](crate::operation::scan::builders::ScanFluentBuilder::limit) / [`set_limit(Option<::std::primitive::i32>)`](crate::operation::scan::builders::ScanFluentBuilder::set_limit): (undocumented)<br>
+    ///   - [`projection_expression(impl Into<Option<::std::string::String>>)`](crate::operation::scan::builders::ScanFluentBuilder::projection_expression) / [`set_projection_expression(Option<::std::string::String>)`](crate::operation::scan::builders::ScanFluentBuilder::set_projection_expression): (undocumented)<br>
+    ///   - [`return_consumed_capacity(impl Into<Option<dynamodb::types::ReturnConsumedCapacity>>)`](crate::operation::scan::builders::ScanFluentBuilder::return_consumed_capacity) / [`set_return_consumed_capacity(Option<dynamodb::types::ReturnConsumedCapacity>)`](crate::operation::scan::builders::ScanFluentBuilder::set_return_consumed_capacity): (undocumented)<br>
+    ///   - [`scan_filter(impl Into<Option<::std::collections::HashMap<::std::string::String, dynamodb::types::Condition>>>)`](crate::operation::scan::builders::ScanFluentBuilder::scan_filter) / [`set_scan_filter(Option<::std::collections::HashMap<::std::string::String, dynamodb::types::Condition>>)`](crate::operation::scan::builders::ScanFluentBuilder::set_scan_filter): (undocumented)<br>
+    ///   - [`segment(impl Into<Option<::std::primitive::i32>>)`](crate::operation::scan::builders::ScanFluentBuilder::segment) / [`set_segment(Option<::std::primitive::i32>)`](crate::operation::scan::builders::ScanFluentBuilder::set_segment): (undocumented)<br>
+    ///   - [`select(impl Into<Option<dynamodb::types::Select>>)`](crate::operation::scan::builders::ScanFluentBuilder::select) / [`set_select(Option<dynamodb::types::Select>)`](crate::operation::scan::builders::ScanFluentBuilder::set_select): (undocumented)<br>
+    ///   - [`table_name(impl Into<Option<::std::string::String>>)`](crate::operation::scan::builders::ScanFluentBuilder::table_name) / [`set_table_name(Option<::std::string::String>)`](crate::operation::scan::builders::ScanFluentBuilder::set_table_name): (undocumented)<br>
+    ///   - [`total_segments(impl Into<Option<::std::primitive::i32>>)`](crate::operation::scan::builders::ScanFluentBuilder::total_segments) / [`set_total_segments(Option<::std::primitive::i32>)`](crate::operation::scan::builders::ScanFluentBuilder::set_total_segments): (undocumented)<br>
+    /// - On success, responds with [`ScanOutput`](crate::operation::scan::ScanOutput) with field(s):
+    ///   - [`consumed_capacity(Option<dynamodb::types::ConsumedCapacity>)`](crate::operation::scan::ScanOutput::consumed_capacity): (undocumented)
+    ///   - [`count(Option<::std::primitive::i32>)`](crate::operation::scan::ScanOutput::count): (undocumented)
+    ///   - [`items(Option<::std::vec::Vec<::std::collections::HashMap<::std::string::String, dynamodb::types::AttributeValue>>>)`](crate::operation::scan::ScanOutput::items): (undocumented)
+    ///   - [`last_evaluated_key(Option<::std::collections::HashMap<::std::string::String, dynamodb::types::AttributeValue>>)`](crate::operation::scan::ScanOutput::last_evaluated_key): (undocumented)
+    ///   - [`scanned_count(Option<::std::primitive::i32>)`](crate::operation::scan::ScanOutput::scanned_count): (undocumented)
+    /// - On failure, responds with [`SdkError<ScanError>`](crate::operation::scan::ScanError)
+    pub fn scan(&self) -> crate::operation::scan::builders::ScanFluentBuilder {
+        crate::operation::scan::builders::ScanFluentBuilder::new(self.clone())
+    }
+}

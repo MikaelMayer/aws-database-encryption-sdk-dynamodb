@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 include "JsonItem.dfy"
-include "CreateInterceptedDDBClient.dfy"
+include "../Model/AwsCryptographyDynamoDbEncryptionTypesWrapped.dfy"
 include "../../../../DynamoDbEncryption/dafny/DynamoDbItemEncryptor/src/Index.dfy"
 
 module {:options "-functionSyntax:4"} JsonConfig {
@@ -29,7 +29,7 @@ module {:options "-functionSyntax:4"} JsonConfig {
   import UTF8
   import Aws.Cryptography.Primitives
   import ParseJsonManifests
-  import CreateInterceptedDDBClient
+  // import CreateInterceptedDDBClient
   import DynamoDbItemEncryptor
 
 
@@ -100,35 +100,35 @@ module {:options "-functionSyntax:4"} JsonConfig {
   type ConfigPair = (ConfigName, ConfigName)
   type PairList = seq<ConfigPair>
 
-  method newGazelle(config: TableConfig)
-    returns (output: Result<DDB.IDynamoDBClient, string>)
-    ensures output.Success? ==>
-              && fresh(output.value)
-              && fresh(output.value.Modifies)
-              && fresh(output.value.History)
-              && output.value.ValidState()
-  {
-    if config.vanilla {
-      var res := CreateInterceptedDDBClient.CreateVanillaDDBClient();
-      if res.Success? {
-        return Success(res.value);
-      } else {
-        print res.error, "\n";
-        return Failure("Failed to create vanilla client.");
-      }
-    } else {
-      var configs := Types.DynamoDbTablesEncryptionConfig (
-        tableEncryptionConfigs := map[TableName := config.config]
-      );
-      var res := CreateInterceptedDDBClient.CreateInterceptedDDBClient(configs);
-      if res.Success? {
-        return Success(res.value);
-      } else {
-        print res.error, "\n";
-        return Failure("Failed to create DbEsdk client.");
-      }
-    }
-  }
+  // method newGazelle(config: TableConfig)
+  //   returns (output: Result<DDB.IDynamoDBClient, string>)
+  //   ensures output.Success? ==>
+  //             && fresh(output.value)
+  //             && fresh(output.value.Modifies)
+  //             && fresh(output.value.History)
+  //             && output.value.ValidState()
+  // {
+  //   if config.vanilla {
+  //     var res := CreateInterceptedDDBClient.CreateVanillaDDBClient();
+  //     if res.Success? {
+  //       return Success(res.value);
+  //     } else {
+  //       print res.error, "\n";
+  //       return Failure("Failed to create vanilla client.");
+  //     }
+  //   } else {
+  //     var configs := Types.DynamoDbTablesEncryptionConfig (
+  //       tableEncryptionConfigs := map[TableName := config.config]
+  //     );
+  //     var res := CreateInterceptedDDBClient.CreateInterceptedDDBClient(configs);
+  //     if res.Success? {
+  //       return Success(res.value);
+  //     } else {
+  //       print res.error, "\n";
+  //       return Failure("Failed to create DbEsdk client.");
+  //     }
+  //   }
+  // }
 
   method GetRoundTripTests(data : JSON) returns (output : Result<seq<RoundTripTest>, string>)
   {

@@ -3,13 +3,13 @@
 // Do not modify this file. This file is machine generated, and any changes to it will be overwritten.
 #[allow(dead_code)]
 pub fn to_dafny(
-    value: &aws_sdk_dynamodb::operation::batch_execute_statement::BatchExecuteStatementInput
+    value: &aws_sdk_dynamodb::operation::batch_execute_statement::BatchExecuteStatementInput,
 ) -> ::std::rc::Rc<
     crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::BatchExecuteStatementInput,
 >{
     ::std::rc::Rc::new(crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::BatchExecuteStatementInput::BatchExecuteStatementInput {
         Statements: ::dafny_runtime::dafny_runtime_conversions::vec_to_dafny_sequence(&value.statements.clone().unwrap(),
-    |e| crate::ddb::conversions::batch_statement_request::to_dafny(&e)
+    |e| crate::ddb::conversions::batch_statement_request::to_dafny(e)
 ,
 )
 ,
@@ -20,25 +20,24 @@ pub fn to_dafny(
 ,
     })
 }
-#[allow(dead_code)]
+ #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
         crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::BatchExecuteStatementInput,
     >,
     client: aws_sdk_dynamodb::Client,
-) -> aws_sdk_dynamodb::operation::batch_execute_statement::builders::BatchExecuteStatementFluentBuilder{
-    client
-        .batch_execute_statement()
-        .set_statements(Some(
-            ::dafny_runtime::dafny_runtime_conversions::dafny_sequence_to_vec(
-                dafny_value.Statements(),
-                |e| crate::ddb::conversions::batch_statement_request::from_dafny(e.clone()),
-            ),
-        ))
-        .set_return_consumed_capacity(match &**dafny_value.ReturnConsumedCapacity() {
-            crate::Wrappers::Option::Some { value } => {
-                Some(crate::ddb::conversions::return_consumed_capacity::from_dafny(value))
-            }
-            _ => None,
-        })
+) -> aws_sdk_dynamodb::operation::batch_execute_statement::builders::BatchExecuteStatementFluentBuilder {
+    client.batch_execute_statement()
+          .set_statements(Some( ::dafny_runtime::dafny_runtime_conversions::dafny_sequence_to_vec(dafny_value.Statements(),
+    |e| crate::ddb::conversions::batch_statement_request::from_dafny(e.clone())
+,
+)
+ ))
+ .set_return_consumed_capacity(match &**dafny_value.ReturnConsumedCapacity() {
+    crate::Wrappers::Option::Some { value } => Some(
+        crate::ddb::conversions::return_consumed_capacity::from_dafny(value)
+    ),
+    _ => None,
+}
+)
 }

@@ -3,7 +3,7 @@
 // Do not modify this file. This file is machine generated, and any changes to it will be overwritten.
 #[allow(dead_code)]
 pub fn to_dafny(
-    value: &aws_sdk_dynamodb::operation::execute_statement::ExecuteStatementInput
+    value: &aws_sdk_dynamodb::operation::execute_statement::ExecuteStatementInput,
 ) -> ::std::rc::Rc<
     crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::ExecuteStatementInput,
 >{
@@ -12,7 +12,7 @@ pub fn to_dafny(
  Parameters: ::std::rc::Rc::new(match &value.parameters {
     Some(x) => crate::Wrappers::Option::Some { value :
         ::dafny_runtime::dafny_runtime_conversions::vec_to_dafny_sequence(x,
-            |e| crate::ddb::conversions::attribute_value::to_dafny(&e)
+            |e| crate::ddb::conversions::attribute_value::to_dafny(e)
 ,
         )
     },
@@ -29,43 +29,34 @@ pub fn to_dafny(
  Limit: crate::ddb::standard_library_conversions::oint_to_dafny(value.limit),
     })
 }
-#[allow(dead_code)]
+ #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
         crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::ExecuteStatementInput,
     >,
     client: aws_sdk_dynamodb::Client,
 ) -> aws_sdk_dynamodb::operation::execute_statement::builders::ExecuteStatementFluentBuilder {
-    client
-        .execute_statement()
-        .set_statement(Some(
-            dafny_runtime::dafny_runtime_conversions::unicode_chars_false::dafny_string_to_string(
-                dafny_value.Statement(),
-            ),
-        ))
-        .set_parameters(match (*dafny_value.Parameters()).as_ref() {
-            crate::Wrappers::Option::Some { value } => Some(
-                ::dafny_runtime::dafny_runtime_conversions::dafny_sequence_to_vec(value, |e| {
-                    crate::ddb::conversions::attribute_value::from_dafny(e.clone())
-                }),
-            ),
-            _ => None,
-        })
-        .set_consistent_read(crate::ddb::standard_library_conversions::obool_from_dafny(
-            dafny_value.ConsistentRead().clone(),
-        ))
-        .set_next_token(
-            crate::ddb::standard_library_conversions::ostring_from_dafny(
-                dafny_value.NextToken().clone(),
-            ),
-        )
-        .set_return_consumed_capacity(match &**dafny_value.ReturnConsumedCapacity() {
-            crate::Wrappers::Option::Some { value } => {
-                Some(crate::ddb::conversions::return_consumed_capacity::from_dafny(value))
-            }
-            _ => None,
-        })
-        .set_limit(crate::ddb::standard_library_conversions::oint_from_dafny(
-            dafny_value.Limit().clone(),
-        ))
+    client.execute_statement()
+          .set_statement(Some( dafny_runtime::dafny_runtime_conversions::unicode_chars_false::dafny_string_to_string(dafny_value.Statement()) ))
+ .set_parameters(match (*dafny_value.Parameters()).as_ref() {
+    crate::Wrappers::Option::Some { value } =>
+        Some(
+            ::dafny_runtime::dafny_runtime_conversions::dafny_sequence_to_vec(value,
+                |e| crate::ddb::conversions::attribute_value::from_dafny(e.clone())
+,
+            )
+        ),
+    _ => None
+}
+)
+ .set_consistent_read(crate::ddb::standard_library_conversions::obool_from_dafny(dafny_value.ConsistentRead().clone()))
+ .set_next_token(crate::ddb::standard_library_conversions::ostring_from_dafny(dafny_value.NextToken().clone()))
+ .set_return_consumed_capacity(match &**dafny_value.ReturnConsumedCapacity() {
+    crate::Wrappers::Option::Some { value } => Some(
+        crate::ddb::conversions::return_consumed_capacity::from_dafny(value)
+    ),
+    _ => None,
+}
+)
+ .set_limit(crate::ddb::standard_library_conversions::oint_from_dafny(dafny_value.Limit().clone()))
 }

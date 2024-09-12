@@ -14,7 +14,7 @@ pub fn to_dafny(
         ::dafny_runtime::dafny_runtime_conversions::hashmap_to_dafny_map(x,
             |k| dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&k),
             |v| ::dafny_runtime::dafny_runtime_conversions::vec_to_dafny_sequence(&v,
-    |e| crate::ddb::conversions::write_request::to_dafny(&e)
+    |e| crate::ddb::conversions::write_request::to_dafny(e)
 ,
 )
 ,
@@ -29,7 +29,7 @@ pub fn to_dafny(
         ::dafny_runtime::dafny_runtime_conversions::hashmap_to_dafny_map(x,
             |k| dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&k),
             |v| ::dafny_runtime::dafny_runtime_conversions::vec_to_dafny_sequence(&v,
-    |e| crate::ddb::conversions::item_collection_metrics::to_dafny(&e)
+    |e| crate::ddb::conversions::item_collection_metrics::to_dafny(e)
 ,
 )
 ,
@@ -41,7 +41,7 @@ pub fn to_dafny(
  ConsumedCapacity: ::std::rc::Rc::new(match &value.consumed_capacity {
     Some(x) => crate::Wrappers::Option::Some { value :
         ::dafny_runtime::dafny_runtime_conversions::vec_to_dafny_sequence(x,
-            |e| crate::ddb::conversions::consumed_capacity::to_dafny(&e)
+            |e| crate::ddb::conversions::consumed_capacity::to_dafny(e)
 ,
         )
     },
@@ -50,3 +50,4 @@ pub fn to_dafny(
 ,
     })
 }
+ 

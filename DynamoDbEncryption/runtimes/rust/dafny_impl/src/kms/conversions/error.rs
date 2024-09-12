@@ -43,7 +43,7 @@ pub fn to_opaque_error<E: 'static>(
 }
 
 /// Wraps up an arbitrary Rust Error value as a Dafny Result<T, Error>.Failure
-pub fn to_opaque_error_result<T: dafny_runtime::DafnyType, E: 'static>(
+pub fn to_opaque_error_result<T: dafny_runtime::DafnyType, E: 'static + std::fmt::Debug>(
     value: E,
 ) -> ::std::rc::Rc<
     crate::Wrappers::Result<
@@ -53,6 +53,7 @@ pub fn to_opaque_error_result<T: dafny_runtime::DafnyType, E: 'static>(
         >,
     >,
 > {
+    println!("KMS Error : {:?}", value);
     ::std::rc::Rc::new(crate::Wrappers::Result::Failure {
         error: to_opaque_error(value),
     })

@@ -5,8 +5,8 @@
 
 #[allow(non_snake_case)]
 pub mod UTF8 {
-    use crate::Wrappers;
     use crate::UTF8;
+    use crate::*;
 
     impl crate::UTF8::_default {
         pub fn Encode(

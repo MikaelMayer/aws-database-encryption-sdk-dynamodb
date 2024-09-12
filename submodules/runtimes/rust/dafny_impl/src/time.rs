@@ -5,8 +5,8 @@
 #![deny(nonstandard_style)]
 #![deny(clippy::all)]
 
-use crate::*;
 use std::time::SystemTime;
+use crate::*;
 
 impl crate::Time::_default {
     #[allow(non_snake_case)]
@@ -25,7 +25,7 @@ impl crate::Time::_default {
         >,
     > {
         let now_utc = chrono::Utc::now();
-        let formatted = format!("{}", now_utc.format("%Y-%m-%dT%H:%M:%S:%.fZ"));
+        let formatted = format!("{}", now_utc.format("%Y-%m-%dT%H:%M:%S%.fZ"));
         ::std::rc::Rc::new(
                 Wrappers::Result::Success{value :
                 dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&formatted)

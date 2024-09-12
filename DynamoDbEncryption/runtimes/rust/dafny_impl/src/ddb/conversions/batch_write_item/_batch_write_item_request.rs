@@ -3,7 +3,7 @@
 // Do not modify this file. This file is machine generated, and any changes to it will be overwritten.
 #[allow(dead_code)]
 pub fn to_dafny(
-    value: &aws_sdk_dynamodb::operation::batch_write_item::BatchWriteItemInput
+    value: &aws_sdk_dynamodb::operation::batch_write_item::BatchWriteItemInput,
 ) -> ::std::rc::Rc<
     crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::BatchWriteItemInput,
 >{
@@ -11,7 +11,7 @@ pub fn to_dafny(
         RequestItems: ::dafny_runtime::dafny_runtime_conversions::hashmap_to_dafny_map(&value.request_items.clone().unwrap(),
     |k| dafny_runtime::dafny_runtime_conversions::unicode_chars_false::string_to_dafny_string(&k),
     |v| ::dafny_runtime::dafny_runtime_conversions::vec_to_dafny_sequence(&v,
-    |e| crate::ddb::conversions::write_request::to_dafny(&e)
+    |e| crate::ddb::conversions::write_request::to_dafny(e)
 ,
 )
 ,
@@ -29,7 +29,7 @@ pub fn to_dafny(
 ,
     })
 }
-#[allow(dead_code)]
+ #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
         crate::r#software::amazon::cryptography::services::dynamodb::internaldafny::types::BatchWriteItemInput,

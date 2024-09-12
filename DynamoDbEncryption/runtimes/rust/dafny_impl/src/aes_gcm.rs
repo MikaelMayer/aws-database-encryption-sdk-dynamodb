@@ -110,7 +110,7 @@ impl AES_GCM {
         aad: &::dafny_runtime::Sequence<u8>,
     ) -> Rc<Wrappers::Result<Rc<AESEncryptOutput>, Rc<DafnyError>>> {
         let iv: Vec<u8> = iv.iter().collect();
-        let mut key: Vec<u8> = key.iter().collect();
+        let key: Vec<u8> = key.iter().collect();
         let msg: Vec<u8> = msg.iter().collect();
         let aad: Vec<u8> = aad.iter().collect();
 
@@ -154,7 +154,7 @@ impl AES_GCM {
         iv: &::dafny_runtime::Sequence<u8>,
         aad: &::dafny_runtime::Sequence<u8>,
     ) -> Rc<Wrappers::Result<::dafny_runtime::Sequence<u8>, Rc<DafnyError>>> {
-        let mut key: Vec<u8> = key.iter().collect();
+        let key: Vec<u8> = key.iter().collect();
         let cipher_text: Vec<u8> = cipher_text.iter().collect();
         let auth_tag: Vec<u8> = auth_tag.iter().collect();
         let iv: Vec<u8> = iv.iter().collect();
