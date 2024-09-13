@@ -5,19 +5,19 @@
 pub fn to_dafny(
     value: crate::primitives::operation::generate_rsa_key_pair::GenerateRsaKeyPairOutput,
 ) -> ::std::rc::Rc<
-    crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateRSAKeyPairOutput,
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateRSAKeyPairOutput,
 >{
-    ::std::rc::Rc::new(crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateRSAKeyPairOutput::GenerateRSAKeyPairOutput {
-        publicKey: crate::primitives::conversions::rsa_public_key::to_dafny(&value.public_key.clone().unwrap())
+    ::std::rc::Rc::new(crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateRSAKeyPairOutput::GenerateRSAKeyPairOutput {
+        publicKey: crate::primitives::conversions::rsa_public_key::to_dafny(value.public_key.clone().unwrap())
 ,
- privateKey: crate::primitives::conversions::rsa_private_key::to_dafny(&value.private_key.clone().unwrap())
+ privateKey: crate::primitives::conversions::rsa_private_key::to_dafny(value.private_key.clone().unwrap())
 ,
     })
 }
  #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
-        crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateRSAKeyPairOutput,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateRSAKeyPairOutput,
     >,
 ) -> crate::primitives::operation::generate_rsa_key_pair::GenerateRsaKeyPairOutput {
     crate::primitives::operation::generate_rsa_key_pair::GenerateRsaKeyPairOutput::builder()

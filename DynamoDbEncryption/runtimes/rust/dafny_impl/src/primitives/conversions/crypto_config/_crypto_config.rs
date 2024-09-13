@@ -6,7 +6,7 @@
 pub fn to_dafny(
     value: crate::primitives::types::crypto_config::CryptoConfig,
 ) -> ::std::rc::Rc<
-    crate::software::amazon::cryptography::primitives::internaldafny::types::CryptoConfig,
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::CryptoConfig,
 > {
     ::std::rc::Rc::new(to_dafny_plain(value))
 }
@@ -14,7 +14,7 @@ pub fn to_dafny(
 #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
-        crate::software::amazon::cryptography::primitives::internaldafny::types::CryptoConfig,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::CryptoConfig,
     >,
 ) -> crate::primitives::types::crypto_config::CryptoConfig {
     plain_from_dafny(&*dafny_value)
@@ -24,18 +24,18 @@ pub fn from_dafny(
 #[allow(dead_code)]
 pub fn to_dafny_plain(
     value: crate::primitives::types::crypto_config::CryptoConfig,
-) -> crate::software::amazon::cryptography::primitives::internaldafny::types::CryptoConfig {
-    crate::software::amazon::cryptography::primitives::internaldafny::types::CryptoConfig::CryptoConfig {
+) -> crate::r#software::amazon::cryptography::primitives::internaldafny::types::CryptoConfig {
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::CryptoConfig::CryptoConfig {
 
     }
 }
 
 #[allow(dead_code)]
 pub fn plain_from_dafny(
-    dafny_value: &crate::software::amazon::cryptography::primitives::internaldafny::types::CryptoConfig,
+    dafny_value: &crate::r#software::amazon::cryptography::primitives::internaldafny::types::CryptoConfig,
 ) -> crate::primitives::types::crypto_config::CryptoConfig {
     match dafny_value {
-        crate::software::amazon::cryptography::primitives::internaldafny::types::CryptoConfig::CryptoConfig {..} =>
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::CryptoConfig::CryptoConfig {..} =>
             crate::primitives::types::crypto_config::CryptoConfig::builder()
 
                 .build()

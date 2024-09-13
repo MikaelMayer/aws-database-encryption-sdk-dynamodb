@@ -5,17 +5,17 @@
 pub fn to_dafny(
     value: crate::primitives::operation::decompress_public_key::DecompressPublicKeyOutput,
 ) -> ::std::rc::Rc<
-    crate::software::amazon::cryptography::primitives::internaldafny::types::DecompressPublicKeyOutput,
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::DecompressPublicKeyOutput,
 >{
-    ::std::rc::Rc::new(crate::software::amazon::cryptography::primitives::internaldafny::types::DecompressPublicKeyOutput::DecompressPublicKeyOutput {
-        publicKey: crate::primitives::conversions::ecc_public_key::to_dafny(&value.public_key.clone().unwrap())
+    ::std::rc::Rc::new(crate::r#software::amazon::cryptography::primitives::internaldafny::types::DecompressPublicKeyOutput::DecompressPublicKeyOutput {
+        publicKey: crate::primitives::conversions::ecc_public_key::to_dafny(value.public_key.clone().unwrap())
 ,
     })
 }
  #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
-        crate::software::amazon::cryptography::primitives::internaldafny::types::DecompressPublicKeyOutput,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::DecompressPublicKeyOutput,
     >,
 ) -> crate::primitives::operation::decompress_public_key::DecompressPublicKeyOutput {
     crate::primitives::operation::decompress_public_key::DecompressPublicKeyOutput::builder()

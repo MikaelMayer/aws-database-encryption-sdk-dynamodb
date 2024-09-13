@@ -5,9 +5,9 @@
 pub fn to_dafny(
     value: crate::primitives::operation::validate_public_key::ValidatePublicKeyInput,
 ) -> ::std::rc::Rc<
-    crate::software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyInput,
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyInput,
 >{
-    ::std::rc::Rc::new(crate::software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyInput::ValidatePublicKeyInput {
+    ::std::rc::Rc::new(crate::r#software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyInput::ValidatePublicKeyInput {
         eccCurve: crate::primitives::conversions::ecdh_curve_spec::to_dafny(value.ecc_curve.clone().unwrap()),
  publicKey: crate::ddb::standard_library_conversions::oblob_to_dafny(&value.public_key).Extract(),
     })
@@ -15,7 +15,7 @@ pub fn to_dafny(
  #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
-        crate::software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyInput,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyInput,
     >,
 ) -> crate::primitives::operation::validate_public_key::ValidatePublicKeyInput {
     crate::primitives::operation::validate_public_key::ValidatePublicKeyInput::builder()

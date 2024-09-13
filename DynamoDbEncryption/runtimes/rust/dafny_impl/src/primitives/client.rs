@@ -5,7 +5,7 @@ use aws_smithy_types::error::operation::BuildError;
 
 #[derive(::std::clone::Clone, ::std::fmt::Debug, ::std::cmp::PartialEq)]
 pub struct Client {
-    pub(crate) dafny_client: ::dafny_runtime::Object<dyn crate::software::amazon::cryptography::primitives::internaldafny::types::IAwsCryptographicPrimitivesClient>
+    pub(crate) dafny_client: ::dafny_runtime::Object<dyn crate::r#software::amazon::cryptography::primitives::internaldafny::types::IAwsCryptographicPrimitivesClient>
 }
 
 impl Client {
@@ -15,7 +15,7 @@ impl Client {
         conf: crate::primitives::types::crypto_config::CryptoConfig,
     ) -> Result<Self, BuildError> {
         let inner =
-            crate::aws::cryptography::primitives::internaldafny::_default::AtomicPrimitives(
+            crate::software::amazon::cryptography::primitives::internaldafny::_default::AtomicPrimitives(
                 &crate::primitives::conversions::crypto_config::_crypto_config::to_dafny(conf),
             );
         if matches!(

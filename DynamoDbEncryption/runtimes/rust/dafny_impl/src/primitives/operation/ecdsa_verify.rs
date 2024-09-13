@@ -25,7 +25,7 @@ impl EcdsaVerify {
             crate::Wrappers::Result::Success { .. }
         ) {
             Ok(
-                crate::primitives::conversions::ecdsa_verify::_ecdsa_verify_output::from_dafny(inner_result.value().clone()),
+                inner_result.value() .clone(),
             )
         } else {
             Err(crate::primitives::conversions::error::from_dafny(

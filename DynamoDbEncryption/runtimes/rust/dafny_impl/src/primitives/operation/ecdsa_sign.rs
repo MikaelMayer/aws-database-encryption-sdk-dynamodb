@@ -25,7 +25,7 @@ impl EcdsaSign {
             crate::Wrappers::Result::Success { .. }
         ) {
             Ok(
-                crate::primitives::conversions::ecdsa_sign::_ecdsa_sign_output::from_dafny(inner_result.value().clone()),
+                crate::ddb::standard_library_conversions::blob_from_dafny(inner_result.value().clone()),
             )
         } else {
             Err(crate::primitives::conversions::error::from_dafny(

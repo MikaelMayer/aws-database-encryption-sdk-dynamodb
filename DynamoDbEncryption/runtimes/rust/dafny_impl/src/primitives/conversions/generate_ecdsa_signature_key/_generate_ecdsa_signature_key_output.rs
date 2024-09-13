@@ -5,9 +5,9 @@
 pub fn to_dafny(
     value: crate::primitives::operation::generate_ecdsa_signature_key::GenerateEcdsaSignatureKeyOutput,
 ) -> ::std::rc::Rc<
-    crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateECDSASignatureKeyOutput,
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateECDSASignatureKeyOutput,
 >{
-    ::std::rc::Rc::new(crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateECDSASignatureKeyOutput::GenerateECDSASignatureKeyOutput {
+    ::std::rc::Rc::new(crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateECDSASignatureKeyOutput::GenerateECDSASignatureKeyOutput {
         signatureAlgorithm: crate::primitives::conversions::ecdsa_signature_algorithm::to_dafny(value.signature_algorithm.clone().unwrap()),
  verificationKey: crate::ddb::standard_library_conversions::oblob_to_dafny(&value.verification_key).Extract(),
  signingKey: crate::ddb::standard_library_conversions::oblob_to_dafny(&value.signing_key).Extract(),
@@ -16,7 +16,7 @@ pub fn to_dafny(
  #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
-        crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateECDSASignatureKeyOutput,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateECDSASignatureKeyOutput,
     >,
 ) -> crate::primitives::operation::generate_ecdsa_signature_key::GenerateEcdsaSignatureKeyOutput {
     crate::primitives::operation::generate_ecdsa_signature_key::GenerateEcdsaSignatureKeyOutput::builder()

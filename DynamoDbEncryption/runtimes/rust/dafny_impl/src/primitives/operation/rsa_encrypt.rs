@@ -25,7 +25,7 @@ impl RsaEncrypt {
             crate::Wrappers::Result::Success { .. }
         ) {
             Ok(
-                crate::primitives::conversions::rsa_encrypt::_rsa_encrypt_output::from_dafny(inner_result.value().clone()),
+                crate::ddb::standard_library_conversions::blob_from_dafny(inner_result.value().clone()),
             )
         } else {
             Err(crate::primitives::conversions::error::from_dafny(

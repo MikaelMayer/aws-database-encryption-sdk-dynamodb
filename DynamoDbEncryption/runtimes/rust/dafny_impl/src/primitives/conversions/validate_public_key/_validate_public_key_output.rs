@@ -5,16 +5,16 @@
 pub fn to_dafny(
     value: crate::primitives::operation::validate_public_key::ValidatePublicKeyOutput,
 ) -> ::std::rc::Rc<
-    crate::software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyOutput,
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyOutput,
 >{
-    ::std::rc::Rc::new(crate::software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyOutput::ValidatePublicKeyOutput {
-        success: crate::ddb::standard_library_conversions::obool_to_dafny(&value.success),
+    ::std::rc::Rc::new(crate::r#software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyOutput::ValidatePublicKeyOutput {
+        success: value.success.clone().unwrap(),
     })
 }
  #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
-        crate::software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyOutput,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyOutput,
     >,
 ) -> crate::primitives::operation::validate_public_key::ValidatePublicKeyOutput {
     crate::primitives::operation::validate_public_key::ValidatePublicKeyOutput::builder()

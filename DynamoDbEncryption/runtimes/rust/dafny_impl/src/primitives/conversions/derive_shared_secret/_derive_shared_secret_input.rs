@@ -5,20 +5,20 @@
 pub fn to_dafny(
     value: crate::primitives::operation::derive_shared_secret::DeriveSharedSecretInput,
 ) -> ::std::rc::Rc<
-    crate::software::amazon::cryptography::primitives::internaldafny::types::DeriveSharedSecretInput,
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::DeriveSharedSecretInput,
 >{
-    ::std::rc::Rc::new(crate::software::amazon::cryptography::primitives::internaldafny::types::DeriveSharedSecretInput::DeriveSharedSecretInput {
+    ::std::rc::Rc::new(crate::r#software::amazon::cryptography::primitives::internaldafny::types::DeriveSharedSecretInput::DeriveSharedSecretInput {
         eccCurve: crate::primitives::conversions::ecdh_curve_spec::to_dafny(value.ecc_curve.clone().unwrap()),
- privateKey: crate::primitives::conversions::ecc_private_key::to_dafny(&value.private_key.clone().unwrap())
+ privateKey: crate::primitives::conversions::ecc_private_key::to_dafny(value.private_key.clone().unwrap())
 ,
- publicKey: crate::primitives::conversions::ecc_public_key::to_dafny(&value.public_key.clone().unwrap())
+ publicKey: crate::primitives::conversions::ecc_public_key::to_dafny(value.public_key.clone().unwrap())
 ,
     })
 }
  #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
-        crate::software::amazon::cryptography::primitives::internaldafny::types::DeriveSharedSecretInput,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::DeriveSharedSecretInput,
     >,
 ) -> crate::primitives::operation::derive_shared_secret::DeriveSharedSecretInput {
     crate::primitives::operation::derive_shared_secret::DeriveSharedSecretInput::builder()

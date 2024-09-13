@@ -5,16 +5,16 @@
 pub fn to_dafny(
     value: crate::primitives::operation::get_rsa_key_modulus_length::GetRsaKeyModulusLengthInput,
 ) -> ::std::rc::Rc<
-    crate::software::amazon::cryptography::primitives::internaldafny::types::GetRSAKeyModulusLengthInput,
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::GetRSAKeyModulusLengthInput,
 >{
-    ::std::rc::Rc::new(crate::software::amazon::cryptography::primitives::internaldafny::types::GetRSAKeyModulusLengthInput::GetRSAKeyModulusLengthInput {
+    ::std::rc::Rc::new(crate::r#software::amazon::cryptography::primitives::internaldafny::types::GetRSAKeyModulusLengthInput::GetRSAKeyModulusLengthInput {
         publicKey: crate::ddb::standard_library_conversions::oblob_to_dafny(&value.public_key).Extract(),
     })
 }
  #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
-        crate::software::amazon::cryptography::primitives::internaldafny::types::GetRSAKeyModulusLengthInput,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::GetRSAKeyModulusLengthInput,
     >,
 ) -> crate::primitives::operation::get_rsa_key_modulus_length::GetRsaKeyModulusLengthInput {
     crate::primitives::operation::get_rsa_key_modulus_length::GetRsaKeyModulusLengthInput::builder()

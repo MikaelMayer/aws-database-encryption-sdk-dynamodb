@@ -5,7 +5,7 @@
 pub fn to_dafny(
     value: crate::primitives::types::EccPublicKey,
 ) -> ::std::rc::Rc<
-    crate::software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey,
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey,
 > {
     ::std::rc::Rc::new(to_dafny_plain(value))
 }
@@ -13,8 +13,8 @@ pub fn to_dafny(
 #[allow(dead_code)]
 pub fn to_dafny_plain(
     value: crate::primitives::types::EccPublicKey,
-) -> crate::software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey {
-    crate::software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey::ECCPublicKey {
+) -> crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey {
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey::ECCPublicKey {
         der: crate::ddb::standard_library_conversions::oblob_to_dafny(&value.der).Extract(),
     }
 }
@@ -23,7 +23,7 @@ pub fn to_dafny_plain(
 pub fn option_to_dafny(
   value: ::std::option::Option<crate::primitives::types::EccPublicKey>,
 ) -> ::std::rc::Rc<crate::Wrappers::Option<::std::rc::Rc<
-  crate::software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey,
+  crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey,
 >>>{
     ::std::rc::Rc::new(match value {
         ::std::option::Option::None => crate::Wrappers::Option::None {},
@@ -36,7 +36,7 @@ pub fn option_to_dafny(
 #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
-        crate::software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey,
     >,
 ) -> crate::primitives::types::EccPublicKey {
     plain_from_dafny(&*dafny_value)
@@ -44,10 +44,10 @@ pub fn from_dafny(
 
 #[allow(dead_code)]
 pub fn plain_from_dafny(
-    dafny_value: &crate::software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey,
+    dafny_value: &crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey,
 ) -> crate::primitives::types::EccPublicKey {
     match dafny_value {
-        crate::software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey::ECCPublicKey {..} =>
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey::ECCPublicKey {..} =>
             crate::primitives::types::EccPublicKey::builder()
                 .set_der(Some(crate::ddb::standard_library_conversions::blob_from_dafny(dafny_value.der().clone())))
                 .build()
@@ -58,7 +58,7 @@ pub fn plain_from_dafny(
 #[allow(dead_code)]
 pub fn option_from_dafny(
     dafny_value: ::std::rc::Rc<crate::Wrappers::Option<::std::rc::Rc<
-        crate::software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECCPublicKey,
     >>>,
 ) -> ::std::option::Option<crate::primitives::types::EccPublicKey> {
     match &*dafny_value {

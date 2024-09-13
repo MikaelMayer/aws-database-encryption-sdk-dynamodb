@@ -5,10 +5,10 @@
 pub fn to_dafny(
     value: crate::primitives::operation::aes_encrypt::AesEncryptInput,
 ) -> ::std::rc::Rc<
-    crate::software::amazon::cryptography::primitives::internaldafny::types::AESEncryptInput,
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::AESEncryptInput,
 >{
-    ::std::rc::Rc::new(crate::software::amazon::cryptography::primitives::internaldafny::types::AESEncryptInput::AESEncryptInput {
-        encAlg: crate::primitives::conversions::aes_gcm::to_dafny(&value.enc_alg.clone().unwrap())
+    ::std::rc::Rc::new(crate::r#software::amazon::cryptography::primitives::internaldafny::types::AESEncryptInput::AESEncryptInput {
+        encAlg: crate::primitives::conversions::aes_gcm::to_dafny(value.enc_alg.clone().unwrap())
 ,
  iv: crate::ddb::standard_library_conversions::oblob_to_dafny(&value.iv).Extract(),
  key: crate::ddb::standard_library_conversions::oblob_to_dafny(&value.key).Extract(),
@@ -19,7 +19,7 @@ pub fn to_dafny(
  #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
-        crate::software::amazon::cryptography::primitives::internaldafny::types::AESEncryptInput,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::AESEncryptInput,
     >,
 ) -> crate::primitives::operation::aes_encrypt::AesEncryptInput {
     crate::primitives::operation::aes_encrypt::AesEncryptInput::builder()

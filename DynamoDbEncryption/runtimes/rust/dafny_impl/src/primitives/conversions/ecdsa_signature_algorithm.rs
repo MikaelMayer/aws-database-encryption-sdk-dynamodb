@@ -5,19 +5,19 @@
 
 pub fn to_dafny(
     value: crate::primitives::types::EcdsaSignatureAlgorithm,
-) -> ::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::ECDSASignatureAlgorithm>{
+) -> ::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECDSASignatureAlgorithm>{
     ::std::rc::Rc::new(match value {
-        crate::primitives::types::EcdsaSignatureAlgorithm::EcdsaP384 => crate::software::amazon::cryptography::primitives::internaldafny::types::ECDSASignatureAlgorithm::ECDSA_P384 {},
-crate::primitives::types::EcdsaSignatureAlgorithm::EcdsaP256 => crate::software::amazon::cryptography::primitives::internaldafny::types::ECDSASignatureAlgorithm::ECDSA_P256 {},
+        crate::primitives::types::EcdsaSignatureAlgorithm::EcdsaP384 => crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECDSASignatureAlgorithm::ECDSA_P384 {},
+crate::primitives::types::EcdsaSignatureAlgorithm::EcdsaP256 => crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECDSASignatureAlgorithm::ECDSA_P256 {},
         _ => panic!("Unknown enum variant: {}", value),
     })
 }
  #[allow(dead_code)]
 pub fn from_dafny(
-    dafny_value: &crate::software::amazon::cryptography::primitives::internaldafny::types::ECDSASignatureAlgorithm,
+    dafny_value: &crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECDSASignatureAlgorithm,
 ) -> crate::primitives::types::EcdsaSignatureAlgorithm {
     match dafny_value {
-        crate::software::amazon::cryptography::primitives::internaldafny::types::ECDSASignatureAlgorithm::ECDSA_P384 {} => crate::primitives::types::EcdsaSignatureAlgorithm::EcdsaP384,
-crate::software::amazon::cryptography::primitives::internaldafny::types::ECDSASignatureAlgorithm::ECDSA_P256 {} => crate::primitives::types::EcdsaSignatureAlgorithm::EcdsaP256,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECDSASignatureAlgorithm::ECDSA_P384 {} => crate::primitives::types::EcdsaSignatureAlgorithm::EcdsaP384,
+crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECDSASignatureAlgorithm::ECDSA_P256 {} => crate::primitives::types::EcdsaSignatureAlgorithm::EcdsaP256,
     }
 }

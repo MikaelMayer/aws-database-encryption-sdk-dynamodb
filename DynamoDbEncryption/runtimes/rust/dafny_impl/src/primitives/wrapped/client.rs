@@ -16,8 +16,8 @@ static dafny_tokio_runtime: LazyLock<tokio::runtime::Runtime> = LazyLock::new(||
           .unwrap()
 });
 
-impl dafny_runtime::UpcastObject<dyn crate::software::amazon::cryptography::primitives::internaldafny::types::IAwsCryptographicPrimitivesClient> for Client {
-  ::dafny_runtime::UpcastObjectFn!(dyn crate::software::amazon::cryptography::primitives::internaldafny::types::IAwsCryptographicPrimitivesClient);
+impl dafny_runtime::UpcastObject<dyn crate::r#software::amazon::cryptography::primitives::internaldafny::types::IAwsCryptographicPrimitivesClient> for Client {
+  ::dafny_runtime::UpcastObjectFn!(dyn crate::r#software::amazon::cryptography::primitives::internaldafny::types::IAwsCryptographicPrimitivesClient);
 }
 
 impl dafny_runtime::UpcastObject<dyn std::any::Any> for Client {
@@ -26,11 +26,11 @@ impl dafny_runtime::UpcastObject<dyn std::any::Any> for Client {
 
 impl Client {
   pub fn from_conf(config: &::std::rc::Rc<
-    crate::software::amazon::cryptography::primitives::internaldafny::types::CryptoConfig,
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::CryptoConfig,
   >) ->
 ::std::rc::Rc<crate::Wrappers::Result<
-  ::dafny_runtime::Object<dyn crate::software::amazon::cryptography::primitives::internaldafny::types::IAwsCryptographicPrimitivesClient>,
-  ::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>
+  ::dafny_runtime::Object<dyn crate::r#software::amazon::cryptography::primitives::internaldafny::types::IAwsCryptographicPrimitivesClient>,
+  ::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>
 >> {
     let result = crate::primitives::client::Client::from_conf(
       crate::primitives::conversions::crypto_config::_crypto_config::from_dafny(
@@ -53,14 +53,14 @@ impl Client {
   }
 }
 
-impl crate::software::amazon::cryptography::primitives::internaldafny::types::IAwsCryptographicPrimitivesClient for Client {
+impl crate::r#software::amazon::cryptography::primitives::internaldafny::types::IAwsCryptographicPrimitivesClient for Client {
     fn AESDecrypt(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::AESDecryptInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::AESDecryptInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
             ::dafny_runtime::dafny_runtime_conversions::DafnySequence<u8>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::aes_decrypt::_aes_decrypt_input::from_dafny(input.clone());
@@ -75,7 +75,7 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
             ),
             Ok(inner_result) => ::std::rc::Rc::new(
                 crate::Wrappers::Result::Success {
-                    value: crate::primitives::conversions::aes_decrypt::_aes_decrypt_output::to_dafny(inner_result),
+                    value: crate::ddb::standard_library_conversions::blob_to_dafny(&inner_result),
                 },
             ),
         }
@@ -83,11 +83,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn AESEncrypt(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::AESEncryptInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::AESEncryptInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
-            ::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::AESEncryptOutput>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            ::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::AESEncryptOutput>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::aes_encrypt::_aes_encrypt_input::from_dafny(input.clone());
@@ -110,11 +110,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn AesKdfCounterMode(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::AesKdfCtrInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::AesKdfCtrInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
             ::dafny_runtime::dafny_runtime_conversions::DafnySequence<u8>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::aes_kdf_counter_mode::_aes_kdf_counter_mode_input::from_dafny(input.clone());
@@ -129,7 +129,7 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
             ),
             Ok(inner_result) => ::std::rc::Rc::new(
                 crate::Wrappers::Result::Success {
-                    value: crate::primitives::conversions::aes_kdf_counter_mode::_aes_kdf_counter_mode_output::to_dafny(inner_result),
+                    value: crate::ddb::standard_library_conversions::blob_to_dafny(&inner_result),
                 },
             ),
         }
@@ -137,11 +137,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn CompressPublicKey(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::CompressPublicKeyInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::CompressPublicKeyInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
-            ::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::CompressPublicKeyOutput>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            ::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::CompressPublicKeyOutput>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::compress_public_key::_compress_public_key_input::from_dafny(input.clone());
@@ -164,11 +164,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn DecompressPublicKey(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::DecompressPublicKeyInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::DecompressPublicKeyInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
-            ::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::DecompressPublicKeyOutput>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            ::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::DecompressPublicKeyOutput>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::decompress_public_key::_decompress_public_key_input::from_dafny(input.clone());
@@ -191,11 +191,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn DeriveSharedSecret(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::DeriveSharedSecretInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::DeriveSharedSecretInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
-            ::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::DeriveSharedSecretOutput>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            ::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::DeriveSharedSecretOutput>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::derive_shared_secret::_derive_shared_secret_input::from_dafny(input.clone());
@@ -218,11 +218,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn Digest(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::DigestInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::DigestInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
             ::dafny_runtime::dafny_runtime_conversions::DafnySequence<u8>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::digest::_digest_input::from_dafny(input.clone());
@@ -237,7 +237,7 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
             ),
             Ok(inner_result) => ::std::rc::Rc::new(
                 crate::Wrappers::Result::Success {
-                    value: crate::primitives::conversions::digest::_digest_output::to_dafny(inner_result),
+                    value: crate::ddb::standard_library_conversions::blob_to_dafny(&inner_result),
                 },
             ),
         }
@@ -245,11 +245,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn ECDSASign(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::ECDSASignInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECDSASignInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
             ::dafny_runtime::dafny_runtime_conversions::DafnySequence<u8>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::ecdsa_sign::_ecdsa_sign_input::from_dafny(input.clone());
@@ -264,7 +264,7 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
             ),
             Ok(inner_result) => ::std::rc::Rc::new(
                 crate::Wrappers::Result::Success {
-                    value: crate::primitives::conversions::ecdsa_sign::_ecdsa_sign_output::to_dafny(inner_result),
+                    value: crate::ddb::standard_library_conversions::blob_to_dafny(&inner_result),
                 },
             ),
         }
@@ -272,11 +272,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn ECDSAVerify(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::ECDSAVerifyInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::ECDSAVerifyInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
             ::std::primitive::bool,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::ecdsa_verify::_ecdsa_verify_input::from_dafny(input.clone());
@@ -291,7 +291,7 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
             ),
             Ok(inner_result) => ::std::rc::Rc::new(
                 crate::Wrappers::Result::Success {
-                    value: crate::primitives::conversions::ecdsa_verify::_ecdsa_verify_output::to_dafny(inner_result),
+                    value: inner_result.clone(),
                 },
             ),
         }
@@ -299,11 +299,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn GenerateECCKeyPair(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateECCKeyPairInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateECCKeyPairInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
-            ::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateECCKeyPairOutput>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            ::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateECCKeyPairOutput>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::generate_ecc_key_pair::_generate_ecc_key_pair_input::from_dafny(input.clone());
@@ -326,11 +326,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn GenerateECDSASignatureKey(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateECDSASignatureKeyInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateECDSASignatureKeyInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
-            ::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateECDSASignatureKeyOutput>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            ::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateECDSASignatureKeyOutput>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::generate_ecdsa_signature_key::_generate_ecdsa_signature_key_input::from_dafny(input.clone());
@@ -353,11 +353,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn GenerateRandomBytes(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateRandomBytesInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateRandomBytesInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
             ::dafny_runtime::dafny_runtime_conversions::DafnySequence<u8>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::generate_random_bytes::_generate_random_bytes_input::from_dafny(input.clone());
@@ -372,7 +372,7 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
             ),
             Ok(inner_result) => ::std::rc::Rc::new(
                 crate::Wrappers::Result::Success {
-                    value: crate::primitives::conversions::generate_random_bytes::_generate_random_bytes_output::to_dafny(inner_result),
+                    value: crate::ddb::standard_library_conversions::blob_to_dafny(&inner_result),
                 },
             ),
         }
@@ -380,11 +380,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn GenerateRSAKeyPair(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateRSAKeyPairInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateRSAKeyPairInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
-            ::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateRSAKeyPairOutput>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            ::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateRSAKeyPairOutput>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::generate_rsa_key_pair::_generate_rsa_key_pair_input::from_dafny(input.clone());
@@ -407,11 +407,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn GetPublicKeyFromPrivateKey(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::GetPublicKeyFromPrivateKeyInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::GetPublicKeyFromPrivateKeyInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
-            ::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::GetPublicKeyFromPrivateKeyOutput>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            ::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::GetPublicKeyFromPrivateKeyOutput>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::get_public_key_from_private_key::_get_public_key_from_private_key_input::from_dafny(input.clone());
@@ -434,11 +434,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn GetRSAKeyModulusLength(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::GetRSAKeyModulusLengthInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::GetRSAKeyModulusLengthInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
-            ::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::GetRSAKeyModulusLengthOutput>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            ::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::GetRSAKeyModulusLengthOutput>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::get_rsa_key_modulus_length::_get_rsa_key_modulus_length_input::from_dafny(input.clone());
@@ -461,11 +461,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn Hkdf(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::HkdfInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::HkdfInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
             ::dafny_runtime::dafny_runtime_conversions::DafnySequence<u8>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::hkdf::_hkdf_input::from_dafny(input.clone());
@@ -480,7 +480,7 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
             ),
             Ok(inner_result) => ::std::rc::Rc::new(
                 crate::Wrappers::Result::Success {
-                    value: crate::primitives::conversions::hkdf::_hkdf_output::to_dafny(inner_result),
+                    value: crate::ddb::standard_library_conversions::blob_to_dafny(&inner_result),
                 },
             ),
         }
@@ -488,11 +488,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn HkdfExpand(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::HkdfExpandInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::HkdfExpandInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
             ::dafny_runtime::dafny_runtime_conversions::DafnySequence<u8>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::hkdf_expand::_hkdf_expand_input::from_dafny(input.clone());
@@ -507,7 +507,7 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
             ),
             Ok(inner_result) => ::std::rc::Rc::new(
                 crate::Wrappers::Result::Success {
-                    value: crate::primitives::conversions::hkdf_expand::_hkdf_expand_output::to_dafny(inner_result),
+                    value: crate::ddb::standard_library_conversions::blob_to_dafny(&inner_result),
                 },
             ),
         }
@@ -515,11 +515,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn HkdfExtract(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::HkdfExtractInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::HkdfExtractInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
             ::dafny_runtime::dafny_runtime_conversions::DafnySequence<u8>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::hkdf_extract::_hkdf_extract_input::from_dafny(input.clone());
@@ -534,7 +534,7 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
             ),
             Ok(inner_result) => ::std::rc::Rc::new(
                 crate::Wrappers::Result::Success {
-                    value: crate::primitives::conversions::hkdf_extract::_hkdf_extract_output::to_dafny(inner_result),
+                    value: crate::ddb::standard_library_conversions::blob_to_dafny(&inner_result),
                 },
             ),
         }
@@ -542,11 +542,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn HMac(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::HMacInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::HMacInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
             ::dafny_runtime::dafny_runtime_conversions::DafnySequence<u8>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::h_mac::_h_mac_input::from_dafny(input.clone());
@@ -561,7 +561,7 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
             ),
             Ok(inner_result) => ::std::rc::Rc::new(
                 crate::Wrappers::Result::Success {
-                    value: crate::primitives::conversions::h_mac::_h_mac_output::to_dafny(inner_result),
+                    value: crate::ddb::standard_library_conversions::blob_to_dafny(&inner_result),
                 },
             ),
         }
@@ -569,11 +569,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn KdfCounterMode(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::KdfCtrInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::KdfCtrInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
             ::dafny_runtime::dafny_runtime_conversions::DafnySequence<u8>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::kdf_counter_mode::_kdf_counter_mode_input::from_dafny(input.clone());
@@ -588,7 +588,7 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
             ),
             Ok(inner_result) => ::std::rc::Rc::new(
                 crate::Wrappers::Result::Success {
-                    value: crate::primitives::conversions::kdf_counter_mode::_kdf_counter_mode_output::to_dafny(inner_result),
+                    value: crate::ddb::standard_library_conversions::blob_to_dafny(&inner_result),
                 },
             ),
         }
@@ -596,11 +596,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn ParsePublicKey(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::ParsePublicKeyInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::ParsePublicKeyInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
-            ::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::ParsePublicKeyOutput>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            ::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::ParsePublicKeyOutput>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::parse_public_key::_parse_public_key_input::from_dafny(input.clone());
@@ -623,11 +623,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn RSADecrypt(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::RSADecryptInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::RSADecryptInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
             ::dafny_runtime::dafny_runtime_conversions::DafnySequence<u8>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::rsa_decrypt::_rsa_decrypt_input::from_dafny(input.clone());
@@ -642,7 +642,7 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
             ),
             Ok(inner_result) => ::std::rc::Rc::new(
                 crate::Wrappers::Result::Success {
-                    value: crate::primitives::conversions::rsa_decrypt::_rsa_decrypt_output::to_dafny(inner_result),
+                    value: crate::ddb::standard_library_conversions::blob_to_dafny(&inner_result),
                 },
             ),
         }
@@ -650,11 +650,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn RSAEncrypt(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::RSAEncryptInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::RSAEncryptInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
             ::dafny_runtime::dafny_runtime_conversions::DafnySequence<u8>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::rsa_encrypt::_rsa_encrypt_input::from_dafny(input.clone());
@@ -669,7 +669,7 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
             ),
             Ok(inner_result) => ::std::rc::Rc::new(
                 crate::Wrappers::Result::Success {
-                    value: crate::primitives::conversions::rsa_encrypt::_rsa_encrypt_output::to_dafny(inner_result),
+                    value: crate::ddb::standard_library_conversions::blob_to_dafny(&inner_result),
                 },
             ),
         }
@@ -677,11 +677,11 @@ impl crate::software::amazon::cryptography::primitives::internaldafny::types::IA
 
     fn ValidatePublicKey(
         &mut self,
-        input: &::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyInput>,
+        input: &::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyInput>,
     ) -> std::rc::Rc<
         crate::Wrappers::Result<
-            ::std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyOutput>,
-            std::rc::Rc<crate::software::amazon::cryptography::primitives::internaldafny::types::Error>,
+            ::std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::ValidatePublicKeyOutput>,
+            std::rc::Rc<crate::r#software::amazon::cryptography::primitives::internaldafny::types::Error>,
         >,
     >{
         let inner_input = crate::primitives::conversions::validate_public_key::_validate_public_key_input::from_dafny(input.clone());

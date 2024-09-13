@@ -5,11 +5,11 @@
 pub fn to_dafny(
     value: crate::primitives::operation::get_public_key_from_private_key::GetPublicKeyFromPrivateKeyOutput,
 ) -> ::std::rc::Rc<
-    crate::software::amazon::cryptography::primitives::internaldafny::types::GetPublicKeyFromPrivateKeyOutput,
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::GetPublicKeyFromPrivateKeyOutput,
 >{
-    ::std::rc::Rc::new(crate::software::amazon::cryptography::primitives::internaldafny::types::GetPublicKeyFromPrivateKeyOutput::GetPublicKeyFromPrivateKeyOutput {
+    ::std::rc::Rc::new(crate::r#software::amazon::cryptography::primitives::internaldafny::types::GetPublicKeyFromPrivateKeyOutput::GetPublicKeyFromPrivateKeyOutput {
         eccCurve: crate::primitives::conversions::ecdh_curve_spec::to_dafny(value.ecc_curve.clone().unwrap()),
- privateKey: crate::primitives::conversions::ecc_private_key::to_dafny(&value.private_key.clone().unwrap())
+ privateKey: crate::primitives::conversions::ecc_private_key::to_dafny(value.private_key.clone().unwrap())
 ,
  publicKey: crate::ddb::standard_library_conversions::oblob_to_dafny(&value.public_key).Extract(),
     })
@@ -17,7 +17,7 @@ pub fn to_dafny(
  #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
-        crate::software::amazon::cryptography::primitives::internaldafny::types::GetPublicKeyFromPrivateKeyOutput,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::GetPublicKeyFromPrivateKeyOutput,
     >,
 ) -> crate::primitives::operation::get_public_key_from_private_key::GetPublicKeyFromPrivateKeyOutput {
     crate::primitives::operation::get_public_key_from_private_key::GetPublicKeyFromPrivateKeyOutput::builder()

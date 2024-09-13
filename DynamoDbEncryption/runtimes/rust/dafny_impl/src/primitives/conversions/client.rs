@@ -9,7 +9,7 @@
 pub fn to_dafny(
     value: &crate::primitives::client::Client,
 ) ->
-  ::dafny_runtime::Object<dyn crate::software::amazon::cryptography::primitives::internaldafny::types::IAwsCryptographicPrimitivesClient>
+  ::dafny_runtime::Object<dyn crate::r#software::amazon::cryptography::primitives::internaldafny::types::IAwsCryptographicPrimitivesClient>
 {
     value.dafny_client.clone()
 }
@@ -17,7 +17,7 @@ pub fn to_dafny(
 #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::dafny_runtime::Object<
-      dyn crate::software::amazon::cryptography::primitives::internaldafny::types::IAwsCryptographicPrimitivesClient
+      dyn crate::r#software::amazon::cryptography::primitives::internaldafny::types::IAwsCryptographicPrimitivesClient
     >,
 ) -> crate::primitives::client::Client {
   crate::primitives::client::Client { dafny_client: dafny_value }

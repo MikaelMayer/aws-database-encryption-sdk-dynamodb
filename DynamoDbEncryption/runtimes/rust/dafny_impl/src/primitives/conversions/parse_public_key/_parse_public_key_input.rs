@@ -5,16 +5,16 @@
 pub fn to_dafny(
     value: crate::primitives::operation::parse_public_key::ParsePublicKeyInput,
 ) -> ::std::rc::Rc<
-    crate::software::amazon::cryptography::primitives::internaldafny::types::ParsePublicKeyInput,
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::ParsePublicKeyInput,
 >{
-    ::std::rc::Rc::new(crate::software::amazon::cryptography::primitives::internaldafny::types::ParsePublicKeyInput::ParsePublicKeyInput {
+    ::std::rc::Rc::new(crate::r#software::amazon::cryptography::primitives::internaldafny::types::ParsePublicKeyInput::ParsePublicKeyInput {
         publicKey: crate::ddb::standard_library_conversions::oblob_to_dafny(&value.public_key).Extract(),
     })
 }
  #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
-        crate::software::amazon::cryptography::primitives::internaldafny::types::ParsePublicKeyInput,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::ParsePublicKeyInput,
     >,
 ) -> crate::primitives::operation::parse_public_key::ParsePublicKeyInput {
     crate::primitives::operation::parse_public_key::ParsePublicKeyInput::builder()

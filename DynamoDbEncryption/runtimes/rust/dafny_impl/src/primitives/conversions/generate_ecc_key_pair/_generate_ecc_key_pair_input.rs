@@ -5,16 +5,16 @@
 pub fn to_dafny(
     value: crate::primitives::operation::generate_ecc_key_pair::GenerateEccKeyPairInput,
 ) -> ::std::rc::Rc<
-    crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateECCKeyPairInput,
+    crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateECCKeyPairInput,
 >{
-    ::std::rc::Rc::new(crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateECCKeyPairInput::GenerateECCKeyPairInput {
+    ::std::rc::Rc::new(crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateECCKeyPairInput::GenerateECCKeyPairInput {
         eccCurve: crate::primitives::conversions::ecdh_curve_spec::to_dafny(value.ecc_curve.clone().unwrap()),
     })
 }
  #[allow(dead_code)]
 pub fn from_dafny(
     dafny_value: ::std::rc::Rc<
-        crate::software::amazon::cryptography::primitives::internaldafny::types::GenerateECCKeyPairInput,
+        crate::r#software::amazon::cryptography::primitives::internaldafny::types::GenerateECCKeyPairInput,
     >,
 ) -> crate::primitives::operation::generate_ecc_key_pair::GenerateEccKeyPairInput {
     crate::primitives::operation::generate_ecc_key_pair::GenerateEccKeyPairInput::builder()

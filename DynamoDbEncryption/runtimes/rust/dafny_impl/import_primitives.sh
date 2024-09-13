@@ -15,4 +15,4 @@ find src/primitives -name '*.rs' | xargs perl -i -pe 's/crate::operation/crate::
 find src/primitives -name '*.rs' | xargs perl -i -pe 's/crate::types/crate::primitives::types/'
 find src/primitives -name '*.rs' | xargs perl -i -pe 's/crate::wrapped/crate::primitives::wrapped/'
 find src/primitives -name '*.rs' | xargs perl -i -pe 's/crate::standard_library_conversions/crate::ddb::standard_library_conversions/'
-find src/primitives -name '*.rs' | xargs perl -i -pe 's/crate::r#aws::cryptography::primitives::internaldafny::/crate::software::amazon::cryptography::primitives::internaldafny::/'
+find src/primitives -name '*.rs' | xargs perl -i -pe 's/crate::r#software::amazon::cryptography::primitives::internaldafny::wrapped::/crate::software::amazon::cryptography::materialproviders::internaldafny::wrapped::/'
